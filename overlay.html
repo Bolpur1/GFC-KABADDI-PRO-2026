@@ -10,12 +10,7 @@
 :root{
  --accent:#d9b65d;
  --accent2:#ffe9a0;
- --bg1:#071b19;
- --bg2:#103c34;
- --panel:#0b2926;
- --white:#ffffff;
- --muted:#b8d0c9;
- --red:#ff404d;
+ --red:#ff3549;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,92 +20,66 @@ html,body{
  min-height:100%;
  background:transparent;
  font-family:Arial,Helvetica,sans-serif;
- color:var(--white);
+ color:white;
  overflow:hidden;
 }
 
-#overlay{
- width:100%;
- padding:20px;
-}
+#overlay{width:100%;padding:20px}
 
 .broadcast{
  position:relative;
- width:min(1050px,100%);
+ width:min(1100px,100%);
  margin:auto;
- border:1px solid rgba(255,255,255,.22);
- border-radius:18px;
  overflow:hidden;
- background:
- linear-gradient(115deg,
- rgba(5,23,22,.98),
- rgba(13,59,51,.97) 55%,
- rgba(5,25,24,.98));
- box-shadow:0 12px 45px rgba(0,0,0,.45);
-}
-
-.broadcast:before{
- content:"";
- position:absolute;
- inset:0;
- pointer-events:none;
- background:linear-gradient(
-  110deg,
-  transparent 20%,
-  rgba(255,255,255,.035) 50%,
-  transparent 80%);
+ border:1px solid rgba(255,255,255,.24);
+ border-radius:18px;
+ background:linear-gradient(115deg,
+ rgba(4,20,19,.98),
+ rgba(12,57,49,.98),
+ rgba(4,22,21,.98));
+ box-shadow:0 12px 45px rgba(0,0,0,.5);
 }
 
 .topbar{
- position:relative;
  display:flex;
  align-items:center;
  justify-content:space-between;
  gap:12px;
  padding:12px 20px;
- background:linear-gradient(90deg,#071b19,#123d34);
- border-bottom:1px solid rgba(255,255,255,.13);
+ background:linear-gradient(90deg,#061b19,#154438);
+ border-bottom:1px solid rgba(255,255,255,.14);
 }
 
-.brand{
- display:flex;
- align-items:center;
- gap:10px;
-}
+.brand{display:flex;align-items:center;gap:10px}
 
 .brand-icon{
- width:37px;
- height:37px;
- display:grid;
- place-items:center;
+ width:38px;height:38px;
+ display:grid;place-items:center;
  border-radius:10px;
  background:linear-gradient(145deg,#ffe7a0,#b98b30);
- color:#152b24;
- font-size:17px;
- font-weight:1000;
- box-shadow:0 3px 12px rgba(217,182,93,.25);
+ color:#172a20;
+ font-size:18px;font-weight:1000;
 }
 
 .brand-name{
- font-size:17px;
- font-weight:1000;
- letter-spacing:1.3px;
+ font-size:17px;font-weight:1000;
+ letter-spacing:1.2px;
 }
 
 .brand-sub{
  margin-top:3px;
+ color:var(--accent);
  font-size:9px;
  letter-spacing:3px;
- color:var(--accent);
- font-weight:800;
+ font-weight:900;
 }
 
 .tournament{
- max-width:45%;
- text-align:right;
+ max-width:42%;
+ text-align:center;
+ color:#e0eee8;
  font-size:12px;
- font-weight:800;
- color:#d8e9e2;
+ font-weight:900;
  letter-spacing:1px;
  overflow-wrap:anywhere;
 }
@@ -119,22 +88,21 @@ html,body{
  display:inline-flex;
  align-items:center;
  gap:7px;
- padding:7px 12px;
- border-radius:5px;
- background:rgba(255,50,65,.14);
+ padding:7px 11px;
  border:1px solid rgba(255,70,80,.5);
- color:#ff6670;
+ border-radius:5px;
+ background:rgba(255,50,65,.13);
+ color:#ff6875;
  font-size:11px;
  font-weight:1000;
- letter-spacing:1.5px;
+ letter-spacing:1px;
 }
 
 .live-dot{
- width:7px;
- height:7px;
+ width:7px;height:7px;
  border-radius:50%;
- background:#ff3447;
- box-shadow:0 0 10px #ff3447;
+ background:#ff3549;
+ box-shadow:0 0 10px #ff3549;
  animation:pulse 1s infinite;
 }
 
@@ -143,63 +111,93 @@ html,body{
 }
 
 .score-area{
- position:relative;
  display:grid;
  grid-template-columns:1fr 170px 1fr;
  align-items:center;
  gap:12px;
- padding:27px 25px 24px;
+ padding:23px 22px;
 }
 
 .team{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:15px;
+ min-width:0;
+}
+
+.team-a{flex-direction:row}
+.team-b{flex-direction:row-reverse}
+
+.team-logo{
+ width:82px;height:82px;
+ flex:0 0 82px;
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ border-radius:50%;
+ border:3px solid var(--accent);
+ background:linear-gradient(145deg,#164b3d,#071c19);
+ box-shadow:0 0 18px rgba(217,182,93,.2);
+}
+
+.team-logo img{
+ width:100%;height:100%;
+ object-fit:cover;
+ display:none;
+}
+
+.team-logo .fallback{
+ font-size:29px;
+ font-weight:1000;
+ color:var(--accent2);
+}
+
+.team-info{
  min-width:0;
  text-align:center;
 }
 
 .team-label{
- color:var(--muted);
- font-size:10px;
+ color:#b8d0c9;
+ font-size:9px;
  font-weight:900;
  letter-spacing:2px;
- margin-bottom:10px;
+ margin-bottom:5px;
 }
 
 .team-name{
- font-size:clamp(17px,3vw,28px);
- font-weight:1000;
+ max-width:190px;
+ font-size:clamp(16px,2.6vw,25px);
  line-height:1.15;
+ font-weight:1000;
  overflow-wrap:anywhere;
- text-shadow:0 3px 12px rgba(0,0,0,.4);
 }
 
 .score{
- display:inline-block;
- min-width:100px;
- margin-top:8px;
- font-size:clamp(55px,9vw,88px);
+ display:block;
+ margin-top:5px;
+ font-size:clamp(48px,7vw,76px);
  line-height:1;
  font-weight:1000;
- letter-spacing:-3px;
- color:#fff;
- text-shadow:0 4px 18px rgba(0,0,0,.4);
+ letter-spacing:-2px;
+ text-shadow:0 4px 15px rgba(0,0,0,.4);
 }
 
-.score.changed{
- animation:scorePop .55s ease;
-}
+.score.changed{animation:scorePop .55s ease}
 
 @keyframes scorePop{
  0%{transform:scale(1)}
- 40%{transform:scale(1.22);color:var(--accent2)}
+ 40%{transform:scale(1.2);color:var(--accent2)}
  100%{transform:scale(1)}
 }
 
 .center-panel{
+ padding:14px 8px;
  text-align:center;
- padding:15px 8px;
- border-radius:14px;
- border:1px solid rgba(217,182,93,.3);
- background:linear-gradient(145deg,rgba(0,0,0,.35),rgba(14,52,45,.7));
+ border:1px solid rgba(217,182,93,.35);
+ border-radius:13px;
+ background:rgba(0,0,0,.3);
 }
 
 .vs{
@@ -211,10 +209,10 @@ html,body{
 
 .half-label{
  margin-top:9px;
- color:#c7d9d2;
+ color:#c9ddd5;
  font-size:10px;
  font-weight:900;
- letter-spacing:1.5px;
+ letter-spacing:1px;
 }
 
 .match-time{
@@ -222,7 +220,6 @@ html,body{
  font-size:27px;
  font-weight:1000;
  font-variant-numeric:tabular-nums;
- letter-spacing:1px;
 }
 
 .timer-line{
@@ -232,7 +229,7 @@ html,body{
 }
 
 .raid-label{
- color:var(--muted);
+ color:#b8d0c9;
  font-size:9px;
  font-weight:900;
  letter-spacing:2px;
@@ -247,13 +244,12 @@ html,body{
 }
 
 .bottom-bar{
- position:relative;
  display:flex;
  align-items:center;
  justify-content:space-between;
  gap:12px;
  flex-wrap:wrap;
- padding:12px 20px;
+ padding:11px 20px;
  background:rgba(0,0,0,.35);
  border-top:1px solid rgba(255,255,255,.12);
 }
@@ -262,15 +258,14 @@ html,body{
  display:flex;
  align-items:center;
  gap:8px;
+ color:var(--accent2);
  font-size:11px;
  font-weight:1000;
- letter-spacing:1.3px;
- color:var(--accent2);
+ letter-spacing:1px;
 }
 
 .status-mark{
- width:7px;
- height:7px;
+ width:7px;height:7px;
  border-radius:50%;
  background:var(--accent);
 }
@@ -278,66 +273,92 @@ html,body{
 .raider-box{
  display:flex;
  align-items:center;
- gap:9px;
- font-size:12px;
- font-weight:900;
+ gap:11px;
 }
 
+.raider-photo{
+ width:43px;height:43px;
+ flex:0 0 43px;
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ border:2px solid var(--accent);
+ border-radius:50%;
+ background:#173e34;
+ color:var(--accent2);
+ font-size:17px;
+ font-weight:1000;
+}
+
+.raider-photo img{
+ width:100%;height:100%;
+ object-fit:cover;
+ display:none;
+}
+
+.raider-details{min-width:0}
+
 .raider-tag{
- color:var(--muted);
- font-size:9px;
- letter-spacing:1.5px;
+ color:#a9c4ba;
+ font-size:8px;
+ font-weight:900;
+ letter-spacing:2px;
 }
 
 .raider-name{
- color:#fff;
+ margin-top:3px;
+ color:white;
+ font-size:13px;
+ font-weight:1000;
 }
 
-.footer{
- display:flex;
- justify-content:center;
- padding:7px;
- background:rgba(0,0,0,.22);
- color:rgba(255,255,255,.48);
- font-size:8px;
- font-weight:900;
- letter-spacing:3px;
+.raider-jersey{
+ margin-top:2px;
+ color:var(--accent2);
+ font-size:10px;
+ font-weight:800;
 }
 
 .result{
  display:none;
- position:relative;
- padding:13px 15px;
+ padding:13px;
  text-align:center;
  color:#17271e;
  background:linear-gradient(90deg,#c99b36,#ffe6a0,#c99b36);
  font-size:19px;
  font-weight:1000;
- letter-spacing:1.5px;
+ letter-spacing:1px;
 }
 
 .result.show{display:block}
 
+.footer{
+ padding:7px;
+ text-align:center;
+ background:rgba(0,0,0,.22);
+ color:rgba(255,255,255,.5);
+ font-size:8px;
+ font-weight:900;
+ letter-spacing:3px;
+}
+
 .animation{
  display:none;
  position:fixed;
- top:43%;
- left:50%;
+ top:43%;left:50%;
  transform:translate(-50%,-50%);
  z-index:20;
- min-width:230px;
  max-width:90%;
- padding:20px 35px;
- text-align:center;
- white-space:nowrap;
+ padding:20px 32px;
  border:2px solid var(--accent);
  border-radius:15px;
- color:var(--accent2);
  background:rgba(3,18,16,.96);
- box-shadow:0 0 40px rgba(217,182,93,.35);
+ color:var(--accent2);
+ text-align:center;
  font-size:clamp(25px,6vw,52px);
  font-weight:1000;
- letter-spacing:2px;
+ white-space:nowrap;
+ box-shadow:0 0 40px rgba(217,182,93,.4);
 }
 
 .animation.show{
@@ -350,6 +371,28 @@ html,body{
  to{opacity:1;transform:translate(-50%,-50%) scale(1)}
 }
 
+/* Colour variants */
+
+.broadcast.blue{
+ --accent:#55c7ff;
+ --accent2:#b8eaff;
+}
+
+.broadcast.red{
+ --accent:#ff6565;
+ --accent2:#ffc0c0;
+}
+
+.broadcast.purple{
+ --accent:#c58aff;
+ --accent2:#e5caff;
+}
+
+.broadcast.orange{
+ --accent:#ffad55;
+ --accent2:#ffe0ad;
+}
+
 .error{
  max-width:600px;
  margin:20px auto;
@@ -357,68 +400,54 @@ html,body{
  border:1px solid #ff5965;
  border-radius:10px;
  background:rgba(80,0,0,.9);
- color:#fff;
  text-align:center;
  font-weight:bold;
 }
 
-/* Colour variants */
-.broadcast.gold{
- --accent:#d9b65d;
- --accent2:#ffe9a0;
-}
-.broadcast.blue{
- --accent:#55c7ff;
- --accent2:#b8eaff;
-}
-.broadcast.red{
- --accent:#ff6565;
- --accent2:#ffc0c0;
-}
-.broadcast.purple{
- --accent:#c58aff;
- --accent2:#e5caff;
-}
-.broadcast.orange{
- --accent:#ffad55;
- --accent2:#ffe0ad;
-}
-
-/* Compact layout */
-@media(max-width:600px){
+@media(max-width:650px){
  #overlay{padding:8px}
  .broadcast{border-radius:11px}
- .topbar{padding:9px 10px}
+ .topbar{padding:9px 10px;gap:5px}
  .brand-icon{width:29px;height:29px;font-size:13px}
- .brand-name{font-size:12px}
+ .brand-name{font-size:11px}
  .brand-sub{font-size:7px;letter-spacing:2px}
  .tournament{font-size:9px}
- .live-badge{padding:5px 7px;font-size:9px}
+ .live-badge{padding:5px 6px;font-size:8px}
  .score-area{
-  grid-template-columns:1fr 95px 1fr;
+  grid-template-columns:1fr 90px 1fr;
   gap:4px;
-  padding:19px 7px;
+  padding:17px 6px;
  }
- .team-label{font-size:8px;letter-spacing:1px}
- .team-name{font-size:clamp(13px,3vw,19px)}
- .score{font-size:clamp(43px,10vw,60px);min-width:0}
- .center-panel{padding:11px 4px}
+ .team{gap:5px}
+ .team-logo{
+  width:43px;height:43px;
+  flex-basis:43px;
+  border-width:2px;
+ }
+ .team-logo .fallback{font-size:18px}
+ .team-label{font-size:7px;letter-spacing:1px}
+ .team-name{font-size:clamp(11px,2.8vw,17px)}
+ .score{font-size:clamp(38px,9vw,55px)}
+ .center-panel{padding:10px 3px}
  .vs{font-size:10px}
  .half-label{font-size:8px}
- .match-time{font-size:20px}
+ .match-time{font-size:19px}
  .raid-label{font-size:7px}
- .raid-time{font-size:19px}
- .bottom-bar{padding:9px 10px}
+ .raid-time{font-size:18px}
+ .bottom-bar{padding:8px 10px}
  .match-status{font-size:9px}
- .raider-box{font-size:10px}
+ .raider-photo{width:36px;height:36px;flex-basis:36px}
+ .raider-name{font-size:11px}
  .footer{font-size:7px}
 }
 
-@media(max-width:350px){
+@media(max-width:360px){
  .score-area{grid-template-columns:1fr 75px 1fr}
- .match-time{font-size:17px}
- .score{font-size:39px}
- .brand-name{font-size:10px}
+ .team-logo{width:35px;height:35px;flex-basis:35px}
+ .score{font-size:36px}
+ .match-time{font-size:16px}
+ .team-name{font-size:11px}
+ .brand-name{font-size:9px}
 }
 </style>
 </head>
@@ -426,9 +455,10 @@ html,body{
 <body>
 
 <div id="overlay">
- <div class="broadcast gold" id="broadcast">
+ <div class="broadcast" id="broadcast">
 
   <div class="topbar">
+
    <div class="brand">
     <div class="brand-icon">G</div>
     <div>
@@ -442,19 +472,30 @@ html,body{
    </div>
 
    <div class="live-badge" id="liveBadge">
-    <span class="live-dot"></span>
-    LIVE
+    <span class="live-dot"></span> LIVE
    </div>
+
   </div>
 
   <div class="score-area">
 
-   <div class="team">
-    <div class="team-label">HOME TEAM</div>
-    <div class="team-name" id="teamA">TEAM A</div>
-    <div class="score" id="scoreA">0</div>
+   <!-- TEAM A -->
+   <div class="team team-a">
+
+    <div class="team-logo">
+     <img id="logoA" alt="Team A Logo">
+     <span class="fallback" id="fallbackA">A</span>
+    </div>
+
+    <div class="team-info">
+     <div class="team-label">HOME TEAM</div>
+     <div class="team-name" id="teamA">TEAM A</div>
+     <div class="score" id="scoreA">0</div>
+    </div>
+
    </div>
 
+   <!-- MATCH TIMER -->
    <div class="center-panel">
     <div class="vs">VS</div>
     <div class="half-label" id="halfLabel">1ST HALF</div>
@@ -464,24 +505,47 @@ html,body{
     <div class="raid-time" id="raidTimer">30</div>
    </div>
 
-   <div class="team">
-    <div class="team-label">AWAY TEAM</div>
-    <div class="team-name" id="teamB">TEAM B</div>
-    <div class="score" id="scoreB">0</div>
+   <!-- TEAM B -->
+   <div class="team team-b">
+
+    <div class="team-logo">
+     <img id="logoB" alt="Team B Logo">
+     <span class="fallback" id="fallbackB">B</span>
+    </div>
+
+    <div class="team-info">
+     <div class="team-label">AWAY TEAM</div>
+     <div class="team-name" id="teamB">TEAM B</div>
+     <div class="score" id="scoreB">0</div>
+    </div>
+
    </div>
 
   </div>
 
   <div class="bottom-bar">
+
    <div class="match-status">
     <span class="status-mark"></span>
     <span id="status">UPCOMING</span>
    </div>
 
+   <!-- CURRENT RAIDER -->
    <div class="raider-box">
-    <span class="raider-tag">RAIDER</span>
-    <span class="raider-name" id="raider">---</span>
+
+    <div class="raider-photo">
+     <img id="raiderPhoto" alt="Raider Photo">
+     <span id="raiderFallback">R</span>
+    </div>
+
+    <div class="raider-details">
+     <div class="raider-tag">CURRENT RAIDER</div>
+     <div class="raider-name" id="raider">---</div>
+     <div class="raider-jersey" id="raiderJersey"></div>
+    </div>
+
    </div>
+
   </div>
 
   <div class="result" id="result"></div>
@@ -535,9 +599,56 @@ function formatTime(seconds){
         String(sec).padStart(2,"0");
 }
 
-function showError(message){
- $("overlay").innerHTML =
- '<div class="error">'+message+'</div>';
+function setImage(imgId,fallbackId,url,letter){
+
+ const img = $(imgId);
+ const fallback = $(fallbackId);
+
+ fallback.textContent = letter || "?";
+ img.onerror = function(){
+  img.style.display = "none";
+  fallback.style.display = "grid";
+ };
+
+ if(url){
+  img.style.display = "block";
+  fallback.style.display = "none";
+  img.src = url;
+ }else{
+  img.removeAttribute("src");
+  img.style.display = "none";
+  fallback.style.display = "grid";
+ }
+}
+
+function updateScore(id,value,previous){
+ const el = $(id);
+ const current = Number(value ?? 0);
+
+ el.textContent = current;
+
+ if(previous !== null && current !== previous){
+  el.classList.remove("changed");
+  void el.offsetWidth;
+  el.classList.add("changed");
+ }
+
+ return current;
+}
+
+function applyColourVariant(value){
+ const box = $("broadcast");
+
+ box.classList.remove(
+  "blue","red","purple","orange"
+ );
+
+ const variant = String(value || "gold").toLowerCase();
+
+ if(variant.includes("blue")) box.classList.add("blue");
+ else if(variant.includes("red")) box.classList.add("red");
+ else if(variant.includes("purple")) box.classList.add("purple");
+ else if(variant.includes("orange")) box.classList.add("orange");
 }
 
 function showAnimation(label){
@@ -556,48 +667,33 @@ function showAnimation(label){
  },3000);
 }
 
-function updateScore(elementId,value,previous){
- const el = $(elementId);
- const current = Number(value ?? 0);
-
- el.textContent = current;
-
- if(previous !== null && current !== previous){
-  el.classList.remove("changed");
-  void el.offsetWidth;
-  el.classList.add("changed");
- }
-
- return current;
-}
-
-function applyColourVariant(value){
- const box = $("broadcast");
-
- box.classList.remove(
-  "gold","blue","red","purple","orange"
- );
-
- const variant = String(value || "gold").toLowerCase();
-
- if(variant.includes("blue")) box.classList.add("blue");
- else if(variant.includes("red")) box.classList.add("red");
- else if(variant.includes("purple")) box.classList.add("purple");
- else if(variant.includes("orange")) box.classList.add("orange");
- else box.classList.add("gold");
-}
-
 function updateOverlay(data){
 
  $("tournament").textContent =
-  safeText(data.tournament || data.tournament_name,"KABADDI CHAMPIONSHIP");
+  safeText(data.tournament,"KABADDI CHAMPIONSHIP");
 
  $("teamA").textContent =
-  safeText(data.team_a,"TEAM A");
+  safeText(data.team_a_full || data.team_a,"TEAM A");
 
  $("teamB").textContent =
-  safeText(data.team_b,"TEAM B");
+  safeText(data.team_b_full || data.team_b,"TEAM B");
 
+ // Team logos
+ setImage(
+  "logoA",
+  "fallbackA",
+  data.team_a_logo,
+  "A"
+ );
+
+ setImage(
+  "logoB",
+  "fallbackB",
+  data.team_b_logo,
+  "B"
+ );
+
+ // Scores
  previousScoreA = updateScore(
   "scoreA",data.score_a,previousScoreA
  );
@@ -606,23 +702,25 @@ function updateOverlay(data){
   "scoreB",data.score_b,previousScoreB
  );
 
+ // Status
  const status = safeText(data.status,"UPCOMING").toUpperCase();
-
  $("status").textContent = status;
 
  const badge = $("liveBadge");
 
  if(status === "LIVE"){
-  badge.style.display = "inline-flex";
   badge.innerHTML = '<span class="live-dot"></span> LIVE';
+  badge.style.color = "#ff6875";
+  badge.style.borderColor = "rgba(255,70,80,.5)";
+  badge.style.background = "rgba(255,50,65,.13)";
  }else{
-  badge.style.display = "inline-flex";
-  badge.innerHTML = status;
+  badge.textContent = status;
   badge.style.color = "#ffe9a0";
   badge.style.borderColor = "rgba(255,255,255,.25)";
   badge.style.background = "rgba(255,255,255,.08)";
  }
 
+ // Half
  const half = Number(data.half || 1);
 
  $("halfLabel").textContent =
@@ -630,6 +728,7 @@ function updateOverlay(data){
   half === 2 ? "2ND HALF" :
   "HALF " + half;
 
+ // Timers
  $("raidTimer").textContent =
   data.raid_timer ?? 30;
 
@@ -638,32 +737,39 @@ function updateOverlay(data){
    ? "--:--"
    : formatTime(data.match_timer);
 
- $("raider").textContent =
-  safeText(data.raider,"---");
+ // Raider details
+ const raiderName = safeText(data.raider,"---");
 
- // Apply selected colour variant if returned by RPC
- applyColourVariant(data.color_variant || data.colour_variant);
+ $("raider").textContent = raiderName;
 
- // Last scoring animation
+ setImage(
+  "raiderPhoto",
+  "raiderFallback",
+  data.raider_photo,
+  raiderName.charAt(0).toUpperCase()
+ );
+
+ $("raiderJersey").textContent =
+  data.raider_jersey_number != null
+   ? "JERSEY #" + data.raider_jersey_number
+   : "";
+
+ // Colour
+ applyColourVariant(data.color_variant);
+
+ // Scoring animation
  if(data.last_animation){
   showAnimation(data.last_animation);
- }else if(data.last_event && data.last_event.overlay_label){
-  showAnimation(data.last_event.overlay_label);
  }
 
- // Match result
+ // Result
  const result = $("result");
 
  if(data.result_type === "draw"){
   result.textContent = "🏆 MATCH DRAW";
   result.classList.add("show");
  }else if(data.result_type === "winner"){
-  const winner =
-   data.winner_team_id &&
-   data.winner_team_id === data.team_a_id
-    ? data.team_a
-    : safeText(data.winner_team,"WINNER");
-
+  const winner = safeText(data.winner_team_name,"WINNER");
   result.textContent = "🏆 " + winner + " WON THE MATCH";
   result.classList.add("show");
  }else{
@@ -705,6 +811,11 @@ async function loadOverlay(){
  }finally{
   loading = false;
  }
+}
+
+function showError(message){
+ $("overlay").innerHTML =
+  '<div class="error">'+message+'</div>';
 }
 
 loadOverlay();
