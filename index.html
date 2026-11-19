@@ -625,7 +625,7 @@ $("clientForm").addEventListener("submit", async event => {
 });
 
 /* =========================================
-   LOAD DASHBOARD - FULL DIAGNOSTIC
+   LOAD DASHBOARD
 ========================================= */
 
 async function loadDashboard() {
@@ -697,7 +697,7 @@ async function loadDashboard() {
 
       db.from("matches")
         .select("id", { count: "exact", head: true })
-        .eq("status", "live"),
+        .eq("match_status", "live"),
 
       db.from("subscriptions")
         .select("*")
@@ -715,7 +715,7 @@ async function loadDashboard() {
       if (results[i].error) {
         throw new Error(
           names[i] + ": " +
-          results[i].error.message
+          (results[i].error.message || JSON.stringify(results[i].error))
         );
       }
     }
@@ -781,7 +781,7 @@ function renderClients(clients) {
       <td>
         <button class="btn secondary small"
           data-manage-club="${escapeHTML(client.id)}">Manage</button>
-        <button class="btn ${String(client.status).toLowerCase() === "active" ? "danger" : "small"} small"
+        <button class="btn danger small"
           data-toggle-club="${escapeHTML(client.id)}"
           data-current-status="${escapeHTML(client.status || "")}">
           ${String(client.status).toLowerCase() === "active" ? "Suspend" : "Activate"}
@@ -977,8 +977,9 @@ async function loadClubDetails() {
     $("clubPlayerCount").textContent = players.length;
     $("clubMatchCount").textContent = matches.length;
 
+    /* Correct column: match_status */
     $("clubLiveCount").textContent = matches.filter(m =>
-      String(m.status || "").toLowerCase() === "live"
+      String(m.match_status || "").toLowerCase() === "live"
     ).length;
 
     $("clubInfo").innerHTML = `
@@ -1043,16 +1044,22 @@ async function loadClubDetails() {
         { key: "created_at", label: "CREATED", format: formatDate }
       ]);
 
+    /* Correct column: match_status */
     renderSimpleTable("matchesHead", "matchesBody",
       matches, [
-        { key: "status", label: "STATUS" },
+        { key: "match_status", label: "STATUS" },
         { key: "created_at", label: "CREATED", format: formatDate }
       ]);
 
+    showMessage("detailMsg", "Club details loaded successfully.");
+
   } catch (error) {
+    console.error("CLUB DETAILS ERROR:", error);
+
     showMessage(
       "detailMsg",
-      "Could not load club details: " + (error.message || "Unknown error"),
+      "Could not load club details: " +
+      (error.message || JSON.stringify(error) || "Unknown error"),
       true
     );
   }
