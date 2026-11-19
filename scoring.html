@@ -63,6 +63,47 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .timer-warning{color:var(--red)!important}
 .timer-success{color:var(--green)!important}
 .section-note{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* RAIDER PANEL */
+.raider-card{
+ background:#0a192b;
+ border:1px solid var(--gold);
+ border-radius:14px;
+ padding:15px;
+ margin-top:12px;
+ display:flex;
+ align-items:center;
+ gap:15px;
+ min-height:105px;
+}
+.raider-photo{
+ width:76px;
+ height:76px;
+ border-radius:50%;
+ object-fit:cover;
+ border:3px solid var(--gold);
+ background:#263b54;
+ flex-shrink:0;
+}
+.raider-details{flex:1;min-width:0}
+.raider-details h3{margin:0 0 6px;color:var(--gold)}
+.raider-details p{margin:4px 0;color:var(--muted);font-size:13px}
+.raid-buttons{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:12px;
+}
+.raid-status{
+ margin-top:12px;
+ padding:10px;
+ border-radius:8px;
+ background:#132a40;
+ color:var(--green);
+ text-align:center;
+ font-weight:bold;
+}
+
 @media(max-width:600px){
  main{padding:10px}
  .score{font-size:38px}
@@ -72,6 +113,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
  .overlaybar .ovteams{font-size:12px}
  .row{gap:7px}
  .row button{font-size:12px;padding:11px 7px}
+ .raider-photo{width:65px;height:65px}
 }
 </style>
 </head>
@@ -200,6 +242,50 @@ button:disabled{opacity:.4;cursor:not-allowed}
    </p>
   </section>
 
+  <!-- RAIDER SELECTION -->
+
+  <section class="panel" id="raiderPanel">
+   <h2>🏃 RAID CONTROL — SELECT RAIDER</h2>
+
+   <label>Raiding Team</label>
+   <select id="raiderTeam">
+    <option value="">Select Raiding Team</option>
+   </select>
+
+   <label>Select Raider / Player</label>
+   <select id="raiderSelect">
+    <option value="">Select Player</option>
+   </select>
+
+   <div class="raider-card">
+    <img id="raiderPhoto" class="raider-photo" alt="Raider Photo">
+
+    <div class="raider-details">
+     <h3 id="raiderName">No Raider Selected</h3>
+     <p id="raiderJersey">Jersey: --</p>
+     <p id="raiderPosition">Position: --</p>
+    </div>
+   </div>
+
+   <div class="raid-status" id="raidStatus">
+    NO ACTIVE RAID
+   </div>
+
+   <div class="raid-buttons">
+    <button class="green" id="startRaidBtn">
+     ▶ START RAID
+    </button>
+
+    <button class="red" id="stopRaidBtn">
+     ■ STOP RAID
+    </button>
+   </div>
+
+   <p class="section-note">
+    Raiding Team নির্বাচন করুন। তারপর সেই দলের Player নির্বাচন করে Start Raid চাপুন।
+   </p>
+  </section>
+
   <!-- SCORING CONTROL -->
 
   <section class="panel">
@@ -321,6 +407,10 @@ let overlayChannel=null;
 let timerInterval=null;
 let transitionBusy=false;
 
+let raidPlayers=[];
+let selectedRaider=null;
+let playerLoadRequest=0;
+
 const params=new URLSearchParams(location.search);
 const isOverlay=params.get("overlay")==="1";
 const requestedMatch=params.get("match");
@@ -363,6 +453,14 @@ function showDashboard(){
 function showLogin(){
  $("loginPanel").classList.remove("hidden");
  $("dashboard").classList.add("hidden");
+}
+
+function resetRaiderPreview(){
+ selectedRaider=null;
+ $("raiderName").textContent="No Raider Selected";
+ $("raiderJersey").textContent="Jersey: --";
+ $("raiderPosition").textContent="Position: --";
+ $("raiderPhoto").removeAttribute("src");
 }
 
 /* =====================================
@@ -570,8 +668,22 @@ function renderMatch(){
  $("raidInput").value=
   m.default_raid_seconds||30;
 
+ $("raidStatus").textContent=
+  m.current_raider_name
+   ?"ACTIVE RAIDER: "+m.current_raider_name
+   :"NO ACTIVE RAID";
+
+ $("startRaidBtn").disabled=
+  m.match_status!=="live";
+
+ $("stopRaidBtn").disabled=
+  m.match_status!=="live"||
+  !m.current_raider_name;
+
  renderOverlay();
  updateTimerDisplay();
+
+ loadRaidPlayers();
 }
 
 /* =====================================
@@ -626,6 +738,308 @@ function subscribeMatch(){
 
   .subscribe();
 }
+
+/* =====================================
+   RAIDER PLAYER SELECTION
+===================================== */
+
+async function loadRaidPlayers(){
+
+ if(!currentMatch)return;
+
+ const matchId=currentMatch.id;
+ const requestNumber=++playerLoadRequest;
+
+ const teamA=currentMatch.team_a_id;
+ const teamB=currentMatch.team_b_id;
+
+ const teamSelect=$("raiderTeam");
+ const previousPlayer=$("raiderSelect").value;
+
+ teamSelect.innerHTML=
+  '<option value="">Select Raiding Team</option>'+
+  '<option value="'+teamA+'">'+
+  escapeHtml(teamName(currentMatch.teamsA))+
+  '</option>'+
+  '<option value="'+teamB+'">'+
+  escapeHtml(teamName(currentMatch.teamsB))+
+  '</option>';
+
+ let activeTeam=currentMatch.current_raiding_team_id||"";
+
+ if(!activeTeam && previousPlayer){
+  const oldPlayer=raidPlayers.find(p=>p.id===previousPlayer);
+  if(oldPlayer)activeTeam=oldPlayer.team_id;
+ }
+
+ if(!activeTeam && $("scoringTeam").value){
+  activeTeam=$("scoringTeam").value;
+ }
+
+ teamSelect.value=activeTeam;
+
+ if(activeTeam){
+  await loadPlayersForTeam(activeTeam);
+ }else{
+  raidPlayers=[];
+  $("raiderSelect").innerHTML=
+   '<option value="">Select Raiding Team First</option>';
+  resetRaiderPreview();
+ }
+
+ if(requestNumber!==playerLoadRequest)return;
+ if(!currentMatch||currentMatch.id!==matchId)return;
+
+ const currentPlayerId=currentMatch.current_raider_player_id;
+
+ if(currentPlayerId){
+  $("raiderSelect").value=currentPlayerId;
+
+  if($("raiderSelect").value){
+   updateRaiderPreview();
+  }else{
+   const {data:player}=await db
+    .from("players")
+    .select("id,name,jersey_number,position,photo_url,team_id")
+    .eq("id",currentPlayerId)
+    .eq("client_id",clientId)
+    .maybeSingle();
+
+   if(
+    player&&
+    (player.team_id===teamA||player.team_id===teamB)
+   ){
+    teamSelect.value=player.team_id;
+    await loadPlayersForTeam(player.team_id);
+    $("raiderSelect").value=player.id;
+    updateRaiderPreview();
+   }
+  }
+ }else if(previousPlayer && $("raiderSelect").querySelector('option[value="'+previousPlayer+'"]')){
+  $("raiderSelect").value=previousPlayer;
+  updateRaiderPreview();
+ }else{
+  resetRaiderPreview();
+ }
+}
+
+
+async function loadPlayersForTeam(teamId){
+
+ const requestNumber=++playerLoadRequest;
+
+ raidPlayers=[];
+ resetRaiderPreview();
+
+ $("raiderSelect").innerHTML=
+  '<option value="">Loading Players...</option>';
+
+ if(!teamId){
+  $("raiderSelect").innerHTML=
+   '<option value="">Select Raiding Team First</option>';
+  return;
+ }
+
+ if(
+  !currentMatch||
+  (teamId!==currentMatch.team_a_id&&teamId!==currentMatch.team_b_id)
+ ){
+  $("raiderSelect").innerHTML=
+   '<option value="">Invalid Team</option>';
+  return;
+ }
+
+ const {data,error}=await db
+  .from("players")
+  .select("id,client_id,team_id,name,jersey_number,position,photo_url")
+  .eq("client_id",clientId)
+  .eq("team_id",teamId)
+  .order("jersey_number",{ascending:true});
+
+ if(requestNumber!==playerLoadRequest)return;
+
+ if(error){
+  $("raiderSelect").innerHTML=
+   '<option value="">Player Load Error</option>';
+
+  msg("Player Load Error: "+error.message,true);
+  return;
+ }
+
+ raidPlayers=data||[];
+
+ $("raiderSelect").innerHTML=
+  '<option value="">Select Raider</option>';
+
+ raidPlayers.forEach(p=>{
+  const jersey=p.jersey_number!==null&&p.jersey_number!==undefined
+   ?" #"+p.jersey_number
+   :"";
+
+  $("raiderSelect").add(
+   new Option((p.name||"Unnamed Player")+jersey,p.id)
+  );
+ });
+
+ if(!raidPlayers.length){
+  $("raiderSelect").innerHTML=
+   '<option value="">No Player Found</option>';
+ }
+}
+
+
+function updateRaiderPreview(){
+
+ const id=$("raiderSelect").value;
+
+ selectedRaider=
+  raidPlayers.find(p=>p.id===id)||null;
+
+ if(!selectedRaider){
+  resetRaiderPreview();
+  return;
+ }
+
+ $("raiderName").textContent=selectedRaider.name||"PLAYER";
+
+ $("raiderJersey").textContent=
+  "Jersey: "+
+  (selectedRaider.jersey_number??"--");
+
+ $("raiderPosition").textContent=
+  "Position: "+
+  (selectedRaider.position||"--");
+
+ const photo=$("raiderPhoto");
+
+ photo.onerror=()=>{
+  photo.onerror=null;
+  photo.removeAttribute("src");
+  photo.alt="Player photo unavailable";
+ };
+
+ if(selectedRaider.photo_url){
+  photo.src=selectedRaider.photo_url;
+  photo.alt=selectedRaider.name||"Raider";
+ }else{
+  photo.removeAttribute("src");
+  photo.alt="No player photo uploaded";
+ }
+}
+
+
+/* =====================================
+   START RAID
+===================================== */
+
+async function startRaid(){
+
+ if(!currentMatch){
+  msg("আগে Match নির্বাচন করুন।",true);
+  return;
+ }
+
+ if(currentMatch.match_status!=="live"){
+  msg("শুধুমাত্র Live Match-এ Raid শুরু করা যাবে।",true);
+  return;
+ }
+
+ if(currentMatch.current_raider_name){
+  msg("আগের Raid শেষ না করে নতুন Raid শুরু করা যাবে না।",true);
+  return;
+ }
+
+ const teamId=$("raiderTeam").value;
+
+ if(!teamId){
+  msg("Raiding Team নির্বাচন করুন।",true);
+  return;
+ }
+
+ if(
+  currentMatch.current_raiding_team_id&&
+  currentMatch.current_raiding_team_id!==teamId
+ ){
+  msg("Database-এ নির্ধারিত Raiding Team নির্বাচন করুন।",true);
+  return;
+ }
+
+ const playerId=$("raiderSelect").value;
+
+ if(!playerId){
+  msg("একজন Raider নির্বাচন করুন।",true);
+  return;
+ }
+
+ const player=raidPlayers.find(p=>p.id===playerId);
+
+ if(!player||player.team_id!==teamId){
+  msg("সঠিক দলের Player নির্বাচন করুন।",true);
+  return;
+ }
+
+ $("startRaidBtn").disabled=true;
+
+ const {error}=await db.rpc(
+  "start_kabaddi_raid",
+  {
+   p_match_id:currentMatch.id,
+   p_raider_name:player.name,
+   p_raider_player_id:player.id,
+   p_raid_seconds:currentMatch.default_raid_seconds||30
+  }
+ );
+
+ if(error){
+  $("startRaidBtn").disabled=false;
+  msg("Raid Start হয়নি: "+error.message,true);
+  return;
+ }
+
+ await selectMatch(currentMatch.id);
+
+ msg("Raid শুরু হয়েছে: "+player.name);
+}
+
+
+/* =====================================
+   STOP RAID
+===================================== */
+
+async function stopRaid(){
+
+ if(!currentMatch)return;
+
+ if(currentMatch.match_status!=="live"){
+  msg("Match Live নেই।",true);
+  return;
+ }
+
+ if(!currentMatch.current_raider_name){
+  msg("কোনো Active Raid নেই।",true);
+  return;
+ }
+
+ $("stopRaidBtn").disabled=true;
+
+ const {error}=await db.rpc(
+  "stop_kabaddi_raid",
+  {
+   p_match_id:currentMatch.id
+  }
+ );
+
+ if(error){
+  $("stopRaidBtn").disabled=false;
+  msg("Raid Stop হয়নি: "+error.message,true);
+  return;
+ }
+
+ await selectMatch(currentMatch.id);
+
+ msg("Raid শেষ হয়েছে।");
+}
+
 
 /* =====================================
    OVERLAY DISPLAY
@@ -1111,6 +1525,12 @@ async function recordEvent(){
   red_card:"RED CARD"
  };
 
+ const playerId=
+  selectedRaider&&
+  selectedRaider.team_id===team
+   ?selectedRaider.id
+   :null;
+
  const {error}=await db.rpc(
   "record_kabaddi_score_event",
   {
@@ -1119,7 +1539,7 @@ async function recordEvent(){
    p_team_id:team,
    p_points:points,
    p_overlay_label:labels[type]||type,
-   p_player_id:null
+   p_player_id:playerId
   }
  );
 
@@ -1311,6 +1731,40 @@ $("saveSettingsBtn").addEventListener(
  saveMatchSettings
 );
 
+/* Raider List */
+$("raiderTeam").addEventListener(
+ "change",
+ async e=>{
+  await loadPlayersForTeam(e.target.value);
+ }
+);
+
+$("raiderSelect").addEventListener(
+ "change",
+ updateRaiderPreview
+);
+
+$("scoringTeam").addEventListener(
+ "change",
+ async e=>{
+  if(e.target.value){
+   $("raiderTeam").value=e.target.value;
+   await loadPlayersForTeam(e.target.value);
+  }
+ }
+);
+
+$("startRaidBtn").addEventListener(
+ "click",
+ startRaid
+);
+
+$("stopRaidBtn").addEventListener(
+ "click",
+ stopRaid
+);
+
+/* Broadcast Alerts */
 document.querySelectorAll("[data-alert]").forEach(btn=>{
  btn.addEventListener(
   "click",
