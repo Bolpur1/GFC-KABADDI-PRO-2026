@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GFC KABADDI PRO 2026 - Live Scoring</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#07111f;--panel:#101f32;--line:#263b54;--gold:#ffc857;--green:#19c784;--red:#ff5364;--text:#f4f7fb;--muted:#9db0c6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{padding:17px;background:#0d1b2d;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{font-weight:900;color:var(--gold);font-size:19px}
+small,.muted{color:var(--muted)}
+main{max-width:1100px;margin:auto;padding:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;margin:14px 0}
+h2{font-size:18px;margin:0 0 14px}
+input,select{background:#081525;color:white;border:1px solid var(--line);padding:12px;border-radius:9px;width:100%;margin:5px 0}
+button{border:0;border-radius:9px;padding:12px 15px;font-weight:bold;cursor:pointer;background:#29415e;color:white}
+button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:var(--gold);color:#101827}
+.green{background:#087d59}
+.red{background:#a82b3d}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
+.team{padding:18px 8px;background:#0a192b;border:1px solid var(--line);border-radius:12px}
+.team h3{margin:0 0 10px;font-size:16px}
+.score{font-size:48px;font-weight:900;color:var(--gold)}
+.timer{font-size:27px;font-weight:bold;color:var(--green)}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.actions button{min-height:54px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.hidden{display:none!important}
+#message{padding:10px;border-radius:8px;background:#132a40;margin:10px 0}
+#overlay{position:fixed;inset:0;background:transparent;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding:5vw}
+.overlaybar{width:min(100%,1000px);display:flex;align-items:center;gap:18px;background:linear-gradient(90deg,#07111fef,#163a5eee);border:2px solid var(--gold);border-radius:15px;padding:17px 24px;box-shadow:0 0 30px #0008}
+.overlaybar .ovscore{font-size:34px;font-weight:900;color:var(--gold)}
+.overlaybar .ovteams{flex:1;text-align:center;font-weight:bold}
+.overlaybar .ovalert{font-size:19px;font-weight:900;color:var(--gold);text-align:center}
+.overlaybar .ovmeta{font-size:12px;color:#c4d4e5;text-align:center}
+#alertBanner{position:fixed;top:18%;left:50%;transform:translate(-50%,-20px) scale(.8);opacity:0;background:#a51f35;color:white;font-size:clamp(22px,5vw,48px);font-weight:1000;padding:20px 35px;border:3px solid var(--gold);border-radius:14px;text-align:center;white-space:normal;max-width:92vw;z-index:5}
+#alertBanner.show{animation:alertIn 3s ease both}
+@keyframes alertIn{0%{opacity:0;transform:translate(-50%,-20px) scale(.8)}12%,78%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-15px) scale(1.05)}}
+.pulse{animation:pulse .7s infinite alternate}
+@keyframes pulse{to{filter:brightness(1.8);box-shadow:0 0 25px var(--gold)}}
+#overlayPage{position:fixed;inset:0;z-index:10;background:transparent;pointer-events:none}
+#overlayPage .overlaybar{position:absolute;bottom:5%;left:50%;transform:translateX(-50%)}
+#overlayPage #alertBanner{pointer-events:none}
+@media(max-width:600px){main{padding:10px}.score{font-size:38px}.actions{grid-template-columns:repeat(2,1fr)}.overlaybar{gap:8px;padding:10px}.overlaybar .ovscore{font-size:23px}.overlaybar .ovteams{font-size:12px}}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="brand">🏆 GFC KABADDI PRO 2026</div>
+ <div class="row" style="flex:0 1 auto">
+  <button id="logoutBtn">Logout</button>
+ </div>
+</header>
+
+<main id="app">
+ <section class="panel" id="loginPanel">
+  <h2>Club Login</h2>
+  <input id="email" type="email" placeholder="Registered Email">
+  <input id="password" type="password" placeholder="Password">
+  <button class="primary" id="loginBtn">LOGIN</button>
+ </section>
+
+ <div id="message">Please login to continue.</div>
+
+ <section id="dashboard" class="hidden">
+  <section class="panel">
+   <h2>Match Selection</h2>
+   <select id="matchSelect"><option value="">Select Match</option></select>
+   <div class="row">
+    <button class="green" id="startBtn">▶ START / RESUME MATCH</button>
+    <button id="refreshBtn">↻ Refresh</button>
+   </div>
+   <p class="muted" id="matchInfo">Select a match.</p>
+  </section>
+
+  <section class="panel">
+   <div class="scoreboard">
+    <div class="team">
+     <h3 id="teamA">TEAM A</h3>
+     <div class="score" id="scoreA">0</div>
+    </div>
+    <div class="team">
+     <h3 id="teamB">TEAM B</h3>
+     <div class="score" id="scoreB">0</div>
+    </div>
+   </div>
+   <div class="grid" style="margin-top:12px;text-align:center">
+    <div class="team">
+     <small>MATCH STATUS</small>
+     <div id="status">UPCOMING</div>
+    </div>
+    <div class="team">
+     <small>HALF</small>
+     <div id="half">1</div>
+    </div>
+   </div>
+  </section>
+
+  <section class="panel">
+   <h2>Scoring Control</h2>
+   <label>Scoring Team</label>
+   <select id="scoringTeam"><option value="">Select Team</option></select>
+   <label>Points</label>
+   <input type="number" id="points" min="0" max="20" value="1">
+   <label>Event</label>
+   <select id="eventType">
+    <option value="raid_touch">Touch / Raid Touch</option>
+    <option value="bonus">Bonus</option>
+    <option value="tackle">Caught / Tackle</option>
+    <option value="super_raid">Super Raid</option>
+    <option value="super_tackle">Super Tackle</option>
+    <option value="all_out">All Out</option>
+    <option value="empty_raid">Empty Raid</option>
+    <option value="do_or_die_success">Do-or-Die Success</option>
+    <option value="do_or_die_failed">Do-or-Die Failed</option>
+    <option value="player_out">Player Out</option>
+    <option value="player_in">Player In</option>
+    <option value="yellow_card">Yellow Card</option>
+    <option value="red_card">Red Card</option>
+   </select>
+   <button class="primary" id="recordBtn" style="width:100%;margin-top:12px">✓ RECORD EVENT</button>
+   <p class="muted">Points নিজে যাচাই করে দিন। বর্তমান database function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।</p>
+   <button class="red" id="undoBtn" style="width:100%">↶ UNDO LAST EVENT</button>
+  </section>
+
+  <section class="panel">
+   <h2>🎬 Broadcast Animation Control</h2>
+   <p class="muted">নিচের Alert নির্বাচন করলে Overlay-তে Animation দেখাবে। এগুলি আলাদা Broadcast Alert; Match Score পরিবর্তন করবে না।</p>
+   <div class="actions">
+    <button class="red" data-alert="🔥 FINAL RAID">🔥 FINAL RAID</button>
+    <button data-alert="⏳ LAST MINUTE RAID">LAST MINUTE RAID</button>
+    <button class="primary" data-alert="🏆 GRAND FINAL">GRAND FINAL</button>
+    <button data-alert="⚔ SEMI FINAL">SEMI FINAL</button>
+    <button class="green" data-alert="✋ PLAYER TOUCHED">TOUCHED</button>
+    <button class="red" data-alert="🛡 PLAYER CAUGHT">CAUGHT</button>
+    <button data-alert="⭐ MATCH POINT">MATCH POINT</button>
+    <button data-alert="🏆 WINNER">WINNER</button>
+   </div>
+   <div style="margin-top:12px">
+    <button id="overlayLinkBtn" class="primary" style="width:100%">OPEN BROADCAST OVERLAY</button>
+   </div>
+  </section>
+ </section>
+</main>
+
+<div id="overlayPage" class="hidden">
+ <div id="alertBanner"></div>
+ <div class="overlaybar">
+  <div class="ovscore" id="ovA">0</div>
+  <div class="ovteams">
+   <div id="ovNames">TEAM A vs TEAM B</div>
+   <div class="ovmeta" id="ovMeta">GFC KABADDI PRO 2026</div>
+   <div class="ovalert" id="ovAlert">LIVE</div>
+  </div>
+  <div class="ovscore" id="ovB">0</div>
+ </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let currentUser=null;
+let clientId=null;
+let currentMatch=null;
+let matchChannel=null;
+let overlayChannel=null;
+let isOverlay=new URLSearchParams(location.search).get("overlay")==="1";
+const params=new URLSearchParams(location.search);
+const requestedMatch=params.get("match");
+
+const $=id=>document.getElementById(id);
+function msg(text,error=false){
+ $("message").textContent=text;
+ $("message").style.color=error?"#ff8490":"#b9f5d9";
+}
+function escapeHtml(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function teamName(team){
+ return team?.short_name || team?.name || "TEAM";
+}
+function showDashboard(){
+ $("loginPanel").classList.add("hidden");
+ $("dashboard").classList.remove("hidden");
+}
+function showLogin(){
+ $("loginPanel").classList.remove("hidden");
+ $("dashboard").classList.add("hidden");
+}
+async function login(){
+ const email=$("email").value.trim();
+ const password=$("password").value;
+ if(!email||!password){msg("Email এবং Password দিন।",true);return;}
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){msg(error.message,true);return;}
+ currentUser=data.user;
+ await initialize();
+}
+async function initialize(){
+ const {data:userData}=await db.auth.getUser();
+ currentUser=userData?.user;
+ if(!currentUser){showLogin();msg("Please login.");return;}
+ const {data:members,error}=await db.from("client_members")
+  .select("client_id,role")
+  .eq("user_id",currentUser.id);
+ if(error){msg("Client access পাওয়া যায়নি: "+error.message,true);return;}
+ if(!members?.length){msg("এই Login-এর সঙ্গে কোনো Club যুক্ত নেই।",true);return;}
+ clientId=members[0].client_id;
+ showDashboard();
+ await loadMatches();
+}
+async function loadMatches(){
+ const {data,error}=await db.from("matches")
+  .select("id,client_id,tournament_id,team_a_id,team_b_id,team_a_score,team_b_score,match_status,current_half,raid_timer,match_timer,current_raiding_team_id,created_at,teamsA:teams!matches_team_a_id_fkey(id,name,short_name),teamsB:teams!matches_team_b_id_fkey(id,name,short_name),tournaments(name)")
+  .eq("client_id",clientId)
+  .order("created_at",{ascending:false});
+ if(error){msg("Match load error: "+error.message,true);return;}
+ const select=$("matchSelect");
+ select.innerHTML='<option value="">Select Match</option>';
+ (data||[]).forEach(m=>{
+  const label=(m.teamsA?.name||"Team A")+" vs "+(m.teamsB?.name||"Team B")+" ("+m.match_status+")";
+  select.add(new Option(label,m.id));
+ });
+ const wanted=requestedMatch || select.value;
+ if(wanted && (data||[]).some(m=>m.id===wanted)){
+  select.value=wanted;
+  await selectMatch(wanted);
+ }else if(data?.length){
+  select.value=data[0].id;
+  await selectMatch(data[0].id);
+ }else{
+  currentMatch=null;
+  msg("এই Club-এ এখনও কোনো Match তৈরি করা হয়নি।");
+ }
+}
+async function selectMatch(id){
+ if(!id)return;
+ const {data,error}=await db.from("matches")
+  .select("*,teamsA:teams!matches_team_a_id_fkey(id,name,short_name),teamsB:teams!matches_team_b_id_fkey(id,name,short_name),tournaments(name)")
+  .eq("id",id).eq("client_id",clientId).single();
+ if(error){msg("Match পাওয়া যায়নি: "+error.message,true);return;}
+ currentMatch=data;
+ renderMatch();
+ subscribeMatch();
+}
+function renderMatch(){
+ if(!currentMatch)return;
+ const m=currentMatch;
+ const a=teamName(m.teamsA),b=teamName(m.teamsB);
+ $("teamA").textContent=a;$("teamB").textContent=b;
+ $("scoreA").textContent=m.team_a_score;
+ $("scoreB").textContent=m.team_b_score;
+ $("status").textContent=(m.match_status||"").toUpperCase();
+ $("half").textContent=m.current_half||1;
+ $("matchInfo").textContent=(m.tournaments?.name||"Tournament")+" • "+m.id;
+ $("scoringTeam").innerHTML='<option value="">Select Team</option>'+
+  '<option value="'+m.team_a_id+'">'+escapeHtml(a)+'</option>'+
+  '<option value="'+m.team_b_id+'">'+escapeHtml(b)+'</option>';
+ renderOverlay();
+}
+function renderOverlay(){
+ if(!currentMatch)return;
+ $("ovA").textContent=currentMatch.team_a_score;
+ $("ovB").textContent=currentMatch.team_b_score;
+ $("ovNames").textContent=teamName(currentMatch.teamsA)+"  VS  "+teamName(currentMatch.teamsB);
+ $("ovMeta").textContent=(currentMatch.tournaments?.name||"GFC KABADDI PRO 2026")+" • "+(currentMatch.match_status||"").toUpperCase()+" • HALF "+(currentMatch.current_half||1);
+}
+function subscribeMatch(){
+ if(matchChannel)db.removeChannel(matchChannel);
+ if(!currentMatch)return;
+ matchChannel=db.channel("score-"+currentMatch.id)
+ .on("postgres_changes",{event:"UPDATE",schema:"public",table:"matches",filter:"id=eq."+currentMatch.id},payload=>{
+  currentMatch={...currentMatch,...payload.new};
+  renderMatch();
+ })
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"match_events",filter:"match_id=eq."+currentMatch.id},payload=>{
+  const ev=payload.new;
+  if(ev.event_data?.overlay_label)showAlert(ev.event_data.overlay_label);
+ })
+ .subscribe();
+}
+async function startMatch(){
+ if(!currentMatch)return;
+ const {data,error}=await db.from("matches").update({match_status:"live",updated_at:new Date().toISOString()})
+  .eq("id",currentMatch.id).eq("client_id",clientId).select().single();
+ if(error){msg("Match start হয়নি: "+error.message,true);return;}
+ currentMatch={...currentMatch,...data};
+ renderMatch();msg("Match Live হয়েছে।");
+}
+async function recordEvent(){
+ if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
+ const team=$("scoringTeam").value;
+ const type=$("eventType").value;
+ const points=Number($("points").value);
+ if(!team){msg("Scoring Team নির্বাচন করুন।",true);return;}
+ if(!Number.isInteger(points)||points<0||points>20){msg("সঠিক Points দিন।",true);return;}
+ const labels={
+  raid_touch:"PLAYER TOUCHED",bonus:"BONUS",tackle:"PLAYER CAUGHT",
+  super_raid:"SUPER RAID",super_tackle:"SUPER TACKLE",all_out:"ALL OUT",
+  empty_raid:"EMPTY RAID",do_or_die_success:"DO-OR-DIE SUCCESS",
+  do_or_die_failed:"DO-OR-DIE FAILED",player_out:"PLAYER OUT",
+  player_in:"PLAYER IN",yellow_card:"YELLOW CARD",red_card:"RED CARD"
+ };
+ const {data,error}=await db.rpc("record_match_event",{
+  p_match_id:currentMatch.id,
+  p_event_type:type,
+  p_team_id:team,
+  p_player_id:null,
+  p_points:points,
+  p_event_data:{overlay_label:labels[type]||type}
+ });
+ if(error){msg("Event save হয়নি: "+error.message,true);return;}
+ currentMatch.team_a_score=data.team_a_score;
+ currentMatch.team_b_score=data.team_b_score;
+ renderMatch();
+ showAlert(labels[type]||type);
+ msg("Event সফলভাবে Save হয়েছে।");
+}
+async function undoEvent(){
+ if(!currentMatch)return;
+ if(!confirm("সর্বশেষ Scoring Event Undo করবেন?"))return;
+ const {data,error}=await db.rpc("undo_last_match_event",{p_match_id:currentMatch.id});
+ if(error){msg("Undo হয়নি: "+error.message,true);return;}
+ currentMatch.team_a_score=data.team_a_score;
+ currentMatch.team_b_score=data.team_b_score;
+ renderMatch();
+ msg("Last event Undo হয়েছে: "+data.undone_event);
+}
+function showAlert(text){
+ const el=$("alertBanner");
+ el.textContent=text;
+ el.classList.remove("show");
+ void el.offsetWidth;
+ el.classList.add("show");
+ $("ovAlert").textContent=text;
+}
+async function sendBroadcastAlert(text){
+ if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
+ if(!overlayChannel){
+  overlayChannel=db.channel("overlay-"+currentMatch.id,{config:{broadcast:{self:false}}});
+  await new Promise(resolve=>overlayChannel.subscribe(resolve));
+ }
+ await overlayChannel.send({type:"broadcast",event:"overlay_alert",payload:{text}});
+ showAlert(text);
+ msg("Overlay Alert পাঠানো হয়েছে।");
+}
+function openOverlay(){
+ if(!currentMatch)return;
+ const url=location.origin+location.pathname+"?overlay=1&match="+currentMatch.id;
+ window.open(url,"GFC_KABADDI_OVERLAY","width=1200,height=700");
+}
+async function initOverlay(){
+ $("app").classList.add("hidden");
+ $("overlayPage").classList.remove("hidden");
+ $("logoutBtn").classList.add("hidden");
+ const {data:userData}=await db.auth.getUser();
+ if(!userData?.user){$("overlayPage").classList.add("hidden");$("app").classList.remove("hidden");showLogin();msg("Overlay দেখার জন্য এই Browser-এ Club Login প্রয়োজন।",true);return;}
+ if(!requestedMatch){$("ovAlert").textContent="MATCH ID REQUIRED";return;}
+ const {data,error}=await db.from("matches")
+  .select("*,teamsA:teams!matches_team_a_id_fkey(id,name,short_name),teamsB:teams!matches_team_b_id_fkey(id,name,short_name),tournaments(name)")
+  .eq("id",requestedMatch).single();
+ if(error){$("ovAlert").textContent="MATCH LOAD ERROR";return;}
+ currentMatch=data;
+ renderOverlay();
+ overlayChannel=db.channel("overlay-"+requestedMatch,{config:{broadcast:{self:false}}})
+ .on("broadcast",{event:"overlay_alert"},({payload})=>showAlert(payload.text))
+ .on("postgres_changes",{event:"UPDATE",schema:"public",table:"matches",filter:"id=eq."+requestedMatch},payload=>{
+  currentMatch={...currentMatch,...payload.new};renderOverlay();
+ })
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"match_events",filter:"match_id=eq."+requestedMatch},payload=>{
+  if(payload.new.event_data?.overlay_label)showAlert(payload.new.event_data.overlay_label);
+ })
+ .subscribe();
+}
+$("loginBtn").addEventListener("click",login);
+$("logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
+$("matchSelect").addEventListener("change",e=>selectMatch(e.target.value));
+$("startBtn").addEventListener("click",startMatch);
+$("refreshBtn").addEventListener("click",loadMatches);
+$("recordBtn").addEventListener("click",recordEvent);
+$("undoBtn").addEventListener("click",undoEvent);
+$("overlayLinkBtn").addEventListener("click",openOverlay);
+document.querySelectorAll("[data-alert]").forEach(btn=>{
+ btn.addEventListener("click",()=>sendBroadcastAlert(btn.dataset.alert));
+});
+(async()=>{
+ if(isOverlay){await initOverlay();return;}
+ const {data}=await db.auth.getSession();
+ if(data?.session)await initialize();
+ else{showLogin();msg("Club Login করে Live Scoring শুরু করুন।");}
+})();
+</script>
+</body>
+</html>
