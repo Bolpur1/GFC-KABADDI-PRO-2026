@@ -3,666 +3,1239 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#071713">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GFC KABADDI PRO 2026 | Super Admin</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
---bg:#071713;--panel:#10231d;--line:#254238;
---text:#effaf3;--muted:#9ab3a6;
---green:#42dc91;--red:#ff6b72;
+:root {
+  --bg:#071510;
+  --panel:#10251b;
+  --panel2:#163324;
+  --green:#16a765;
+  --green2:#20d080;
+  --text:#f2fff7;
+  --muted:#9bb5a5;
+  --red:#ef5350;
+  --border:#244735;
+  --yellow:#f5c451;
 }
-*{box-sizing:border-box}
-body{
-margin:0;background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);
-color:var(--text);font-family:Arial,sans-serif;min-height:100vh
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
-button,input,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.wrap{max-width:1180px;margin:auto;padding:20px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:25px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{
-width:46px;height:46px;border-radius:14px;
-background:linear-gradient(135deg,var(--green),#138454);
-display:grid;place-items:center;color:#052317;
-font-weight:1000;font-size:22px
+
+body {
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
 }
-.brand h1{font-size:16px;margin:0}
-.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
-.pill{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--muted);font-size:11px}
-.panel{
-background:linear-gradient(145deg,#122820,#0d1e18);
-border:1px solid var(--line);border-radius:18px;
-box-shadow:0 12px 40px #0003
+
+button,input,select {
+  font:inherit;
 }
-.login{max-width:430px;margin:8vh auto;padding:25px}
-.login h2{margin:0 0 8px}
-.sub{color:var(--muted);font-size:13px;line-height:1.5}
-label{display:block;color:#c4d9cd;font-size:12px;font-weight:bold;margin:14px 0 7px}
-input,select{
-width:100%;background:#071812;border:1px solid #315344;
-border-radius:10px;padding:12px;color:var(--text);outline:none
+
+button {
+  cursor:pointer;
+  border:0;
 }
-input:focus,select:focus{border-color:var(--green)}
-.btn{
-border:0;border-radius:10px;padding:12px 15px;
-font-weight:bold;background:var(--green);color:#052317
+
+.container {
+  width:100%;
+  max-width:1150px;
+  margin:auto;
+  padding:18px;
 }
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.secondary{background:#1a382c;color:white;border:1px solid #315344}
-.btn.danger{background:#51252a;color:#ffdadd;border:1px solid #873d45}
-.btn.small{padding:8px 10px;font-size:11px}
-.full{width:100%;margin-top:17px}
-.msg{font-size:12px;color:#f5c56b;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
-.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 18px}
-.heading h2{margin:0;font-size:24px}
-.heading p{color:var(--muted);font-size:12px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:17px}
-.stat{padding:17px}
-.stat .k{color:var(--muted);font-size:11px}
-.stat .v{font-size:28px;font-weight:900;margin-top:9px}
-.stat .hint{font-size:11px;color:var(--green);margin-top:5px}
-.grid{display:grid;grid-template-columns:1fr 1.4fr;gap:15px}
-.section{padding:18px}
-.section h3{margin:0 0 5px;font-size:16px}
-.desc{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-.span2{grid-column:1/-1}
-.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;padding:10px;background:#0a1b14;border-radius:10px;border:1px solid #203b2e}
-.tablewrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:510px}
-th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #203b30;font-size:12px}
-th{color:var(--muted)}
-.status{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:bold;text-transform:uppercase}
-.active{background:#123f2c;color:#6ff0ac}
-.suspended{background:#48252a;color:#ff9ba0}
-.inactive{background:#303a35;color:#c2cec6}
-.empty{color:var(--muted);text-align:center;padding:25px;font-size:13px}
-.toolbar{display:flex;gap:8px;align-items:center}
-.toolbar input{max-width:230px;padding:10px}
-.footer{text-align:center;color:#688576;font-size:11px;padding:25px}
-@media(max-width:850px){
-.stats{grid-template-columns:repeat(2,1fr)}
-.grid{grid-template-columns:1fr}
-.heading{align-items:flex-start;flex-direction:column}
-.toolbar{width:100%}
-.toolbar input{max-width:none;flex:1}
+
+header {
+  background:linear-gradient(120deg,#123d28,#071c13);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
 }
-@media(max-width:520px){
-.wrap{padding:13px}
-.brand h1{font-size:13px}
-.logo{width:40px;height:40px}
-.login{padding:21px;margin:5vh auto}
-.stat{padding:13px}
-.stat .v{font-size:24px}
-.section{padding:14px}
-.formgrid{grid-template-columns:1fr}
-.span2{grid-column:auto}
-.heading h2{font-size:21px}
+
+.brand h1 {
+  font-size:23px;
+  color:var(--green2);
+  letter-spacing:.5px;
+}
+
+.brand p {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:6px;
+}
+
+.admin-label {
+  font-size:11px;
+  color:var(--green2);
+  margin-top:7px;
+  font-weight:bold;
+}
+
+.btn {
+  padding:11px 16px;
+  border-radius:9px;
+  font-weight:bold;
+  color:white;
+  background:var(--green);
+}
+
+.btn:hover {
+  filter:brightness(1.12);
+}
+
+.btn-secondary {
+  background:#294536;
+}
+
+.btn-danger {
+  background:#a93636;
+}
+
+.btn-small {
+  padding:7px 10px;
+  font-size:12px;
+  border-radius:7px;
+}
+
+.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.panel h2 {
+  font-size:17px;
+  margin-bottom:17px;
+}
+
+input,select {
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:#091b12;
+  color:white;
+  outline:none;
+}
+
+input:focus,select:focus {
+  border-color:var(--green);
+}
+
+input::placeholder {
+  color:#789383;
+}
+
+label {
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.field {
+  margin-bottom:14px;
+}
+
+.login-box {
+  max-width:420px;
+  margin:70px auto;
+}
+
+.login-box h2 {
+  color:var(--green2);
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.login-box .btn {
+  width:100%;
+}
+
+.message {
+  padding:11px;
+  border-radius:8px;
+  font-size:13px;
+  margin-top:12px;
+  display:none;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.message.success {
+  display:block;
+  background:#123c27;
+  color:#8fffc0;
+}
+
+.message.error {
+  display:block;
+  background:#421b1b;
+  color:#ffaaaa;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  margin-bottom:20px;
+}
+
+.stat-card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:19px;
+  border-radius:14px;
+}
+
+.stat-card p {
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:12px;
+}
+
+.stat-card h2 {
+  color:var(--green2);
+  font-size:28px;
+}
+
+.grid-2 {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.form-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.table-wrap {
+  width:100%;
+  overflow-x:auto;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,td {
+  padding:13px 11px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+  font-size:12px;
+  vertical-align:middle;
+}
+
+th {
+  color:var(--green2);
+  background:#142d20;
+}
+
+td {
+  color:#e0eee5;
+}
+
+.status {
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:10px;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
+.active {
+  background:#174a2e;
+  color:#77ffad;
+}
+
+.suspended {
+  background:#512323;
+  color:#ffaaaa;
+}
+
+.search {
+  max-width:350px;
+  margin-bottom:14px;
+}
+
+.empty {
+  color:var(--muted);
+  padding:20px;
+  text-align:center;
+}
+
+.top-actions {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.small-note {
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:12px;
+}
+
+footer {
+  text-align:center;
+  padding:25px 10px;
+  color:#779080;
+  font-size:11px;
+}
+
+.hidden {
+  display:none !important;
+}
+
+@media(max-width:750px) {
+  .stats {
+    grid-template-columns:1fr 1fr;
+  }
+
+  .grid-2 {
+    grid-template-columns:1fr;
+  }
+
+  header {
+    padding:17px;
+  }
+
+  .brand h1 {
+    font-size:19px;
+  }
+
+  .container {
+    padding:12px;
+  }
+}
+
+@media(max-width:400px) {
+  .form-grid {
+    grid-template-columns:1fr;
+  }
+
+  .stat-card h2 {
+    font-size:23px;
+  }
 }
 </style>
 </head>
 
 <body>
-<div class="wrap">
 
-<header class="top">
-<div class="brand">
-<div class="logo">G</div>
-<div>
-<h1>GFC KABADDI PRO 2026</h1>
-<p>COMMERCIAL SPORTS PLATFORM</p>
-</div>
-</div>
-<div class="pill" id="topState">SUPER ADMIN PORTAL</div>
+<div class="container">
+
+<!-- HEADER -->
+<header>
+  <div class="brand">
+    <h1>🏆 GFC KABADDI PRO 2026</h1>
+    <p>Professional Kabaddi Tournament Management Platform</p>
+    <div class="admin-label">SUPER ADMIN CONTROL PANEL</div>
+  </div>
+
+  <button class="btn btn-danger hidden" id="logoutBtn"
+    onclick="logout()">Logout</button>
 </header>
 
 <!-- LOGIN -->
-<section id="loginView" class="panel login">
-<h2>Super Admin Login</h2>
-<p class="sub">Login to manage clients, subscriptions and live matches.</p>
+<section id="loginSection" class="panel login-box">
 
-<form id="loginForm">
-<label>Admin Email</label>
-<input id="email" type="email" required autocomplete="username" placeholder="Admin Email">
+  <h2>Super Admin Login</h2>
 
-<label>Password</label>
-<input id="password" type="password" required autocomplete="current-password" placeholder="Password">
+  <form id="loginForm">
 
-<button class="btn full" id="loginBtn" type="submit">LOGIN TO DASHBOARD</button>
-</form>
-<div class="msg" id="loginMsg"></div>
+    <div class="field">
+      <label>Admin Email</label>
+      <input type="email" id="loginEmail"
+        placeholder="Enter admin email" required>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPassword"
+        placeholder="Enter password" required>
+    </div>
+
+    <button class="btn" type="submit" id="loginBtn">
+      LOGIN TO DASHBOARD
+    </button>
+
+  </form>
+
+  <div id="loginMessage" class="message"></div>
+
 </section>
 
 <!-- DASHBOARD -->
-<main id="appView" class="hidden">
+<main id="dashboardSection" class="hidden">
 
-<div class="heading">
-<div>
-<h2>Super Admin Dashboard</h2>
-<p id="welcome">Platform Overview</p>
-</div>
-<div class="toolbar">
-<span class="pill">Owner Control</span>
-<button class="btn secondary small" id="refreshBtn">Refresh</button>
-<button class="btn danger small" id="logoutBtn">Logout</button>
-</div>
-</div>
+  <!-- STATS -->
+  <section class="stats">
 
-<!-- STATISTICS -->
-<section class="stats">
-<div class="panel stat">
-<div class="k">TOTAL CLIENTS</div>
-<div class="v" id="totalClients">—</div>
-<div class="hint">Registered organizations</div>
-</div>
+    <div class="stat-card">
+      <p>TOTAL CLIENTS</p>
+      <h2 id="totalClients">0</h2>
+    </div>
 
-<div class="panel stat">
-<div class="k">ACTIVE CLIENTS</div>
-<div class="v" id="activeClients">—</div>
-<div class="hint">Currently enabled</div>
-</div>
+    <div class="stat-card">
+      <p>ACTIVE CLIENTS</p>
+      <h2 id="activeClients">0</h2>
+    </div>
 
-<div class="panel stat">
-<div class="k">TOURNAMENTS</div>
-<div class="v" id="totalTournaments">—</div>
-<div class="hint">All tournaments</div>
-</div>
+    <div class="stat-card">
+      <p>TOTAL TOURNAMENTS</p>
+      <h2 id="totalTournaments">0</h2>
+    </div>
 
-<div class="panel stat">
-<div class="k">LIVE MATCHES</div>
-<div class="v" id="liveMatches">—</div>
-<div class="hint">Currently live</div>
-</div>
-</section>
+    <div class="stat-card">
+      <p>LIVE MATCHES</p>
+      <h2 id="liveMatches">0</h2>
+    </div>
 
-<div class="grid">
+  </section>
 
-<!-- CREATE CLIENT -->
-<section class="panel section">
-<h3>Create New Client</h3>
-<p class="desc">Create a club account and assign a subscription.</p>
+  <!-- CREATE CLIENT -->
+  <section class="panel">
 
-<form id="clientForm">
-<div class="formgrid">
+    <h2>➕ Create New Client Account</h2>
 
-<div class="span2">
-<label>Club / Organization Name *</label>
-<input id="clientName" required placeholder="Bolpur Kabaddi Club">
-</div>
+    <form id="clientForm">
 
-<div>
-<label>Unique Slug *</label>
-<input id="clientSlug" required placeholder="bolpur-kabaddi">
-</div>
+      <div class="form-grid">
 
-<div>
-<label>Phone</label>
-<input id="clientPhone" placeholder="+91...">
-</div>
+        <div class="field">
+          <label>Club / Organization Name *</label>
+          <input id="clientName" required
+            placeholder="Example: Bolpur Test Club">
+        </div>
 
-<div class="span2">
-<label>Contact Email</label>
-<input id="clientEmail" type="email" placeholder="club@example.com">
-</div>
+        <div class="field">
+          <label>Client Slug *</label>
+          <input id="clientSlug" required
+            placeholder="bolpur-test-club">
+        </div>
 
-<div class="span2">
-<label>Owner Auth User UUID *</label>
-<input id="ownerId" required placeholder="Paste Supabase Auth UUID">
-</div>
+        <div class="field">
+          <label>Contact Email</label>
+          <input id="clientEmail" type="email"
+            placeholder="club@example.com">
+        </div>
 
-<div>
-<label>Subscription Plan *</label>
-<select id="plan">
-<option>Single Tournament</option>
-<option>Monthly</option>
-<option>Quarterly</option>
-<option>Yearly</option>
-<option>Custom</option>
-</select>
-</div>
+        <div class="field">
+          <label>Mobile Number</label>
+          <input id="clientPhone" type="tel"
+            placeholder="Enter mobile number">
+        </div>
 
-<div>
-<label>Amount (INR) *</label>
-<input id="amount" type="number" min="0" step="0.01" value="499" required>
-</div>
+        <div class="field">
+          <label>Owner User ID *</label>
+          <input id="ownerUserId" required
+            placeholder="Supabase Auth UUID">
+        </div>
 
-<div class="span2">
-<label>Subscription Duration (Days) *</label>
-<input id="days" type="number" min="1" max="3650" value="30" required>
-</div>
+        <div class="field">
+          <label>Subscription Plan *</label>
+          <select id="planName" required>
+            <option value="Test Plan">Test Plan</option>
+            <option value="Single Tournament">Single Tournament</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+        </div>
 
-</div>
+        <div class="field">
+          <label>Subscription Amount (₹) *</label>
+          <input id="planAmount" type="number"
+            min="0" step="0.01" value="0" required>
+        </div>
 
-<div class="note">
-<b>Important:</b> আগে Supabase Authentication → Users থেকে Client Owner-এর Auth User তৈরি করতে হবে। তারপর তার UUID এখানে দিতে হবে। এই ফর্ম নিজে Auth User তৈরি করে না।
-</div>
+        <div class="field">
+          <label>Duration (Days) *</label>
+          <input id="planDays" type="number"
+            min="1" max="3650" value="30" required>
+        </div>
 
-<button class="btn full" id="createBtn" type="submit">CREATE CLIENT ACCOUNT</button>
-</form>
+      </div>
 
-<div class="msg" id="clientMsg"></div>
-</section>
+      <button class="btn" type="submit" id="createBtn">
+        CREATE CLIENT ACCOUNT
+      </button>
 
-<!-- CLIENT LIST -->
-<section class="panel section">
-<h3>Client Organizations</h3>
-<p class="desc">View, activate or suspend client organizations.</p>
+    </form>
 
-<div class="toolbar" style="margin-bottom:12px">
-<input id="searchClients" placeholder="Search client...">
-</div>
+    <div id="clientMessage" class="message"></div>
 
-<div class="tablewrap">
-<table>
-<thead>
-<tr>
-<th>CLIENT</th>
-<th>STATUS</th>
-<th>CREATED</th>
-<th>ACTION</th>
-</tr>
-</thead>
-<tbody id="clientsBody">
-<tr><td colspan="4" class="empty">Loading clients...</td></tr>
-</tbody>
-</table>
-</div>
-<div class="msg" id="listMsg"></div>
-</section>
-</div>
+    <p class="small-note">
+      Note: Owner-এর Supabase Authentication User আগে তৈরি থাকতে হবে।
+      Owner User ID হিসেবে তার UUID ব্যবহার করুন।
+      Password কখনও এখানে দেবেন না।
+    </p>
 
-<!-- SUBSCRIPTIONS -->
-<section class="panel section" style="margin-top:16px">
-<h3>Subscription Overview</h3>
-<p class="desc">Latest client subscriptions.</p>
+  </section>
 
-<div class="tablewrap">
-<table>
-<thead>
-<tr>
-<th>CLIENT ID</th>
-<th>PLAN</th>
-<th>AMOUNT</th>
-<th>END DATE</th>
-<th>STATUS</th>
-</tr>
-</thead>
-<tbody id="subsBody">
-<tr><td colspan="5" class="empty">Loading...</td></tr>
-</tbody>
-</table>
-</div>
-</section>
+  <!-- CLIENT LIST -->
+  <section class="panel">
+
+    <div class="top-actions">
+      <h2>👥 Client Management</h2>
+
+      <button class="btn btn-secondary btn-small"
+        onclick="loadDashboard()">
+        ↻ Refresh
+      </button>
+    </div>
+
+    <input class="search" id="clientSearch"
+      placeholder="Search client name, email or slug..."
+      oninput="renderClients()">
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>CLIENT</th>
+            <th>EMAIL</th>
+            <th>PHONE</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+
+        <tbody id="clientTable">
+          <tr>
+            <td colspan="5" class="empty">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- SUBSCRIPTIONS -->
+  <section class="panel">
+
+    <h2>💳 Subscription Management</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>CLIENT</th>
+            <th>PLAN</th>
+            <th>AMOUNT</th>
+            <th>START DATE</th>
+            <th>END DATE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+
+        <tbody id="subscriptionTable">
+          <tr>
+            <td colspan="6" class="empty">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
 
 </main>
 
-<div class="footer">
-GFC KABADDI PRO 2026 · Commercial Multi-Client Platform
-</div>
+<footer>
+  GFC KABADDI PRO 2026 · Super Admin Dashboard
+  <br>
+  All Rights Reserved
+</footer>
+
 </div>
 
 <script>
-(() => {
 
-const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+// ======================================
+// SUPABASE CONFIGURATION
+// ======================================
+
+const SUPABASE_URL =
+"https://wpefjtjcnvdnbsenfukg.supabase.co";
 
 const SUPABASE_ANON_KEY =
 "sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
 
 const db = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_ANON_KEY
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
 
-let allClients = [];
-let busy = false;
 
-const $ = id => document.getElementById(id);
+// ======================================
+// GLOBAL DATA
+// ======================================
 
-const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-}[c]));
+let clientsData = [];
+let subscriptionsData = [];
 
-const showMsg = (id,text,error=false) => {
-$(id).textContent = text;
-$(id).style.color = error ? "#ff9ba0" : "#f5c56b";
-};
 
-const dateText = value =>
-value ? new Date(value).toLocaleDateString() : "—";
+// ======================================
+// IST DATE & TIME FORMATTER
+// ======================================
 
-function showLogin(){
-$("loginView").classList.remove("hidden");
-$("appView").classList.add("hidden");
-$("topState").textContent = "SUPER ADMIN PORTAL";
+function formatIndiaDateTime(value) {
+
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) return "-";
+
+  return date.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
 }
 
-function showApp(email){
-$("loginView").classList.add("hidden");
-$("appView").classList.remove("hidden");
-$("topState").textContent = "ADMIN VERIFIED";
-$("welcome").textContent = "Signed in as " + (email || "Super Admin");
+
+// ======================================
+// SAFE HTML
+// ======================================
+
+function escapeHTML(value) {
+
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    function(char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char];
+    }
+  );
 }
 
-async function verifyAdmin(){
-const {data:{user},error:userError} = await db.auth.getUser();
 
-if(userError) throw userError;
-if(!user) return false;
+// ======================================
+// MESSAGE SYSTEM
+// ======================================
 
-const {data,error} = await db.rpc("is_platform_admin");
+function showMessage(id, message, type) {
 
-if(error) throw error;
+  const box = document.getElementById(id);
 
-if(data !== true){
-throw new Error("This account is not registered as Platform Super Admin.");
-}
-
-showApp(user.email);
-await loadDashboard();
-return true;
-}
-
-async function loadDashboard(){
-
-showMsg("listMsg","Refreshing platform data...");
-
-const [clientsRes,subsRes,tournamentsRes,matchesRes] =
-await Promise.all([
-
-db.from("clients")
-.select("id,name,slug,status,created_at")
-.order("created_at",{ascending:false}),
-
-db.from("subscriptions")
-.select("id,client_id,plan_name,amount,end_date,status,created_at")
-.order("created_at",{ascending:false})
-.limit(100),
-
-db.from("tournaments")
-.select("id",{count:"exact",head:true}),
-
-db.from("matches")
-.select("id",{count:"exact",head:true})
-.eq("match_status","live")
-
-]);
-
-for(const r of [clientsRes,subsRes,tournamentsRes,matchesRes]){
-if(r.error) throw r.error;
-}
-
-allClients = clientsRes.data || [];
-
-$("totalClients").textContent = allClients.length;
-
-$("activeClients").textContent =
-allClients.filter(c=>c.status==="active").length;
-
-$("totalTournaments").textContent =
-tournamentsRes.count ?? 0;
-
-$("liveMatches").textContent =
-matchesRes.count ?? 0;
-
-renderClients();
-renderSubscriptions(subsRes.data || []);
-
-showMsg("listMsg","Data updated successfully.");
-}
-
-function renderClients(){
-
-const term = $("searchClients").value.trim().toLowerCase();
-
-const rows = allClients.filter(c =>
-(c.name+" "+c.slug).toLowerCase().includes(term)
-);
-
-$("clientsBody").innerHTML = rows.length
-? rows.map(c=>`
-
-<tr>
-<td>
-<b>${esc(c.name)}</b><br>
-<span style="color:#8eaa9a">${esc(c.slug)}</span>
-</td>
-
-<td>
-<span class="status ${esc(c.status)}">${esc(c.status)}</span>
-</td>
-
-<td>${dateText(c.created_at)}</td>
-
-<td>
-${c.status==="active"
-? `<button class="btn danger small" data-client="${esc(c.id)}" data-status="suspended">Suspend</button>`
-: `<button class="btn secondary small" data-client="${esc(c.id)}" data-status="active">Activate</button>`
-}
-</td>
-</tr>
-
-`).join("")
-: `<tr><td colspan="4" class="empty">No clients found.</td></tr>`;
-}
-
-function renderSubscriptions(rows){
-
-$("subsBody").innerHTML = rows.length
-? rows.map(s=>`
-
-<tr>
-<td>${esc(s.client_id.slice(0,8))}...</td>
-<td>${esc(s.plan_name)}</td>
-<td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
-<td>${dateText(s.end_date)}</td>
-<td>
-<span class="status ${s.status==="active"?"active":"suspended"}">
-${esc(s.status)}
-</span>
-</td>
-</tr>
-
-`).join("")
-: `<tr><td colspan="5" class="empty">No subscriptions yet.</td></tr>`;
-}
-
-// ADMIN LOGIN
-
-$("loginForm").addEventListener("submit",async e=>{
-
-e.preventDefault();
-
-if(busy) return;
-busy=true;
-
-const btn=$("loginBtn");
-btn.disabled=true;
-btn.textContent="SIGNING IN...";
-
-showMsg("loginMsg","Checking account...");
-
-try{
-
-const {error}=await db.auth.signInWithPassword({
-email:$("email").value.trim(),
-password:$("password").value
-});
-
-if(error) throw error;
-
-await verifyAdmin();
-
-showMsg("loginMsg","");
-
-}catch(err){
-
-showMsg("loginMsg",err.message || "Login failed.",true);
-await db.auth.signOut();
-showLogin();
-
-}finally{
-
-busy=false;
-btn.disabled=false;
-btn.textContent="LOGIN TO DASHBOARD";
+  box.textContent = message;
+  box.className = "message " + type;
 
 }
+
+function clearMessage(id) {
+
+  const box = document.getElementById(id);
+
+  box.textContent = "";
+  box.className = "message";
+
+}
+
+
+// ======================================
+// LOGIN
+// ======================================
+
+document.getElementById("loginForm")
+.addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  const btn = document.getElementById("loginBtn");
+
+  btn.disabled = true;
+  btn.textContent = "VERIFYING...";
+
+  clearMessage("loginMessage");
+
+  try {
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const { error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    await verifyAdmin();
+
+  } catch(error) {
+
+    showMessage(
+      "loginMessage",
+      error.message || "Login failed.",
+      "error"
+    );
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = "LOGIN TO DASHBOARD";
+
+  }
 
 });
 
-// CREATE CLIENT
 
-$("clientForm").addEventListener("submit",async e=>{
+// ======================================
+// ADMIN VERIFICATION
+// ======================================
 
-e.preventDefault();
+async function verifyAdmin() {
 
-const btn=$("createBtn");
-btn.disabled=true;
-btn.textContent="CREATING CLIENT...";
+  const { data: userData, error: userError } =
+    await db.auth.getUser();
 
-showMsg("clientMsg","Creating client and subscription...");
+  if (userError || !userData.user) {
 
-const name=$("clientName").value.trim();
+    await db.auth.signOut();
 
-const slug=$("clientSlug").value
-.trim()
-.toLowerCase()
-.replace(/[^a-z0-9-]/g,"-")
-.replace(/-+/g,"-")
-.replace(/^-|-$/g,"");
+    throw new Error("User authentication failed.");
 
-const args={
+  }
 
-p_name:name,
-p_slug:slug,
-p_email:$("clientEmail").value.trim(),
-p_phone:$("clientPhone").value.trim(),
-p_owner_user_id:$("ownerId").value.trim(),
-p_plan_name:$("plan").value,
-p_amount:Number($("amount").value),
-p_days:Number($("days").value)
+  const { data, error } = await db.rpc(
+    "is_platform_admin"
+  );
 
-};
+  if (error) {
 
-try{
+    await db.auth.signOut();
 
-const {data,error}=await db.rpc(
-"create_client_account",
-args
-);
+    throw new Error(
+      "Admin verification failed: " + error.message
+    );
 
-if(error) throw error;
+  }
 
-showMsg(
-"clientMsg",
-"Client created successfully. Client ID: "+data
-);
+  if (data !== true) {
 
-$("clientForm").reset();
-$("amount").value="499";
-$("days").value="30";
+    await db.auth.signOut();
 
-await loadDashboard();
+    throw new Error(
+      "Access denied. You are not a Super Admin."
+    );
 
-}catch(err){
+  }
 
-showMsg("clientMsg",err.message || "Client creation failed.",true);
+  document.getElementById("loginSection")
+    .classList.add("hidden");
 
-}finally{
+  document.getElementById("dashboardSection")
+    .classList.remove("hidden");
 
-btn.disabled=false;
-btn.textContent="CREATE CLIENT ACCOUNT";
+  document.getElementById("logoutBtn")
+    .classList.remove("hidden");
+
+  await loadDashboard();
 
 }
 
-});
 
-// ACTIVATE / SUSPEND CLIENT
-
-$("clientsBody").addEventListener("click",async e=>{
-
-const btn=e.target.closest("button[data-client]");
-
-if(!btn) return;
-
-btn.disabled=true;
-
-try{
-
-const {error}=await db.from("clients")
-.update({status:btn.dataset.status})
-.eq("id",btn.dataset.client);
-
-if(error) throw error;
-
-await loadDashboard();
-
-}catch(err){
-
-showMsg("listMsg",err.message || "Status update failed.",true);
-btn.disabled=false;
-
-}
-
-});
-
-// SEARCH
-
-$("searchClients").addEventListener("input",renderClients);
-
-// REFRESH
-
-$("refreshBtn").addEventListener("click",async()=>{
-
-try{
-await loadDashboard();
-}catch(e){
-showMsg("listMsg",e.message,true);
-}
-
-});
-
+// ======================================
 // LOGOUT
+// ======================================
 
-$("logoutBtn").addEventListener("click",async()=>{
-await db.auth.signOut();
-showLogin();
-});
+async function logout() {
 
-// AUTH SESSION
+  await db.auth.signOut();
 
-db.auth.onAuthStateChange((event,session)=>{
+  clientsData = [];
+  subscriptionsData = [];
 
-if(event==="SIGNED_OUT"){
-showLogin();
+  document.getElementById("dashboardSection")
+    .classList.add("hidden");
+
+  document.getElementById("logoutBtn")
+    .classList.add("hidden");
+
+  document.getElementById("loginSection")
+    .classList.remove("hidden");
+
+  document.getElementById("loginPassword").value = "";
+
 }
 
-});
 
-// INITIAL CHECK
+// ======================================
+// INITIAL SESSION CHECK
+// ======================================
 
-(async()=>{
+async function checkSession() {
 
-try{
-await verifyAdmin();
-}catch(e){
-showLogin();
-showMsg("loginMsg",e.message,true);
+  const { data } = await db.auth.getSession();
+
+  if (data.session) {
+
+    try {
+
+      await verifyAdmin();
+
+    } catch(error) {
+
+      console.error(error);
+
+      showMessage(
+        "loginMessage",
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+
 }
 
-})();
 
-})();
+// ======================================
+// LOAD DASHBOARD
+// ======================================
+
+async function loadDashboard() {
+
+  try {
+
+    const [
+      clientsResult,
+      tournamentsResult,
+      matchesResult,
+      subscriptionsResult
+    ] = await Promise.all([
+
+      db.from("clients")
+        .select("id,name,slug,contact_email,phone,status"),
+
+      db.from("tournaments")
+        .select("id,status"),
+
+      db.from("matches")
+        .select("id,status"),
+
+      db.from("subscriptions")
+        .select("id,client_id,plan_name,amount,start_date,end_date,status")
+        .order("start_date", { ascending:false })
+
+    ]);
+
+    if (clientsResult.error) throw clientsResult.error;
+    if (tournamentsResult.error) throw tournamentsResult.error;
+    if (matchesResult.error) throw matchesResult.error;
+    if (subscriptionsResult.error) throw subscriptionsResult.error;
+
+    clientsData = clientsResult.data || [];
+
+    subscriptionsData = subscriptionsResult.data || [];
+
+    const tournaments = tournamentsResult.data || [];
+
+    const matches = matchesResult.data || [];
+
+    // Dashboard statistics
+
+    document.getElementById("totalClients")
+      .textContent = clientsData.length;
+
+    document.getElementById("activeClients")
+      .textContent = clientsData.filter(
+        item => item.status === "active"
+      ).length;
+
+    document.getElementById("totalTournaments")
+      .textContent = tournaments.length;
+
+    document.getElementById("liveMatches")
+      .textContent = matches.filter(
+        item => String(item.status || "").toLowerCase() === "live"
+      ).length;
+
+    renderClients();
+    renderSubscriptions();
+
+  } catch(error) {
+
+    console.error("Dashboard error:", error);
+
+    showMessage(
+      "clientMessage",
+      "Dashboard loading error: " + error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+// ======================================
+// RENDER CLIENTS
+// ======================================
+
+function renderClients() {
+
+  const tbody = document.getElementById("clientTable");
+
+  const search = document.getElementById("clientSearch")
+    .value.trim().toLowerCase();
+
+  const filtered = clientsData.filter(client => {
+
+    return [
+      client.name,
+      client.slug,
+      client.contact_email,
+      client.phone
+    ].some(value =>
+      String(value || "").toLowerCase().includes(search)
+    );
+
+  });
+
+  if (!filtered.length) {
+
+    tbody.innerHTML =
+      '<tr><td colspan="5" class="empty">No clients found.</td></tr>';
+
+    return;
+
+  }
+
+  tbody.innerHTML = filtered.map(client => {
+
+    const isActive = client.status === "active";
+
+    const statusClass = isActive ? "active" : "suspended";
+
+    const nextStatus = isActive ? "suspended" : "active";
+
+    const buttonText = isActive ? "SUSPEND" : "ACTIVATE";
+
+    const buttonClass = isActive ? "btn-danger" : "";
+
+    return `
+      <tr>
+
+        <td>
+          <strong>${escapeHTML(client.name)}</strong>
+          <br>
+          <small>${escapeHTML(client.slug)}</small>
+        </td>
+
+        <td>${escapeHTML(client.contact_email || "-")}</td>
+
+        <td>${escapeHTML(client.phone || "-")}</td>
+
+        <td>
+          <span class="status ${statusClass}">
+            ${escapeHTML(client.status)}
+          </span>
+        </td>
+
+        <td>
+          <button
+            class="btn btn-small ${buttonClass}"
+            onclick="updateClientStatus('${client.id}','${nextStatus}')">
+            ${buttonText}
+          </button>
+        </td>
+
+      </tr>
+    `;
+
+  }).join("");
+
+}
+
+
+// ======================================
+// UPDATE CLIENT STATUS
+// ======================================
+
+async function updateClientStatus(clientId, newStatus) {
+
+  const action = newStatus === "active"
+    ? "activate"
+    : "suspend";
+
+  if (!confirm("Are you sure you want to " + action + " this client?")) {
+    return;
+  }
+
+  try {
+
+    const { error } = await db
+      .from("clients")
+      .update({ status:newStatus })
+      .eq("id", clientId);
+
+    if (error) throw error;
+
+    alert("Client status updated successfully.");
+
+    await loadDashboard();
+
+  } catch(error) {
+
+    alert("Status update failed: " + error.message);
+
+  }
+
+}
+
+
+// ======================================
+// CREATE CLIENT
+// ======================================
+
+document.getElementById("clientForm")
+.addEventListener("submit", async function(event) {
+
+  event.preventDefault();
+
+  const btn = document.getElementById("createBtn");
+
+  btn.disabled = true;
+  btn.textContent = "CREATING...";
+
+  clearMessage("clientMessage");
+
+  try {
+
+    const name =
+      document.getElementById("clientName").value.trim();
+
+    const slug =
+      document.getElementById("clientSlug").value
+        .trim()
+        .toLowerCase();
+
+    const email =
+      document.getElementById("clientEmail").value.trim();
+
+    const phone =
+      document.getElementById("clientPhone").value.trim();
+
+    const ownerId =
+      document.getElementById("ownerUserId").value.trim();
+
+    const plan =
+      document.getElementById("planName").value;
+
+    const amount =
+      Number(document.getElementById("planAmount").value);
+
+    const days =
+      Number(document.getElementById("planDays").value);
+
+    if (!name || !slug || !ownerId) {
+
+      throw new Error(
+        "Name, Slug and Owner User ID are required."
+      );
+
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slug)) {
+
+      throw new Error(
+        "Slug can contain only lowercase letters, numbers and hyphens."
+      );
+
+    }
+
+    if (!Number.isFinite(amount) || amount < 0) {
+
+      throw new Error("Invalid subscription amount.");
+
+    }
+
+    if (!Number.isInteger(days) || days < 1 || days > 3650) {
+
+      throw new Error("Duration must be between 1 and 3650 days.");
+
+    }
+
+    const { data, error } = await db.rpc(
+      "create_client_account",
+      {
+        p_name:name,
+        p_slug:slug,
+        p_email:email || null,
+        p_phone:phone || null,
+        p_owner_user_id:ownerId,
+        p_plan_name:plan,
+        p_amount:amount,
+        p_days:days
+      }
+    );
+
+    if (error) throw error;
+
+    showMessage(
+      "clientMessage",
+      "Client created successfully! Client ID: " + data,
+      "success"
+    );
+
+    document.getElementById("clientForm").reset();
+
+    document.getElementById("planAmount").value = "0";
+    document.getElementById("planDays").value = "30";
+
+    await loadDashboard();
+
+  } catch(error) {
+
+    showMessage(
+      "clientMessage",
+      "Client creation failed: " + error.message,
+      "error"
+    );
+
+  } finally {
+
+    btn.disabled = false;
+    btn.textContent = "CREATE CLIENT ACCOUNT";
+
+  }
+
+});
+
+
+// ======================================
+// RENDER SUBSCRIPTIONS
+// ======================================
+
+function renderSubscriptions() {
+
+  const tbody = document.getElementById("subscriptionTable");
+
+  if (!subscriptionsData.length) {
+
+    tbody.innerHTML =
+      '<tr><td colspan="6" class="empty">No subscriptions found.</td></tr>';
+
+    return;
+
+  }
+
+  const clientMap = {};
+
+  clientsData.forEach(client => {
+    clientMap[client.id] = client.name;
+  });
+
+  tbody.innerHTML = subscriptionsData.map(sub => {
+
+    const clientName =
+      clientMap[sub.client_id] || "Unknown Client";
+
+    const statusClass =
+      sub.status === "active" ? "active" : "suspended";
+
+    const amount = Number(sub.amount || 0)
+      .toLocaleString("en-IN", {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      });
+
+    return `
+      <tr>
+
+        <td>${escapeHTML(clientName)}</td>
+
+        <td>${escapeHTML(sub.plan_name)}</td>
+
+        <td>₹${amount}</td>
+
+        <td>${escapeHTML(formatIndiaDateTime(sub.start_date))}</td>
+
+        <td>${escapeHTML(formatIndiaDateTime(sub.end_date))}</td>
+
+        <td>
+          <span class="status ${statusClass}">
+            ${escapeHTML(sub.status)}
+          </span>
+        </td>
+
+      </tr>
+    `;
+
+  }).join("");
+
+}
+
+
+// ======================================
+// AUTO SESSION LISTENER
+// ======================================
+
+db.auth.onAuthStateChange((event, session) => {
+
+  if (event === "SIGNED_OUT") {
+
+    document.getElementById("dashboardSection")
+      .classList.add("hidden");
+
+    document.getElementById("logoutBtn")
+      .classList.add("hidden");
+
+    document.getElementById("loginSection")
+      .classList.remove("hidden");
+
+  }
+
+});
+
+
+// ======================================
+// START APPLICATION
+// ======================================
+
+checkSession();
+
 </script>
+
 </body>
 </html>
