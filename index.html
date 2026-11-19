@@ -180,37 +180,30 @@ td{overflow-wrap:anywhere}
 
  <form id="clientForm">
   <div class="formgrid">
-
    <div class="span2">
     <label>Club / Organization Name *</label>
     <input id="clientName" required placeholder="Bolpur Kabaddi Club">
    </div>
-
    <div>
     <label>Unique Slug *</label>
     <input id="clientSlug" required placeholder="bolpur-kabaddi">
    </div>
-
    <div>
     <label>Phone</label>
     <input id="clientPhone" placeholder="+91...">
    </div>
-
    <div class="span2">
     <label>Club Contact Email</label>
     <input id="clientEmail" type="email" placeholder="club@example.com">
    </div>
-
    <div class="span2">
     <label>Owner Login Email *</label>
     <input id="ownerEmail" type="email" required autocomplete="off" placeholder="owner@example.com">
    </div>
-
    <div class="span2">
     <label>Owner Login Password * (Minimum 8 characters)</label>
     <input id="ownerPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Create owner password">
    </div>
-
    <div>
     <label>Subscription Plan *</label>
     <select id="plan">
@@ -221,26 +214,21 @@ td{overflow-wrap:anywhere}
      <option>Custom</option>
     </select>
    </div>
-
    <div>
     <label>Amount (INR) *</label>
     <input id="amount" type="number" min="0" step="0.01" value="499" required>
    </div>
-
    <div class="span2">
     <label>Subscription Duration (Days) *</label>
     <input id="days" type="number" min="1" max="3650" value="30" required>
    </div>
-
   </div>
 
   <div class="note">
    <b>Automatic setup:</b> Create চাপলে Supabase Auth-এ Owner Login Account তৈরি হবে। এরপর Club, Owner Membership এবং Subscription তৈরি হবে। Owner Email ও Password নিরাপদে সংরক্ষণ করে রাখুন এবং Owner-কে দিন।
   </div>
-
   <button class="btn full" id="createBtn" type="submit">CREATE CLUB + OWNER ACCOUNT</button>
  </form>
-
  <div class="msg" id="clientMsg"></div>
 </section>
 
@@ -262,7 +250,6 @@ td{overflow-wrap:anywhere}
  </div>
  <div class="msg" id="listMsg"></div>
 </section>
-
 </div>
 
 <section class="panel section" style="margin-top:16px">
@@ -347,39 +334,27 @@ td{overflow-wrap:anywhere}
    <h2>Manage Client & Owner</h2>
    <button class="closebtn" id="closeModal" type="button">✕</button>
   </div>
-
   <p class="desc">Update club information and Owner login credentials.</p>
-
   <form id="manageForm" class="hidden">
    <input type="hidden" id="manageClientId">
    <input type="hidden" id="manageUserId">
-
    <label>Club / Organization Name *</label>
    <input id="manageName" required>
-
    <label>Unique Slug *</label>
    <input id="manageSlug" required>
-
    <label>Contact Email</label>
    <input id="manageContactEmail" type="email">
-
    <label>Phone</label>
    <input id="managePhone">
-
    <hr class="divider">
    <h3>Owner Login Information</h3>
-
    <label>Current Login Email</label>
    <input id="manageLoginEmail" type="email" required>
-
    <label>New Password</label>
    <input id="managePassword" type="password" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password">
-
    <p class="modalnote">নতুন Password না দিলে পুরোনো Password অপরিবর্তিত থাকবে। Password কমপক্ষে ৮ অক্ষরের হতে হবে। বর্তমান Password দেখা যাবে না।</p>
-
    <button class="btn full" id="saveManageBtn" type="submit">SAVE CHANGES</button>
   </form>
-
   <div class="msg" id="manageMsg"></div>
  </div>
 </div>
@@ -649,35 +624,115 @@ $("clientForm").addEventListener("submit", async event => {
   }
 });
 
-/* Load dashboard data */
+/* =========================================
+   LOAD DASHBOARD - FULL DIAGNOSTIC
+========================================= */
+
 async function loadDashboard() {
-  showMessage("listMsg", "");
+  showMessage("listMsg", "Checking database connection...");
+
+  const tests = [
+    {
+      name: "CLIENTS",
+      run: () => db.from("clients").select("*").limit(1)
+    },
+    {
+      name: "TOURNAMENTS",
+      run: () => db.from("tournaments").select("id").limit(1)
+    },
+    {
+      name: "MATCHES",
+      run: () => db.from("matches").select("id").limit(1)
+    },
+    {
+      name: "SUBSCRIPTIONS",
+      run: () => db.from("subscriptions").select("*").limit(1)
+    }
+  ];
+
+  const errors = [];
+
+  for (const test of tests) {
+    try {
+      const result = await test.run();
+
+      if (result.error) {
+        errors.push(
+          test.name + ": " +
+          (result.error.message || JSON.stringify(result.error))
+        );
+      } else {
+        console.log("DATABASE OK:", test.name);
+      }
+    } catch (error) {
+      errors.push(
+        test.name + ": " +
+        (error.message || String(error))
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    console.error("DATABASE DIAGNOSTIC:", errors);
+
+    showMessage(
+      "listMsg",
+      "DATABASE ERROR: " + errors.join(" | "),
+      true
+    );
+
+    return;
+  }
 
   try {
-    const [
-      clientsResult,
-      tournamentsResult,
-      matchesResult,
-      subscriptionsResult
-    ] = await Promise.all([
-      db.from("clients").select("*").order("created_at", { ascending: false }),
-      db.from("tournaments").select("id", { count: "exact", head: true }),
-      db.from("matches").select("id", { count: "exact", head: true })
+    showMessage("listMsg", "Database OK. Loading dashboard...");
+
+    const results = await Promise.all([
+      db.from("clients")
+        .select("*")
+        .order("created_at", { ascending: false }),
+
+      db.from("tournaments")
+        .select("id", { count: "exact", head: true }),
+
+      db.from("matches")
+        .select("id", { count: "exact", head: true })
         .eq("status", "live"),
-      db.from("subscriptions").select("*")
+
+      db.from("subscriptions")
+        .select("*")
         .order("created_at", { ascending: false })
     ]);
 
-    if (clientsResult.error) throw clientsResult.error;
-    if (tournamentsResult.error) throw tournamentsResult.error;
-    if (matchesResult.error) throw matchesResult.error;
-    if (subscriptionsResult.error) throw subscriptionsResult.error;
+    const names = [
+      "CLIENTS",
+      "TOURNAMENTS",
+      "LIVE MATCHES",
+      "SUBSCRIPTIONS"
+    ];
+
+    for (let i = 0; i < results.length; i++) {
+      if (results[i].error) {
+        throw new Error(
+          names[i] + ": " +
+          results[i].error.message
+        );
+      }
+    }
+
+    const clientsResult = results[0];
+    const tournamentsResult = results[1];
+    const matchesResult = results[2];
+    const subscriptionsResult = results[3];
 
     allClients = clientsResult.data || [];
 
     $("totalClients").textContent = allClients.length;
+
     $("activeClients").textContent =
-      allClients.filter(c => String(c.status).toLowerCase() === "active").length;
+      allClients.filter(client =>
+        String(client.status || "").toLowerCase() === "active"
+      ).length;
 
     $("totalTournaments").textContent =
       tournamentsResult.count ?? "—";
@@ -688,10 +743,15 @@ async function loadDashboard() {
     renderClients(allClients);
     renderSubscriptions(subscriptionsResult.data || []);
 
+    showMessage("listMsg", "Dashboard loaded successfully.");
+
   } catch (error) {
+    console.error("DASHBOARD LOADING ERROR:", error);
+
     showMessage(
       "listMsg",
-      "Dashboard loading error: " + (error.message || "Unknown error"),
+      "Dashboard Error: " +
+      (error.message || JSON.stringify(error) || String(error)),
       true
     );
   }
@@ -819,7 +879,6 @@ $("clientsBody").addEventListener("click", async event => {
     await loadDashboard();
   }
 })();
-
 
 /* =========================================
    CLUB DETAILS
@@ -1014,7 +1073,6 @@ $("detailManageBtn").addEventListener("click", () => {
   if (currentClubId) openManageModal(currentClubId);
 });
 
-
 /* =========================================
    MANAGE CLIENT AND OWNER
 ========================================= */
@@ -1129,7 +1187,6 @@ $("manageForm").addEventListener("submit", async event => {
     setLoading("saveManageBtn", false);
   }
 });
-
 
 /* =========================================
    AUTH STATE LISTENER
