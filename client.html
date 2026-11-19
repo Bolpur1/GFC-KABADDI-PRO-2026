@@ -1,0 +1,1096 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071713">
+<title>GFC KABADDI PRO 2026 | Club Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--bg:#071713;--panel:#10231d;--line:#254238;
+--text:#effaf3;--muted:#9ab3a6;
+--green:#42dc91;--red:#ff6b72;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);
+color:var(--text);font-family:Arial,sans-serif;min-height:100vh
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:auto;padding:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:25px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+width:46px;height:46px;border-radius:14px;
+background:linear-gradient(135deg,var(--green),#138454);
+display:grid;place-items:center;color:#052317;
+font-weight:1000;font-size:22px
+}
+.brand h1{font-size:16px;margin:0}
+.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
+.pill{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--muted);font-size:11px}
+.panel{
+background:linear-gradient(145deg,#122820,#0d1e18);
+border:1px solid var(--line);border-radius:18px;
+box-shadow:0 12px 40px #0003
+}
+.login{max-width:430px;margin:8vh auto;padding:25px}
+.login h2{margin:0 0 8px}
+.sub{color:var(--muted);font-size:13px;line-height:1.5}
+label{display:block;color:#c4d9cd;font-size:12px;font-weight:bold;margin:14px 0 7px}
+input,select{
+width:100%;background:#071812;border:1px solid #315344;
+border-radius:10px;padding:12px;color:var(--text);outline:none
+}
+input:focus,select:focus{border-color:var(--green)}
+.btn{
+border:0;border-radius:10px;padding:12px 15px;
+font-weight:bold;background:var(--green);color:#052317
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:#1a382c;color:white;border:1px solid #315344}
+.btn.danger{background:#51252a;color:#ffdadd;border:1px solid #873d45}
+.btn.small{padding:8px 10px;font-size:11px}
+.full{width:100%;margin-top:17px}
+.msg{font-size:12px;color:#f5c56b;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 18px}
+.heading h2{margin:0;font-size:24px}
+.heading p{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:17px}
+.stat{padding:17px}
+.stat .k{color:var(--muted);font-size:11px}
+.stat .v{font-size:28px;font-weight:900;margin-top:9px}
+.stat .hint{font-size:11px;color:var(--green);margin-top:5px}
+.grid{display:grid;grid-template-columns:1fr 1.4fr;gap:15px}
+.section{padding:18px;margin-bottom:16px}
+.section h3{margin:0 0 5px;font-size:16px}
+.desc{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.span2{grid-column:1/-1}
+.tablewrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:510px}
+th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #203b30;font-size:12px}
+th{color:var(--muted)}
+.status{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:bold;text-transform:uppercase}
+.active{background:#123f2c;color:#6ff0ac}
+.suspended{background:#48252a;color:#ff9ba0}
+.inactive{background:#303a35;color:#c2cec6}
+.empty{color:var(--muted);text-align:center;padding:25px;font-size:13px}
+.toolbar{display:flex;gap:8px;align-items:center}
+.toolbar input{max-width:230px;padding:10px}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;padding:10px;background:#0a1b14;border-radius:10px;border:1px solid #203b2e}
+.footer{text-align:center;color:#688576;font-size:11px;padding:25px}
+@media(max-width:850px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.grid{grid-template-columns:1fr}
+.heading{align-items:flex-start;flex-direction:column}
+.toolbar{width:100%}
+.toolbar input{max-width:none;flex:1}
+}
+@media(max-width:520px){
+.wrap{padding:13px}
+.brand h1{font-size:13px}
+.logo{width:40px;height:40px}
+.login{padding:21px;margin:5vh auto}
+.stat{padding:13px}
+.stat .v{font-size:24px}
+.section{padding:14px}
+.formgrid{grid-template-columns:1fr}
+.span2{grid-column:auto}
+.heading h2{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="top">
+<div class="brand">
+<div class="logo">G</div>
+<div>
+<h1>GFC KABADDI PRO 2026</h1>
+<p>CLUB MANAGEMENT PORTAL</p>
+</div>
+</div>
+<div class="pill" id="topState">CLUB OWNER PORTAL</div>
+</header>
+
+<!-- LOGIN -->
+<section id="loginView" class="panel login">
+<h2>Club Owner Login</h2>
+<p class="sub">Login to manage your club, tournaments, teams and players.</p>
+
+<form id="loginForm">
+<label>Email Address</label>
+<input id="email" type="email" required autocomplete="username" placeholder="Owner Email">
+
+<label>Password</label>
+<input id="password" type="password" required autocomplete="current-password" placeholder="Password">
+
+<button class="btn full" id="loginBtn" type="submit">LOGIN TO CLUB DASHBOARD</button>
+</form>
+<div class="msg" id="loginMsg"></div>
+</section>
+
+<!-- DASHBOARD -->
+<main id="appView" class="hidden">
+
+<div class="heading">
+<div>
+<h2 id="clubTitle">Club Dashboard</h2>
+<p id="welcome">Your Club Management Panel</p>
+</div>
+<div class="toolbar">
+<select id="clientSelector" class="hidden"></select>
+<span class="pill" id="rolePill">OWNER</span>
+<button class="btn secondary small" id="refreshBtn">Refresh</button>
+<button class="btn danger small" id="logoutBtn">Logout</button>
+</div>
+</div>
+
+<!-- STATS -->
+<section class="stats">
+<div class="panel stat">
+<div class="k">TOURNAMENTS</div>
+<div class="v" id="totalTournaments">0</div>
+<div class="hint">Your tournaments</div>
+</div>
+
+<div class="panel stat">
+<div class="k">TEAMS</div>
+<div class="v" id="totalTeams">0</div>
+<div class="hint">Registered teams</div>
+</div>
+
+<div class="panel stat">
+<div class="k">PLAYERS</div>
+<div class="v" id="totalPlayers">0</div>
+<div class="hint">Registered players</div>
+</div>
+
+<div class="panel stat">
+<div class="k">MATCHES</div>
+<div class="v" id="totalMatches">0</div>
+<div class="hint">Total matches</div>
+</div>
+</section>
+
+<!-- SUBSCRIPTION -->
+<section class="panel section">
+<h3>Subscription Information</h3>
+<p class="desc">Your club subscription details.</p>
+<div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th>PLAN</th>
+<th>AMOUNT</th>
+<th>START DATE</th>
+<th>END DATE</th>
+<th>STATUS</th>
+</tr>
+</thead>
+<tbody id="subscriptionBody">
+<tr><td colspan="5" class="empty">Loading subscription...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<!-- TOURNAMENT -->
+<div class="grid">
+
+<section class="panel section">
+<h3>Create Tournament</h3>
+<p class="desc">Register a new Kabaddi tournament.</p>
+
+<form id="tournamentForm">
+<label>Tournament Name *</label>
+<input id="tournamentName" required placeholder="GFC Kabaddi Cup 2026">
+
+<label>Season</label>
+<input id="tournamentSeason" placeholder="2026">
+
+<label>Venue</label>
+<input id="tournamentVenue" placeholder="Tournament Ground">
+
+<div class="formgrid">
+<div>
+<label>Start Date</label>
+<input id="tournamentStart" type="date">
+</div>
+<div>
+<label>End Date</label>
+<input id="tournamentEnd" type="date">
+</div>
+</div>
+
+<label>Status</label>
+<select id="tournamentStatus">
+<option value="upcoming">Upcoming</option>
+<option value="ongoing">Ongoing</option>
+<option value="completed">Completed</option>
+</select>
+
+<button class="btn full" id="tournamentBtn" type="submit">CREATE TOURNAMENT</button>
+</form>
+<div class="msg" id="tournamentMsg"></div>
+</section>
+
+<section class="panel section">
+<h3>Your Tournaments</h3>
+<p class="desc">All tournaments registered under your club.</p>
+<div class="tablewrap">
+<table>
+<thead>
+<tr><th>NAME</th><th>VENUE</th><th>START DATE</th><th>STATUS</th></tr>
+</thead>
+<tbody id="tournamentsBody">
+<tr><td colspan="4" class="empty">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+
+<!-- TEAMS -->
+<div class="grid">
+
+<section class="panel section">
+<h3>Add Team</h3>
+<p class="desc">Register teams for your tournaments.</p>
+
+<form id="teamForm">
+<label>Tournament</label>
+<select id="teamTournament">
+<option value="">Select Tournament</option>
+</select>
+
+<label>Team Name *</label>
+<input id="teamName" required placeholder="Bolpur Warriors">
+
+<label>Short Name</label>
+<input id="teamShortName" placeholder="BWR">
+
+<label>Team Logo URL</label>
+<input id="teamLogo" type="url" placeholder="https://example.com/logo.png">
+
+<button class="btn full" id="teamBtn" type="submit">ADD TEAM</button>
+</form>
+<div class="msg" id="teamMsg"></div>
+</section>
+
+<section class="panel section">
+<h3>Your Teams</h3>
+<p class="desc">Teams registered under your club.</p>
+<div class="tablewrap">
+<table>
+<thead>
+<tr><th>TEAM</th><th>SHORT NAME</th><th>TOURNAMENT</th></tr>
+</thead>
+<tbody id="teamsBody">
+<tr><td colspan="3" class="empty">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+
+<!-- PLAYERS -->
+<div class="grid">
+
+<section class="panel section">
+<h3>Add Player</h3>
+<p class="desc">Register players for your teams.</p>
+
+<form id="playerForm">
+<label>Team</label>
+<select id="playerTeam">
+<option value="">Select Team</option>
+</select>
+
+<label>Player Name *</label>
+<input id="playerName" required placeholder="Player Name">
+
+<div class="formgrid">
+<div>
+<label>Jersey Number</label>
+<input id="playerJersey" type="number" min="0" placeholder="10">
+</div>
+<div>
+<label>Position</label>
+<select id="playerPosition">
+<option value="">Select Position</option>
+<option>Raider</option>
+<option>Defender</option>
+<option>All-Rounder</option>
+</select>
+</div>
+</div>
+
+<label>Player Photo URL</label>
+<input id="playerPhoto" type="url" placeholder="https://example.com/player.jpg">
+
+<button class="btn full" id="playerBtn" type="submit">ADD PLAYER</button>
+</form>
+<div class="msg" id="playerMsg"></div>
+</section>
+
+<section class="panel section">
+<h3>Your Players</h3>
+<p class="desc">Registered players in your club.</p>
+<div class="tablewrap">
+<table>
+<thead>
+<tr><th>PLAYER</th><th>JERSEY</th><th>POSITION</th><th>TEAM</th></tr>
+</thead>
+<tbody id="playersBody">
+<tr><td colspan="4" class="empty">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+
+<!-- MATCHES -->
+<div class="grid">
+
+<section class="panel section">
+<h3>Create Match</h3>
+<p class="desc">Schedule a new Kabaddi match.</p>
+
+<form id="matchForm">
+<label>Tournament</label>
+<select id="matchTournament">
+<option value="">Select Tournament</option>
+</select>
+
+<label>Team A *</label>
+<select id="matchTeamA" required>
+<option value="">Select Team A</option>
+</select>
+
+<label>Team B *</label>
+<select id="matchTeamB" required>
+<option value="">Select Team B</option>
+</select>
+
+<label>Match Status</label>
+<select id="matchStatus">
+<option value="scheduled">Scheduled</option>
+<option value="live">Live</option>
+<option value="completed">Completed</option>
+</select>
+
+<button class="btn full" id="matchBtn" type="submit">CREATE MATCH</button>
+</form>
+<div class="msg" id="matchMsg"></div>
+</section>
+
+<section class="panel section">
+<h3>Your Matches</h3>
+<p class="desc">Match schedule and current scores.</p>
+<div class="tablewrap">
+<table>
+<thead>
+<tr><th>TEAM A</th><th>SCORE</th><th>TEAM B</th><th>STATUS</th></tr>
+</thead>
+<tbody id="matchesBody">
+<tr><td colspan="4" class="empty">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note">
+Live scoring, raid events, tackle events and scoreboard controls will be connected in the next module.
+</div>
+</section>
+</div>
+
+<div class="msg" id="dashboardMsg"></div>
+
+</main>
+
+<div class="footer">
+GFC KABADDI PRO 2026 · Club Management Portal
+</div>
+</div>
+
+<script>
+(() => {
+
+const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let memberships = [];
+let currentClient = null;
+let currentRole = "";
+let tournaments = [];
+let teams = [];
+let players = [];
+let matches = [];
+let subscriptions = [];
+let busy = false;
+
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[c]));
+
+const showMsg = (id,text,error=false) => {
+$(id).textContent = text;
+$(id).style.color = error ? "#ff9ba0" : "#f5c56b";
+};
+
+function dateText(value) {
+if (!value) return "—";
+
+const date = new Date(value);
+
+if (isNaN(date.getTime())) return "—";
+
+return date.toLocaleString("en-IN",{
+timeZone:"Asia/Kolkata",
+day:"2-digit",
+month:"short",
+year:"numeric",
+hour:"2-digit",
+minute:"2-digit",
+hour12:true
+});
+}
+
+function dateOnly(value) {
+if (!value) return "—";
+
+const date = new Date(value + "T00:00:00");
+
+return date.toLocaleDateString("en-IN",{
+timeZone:"Asia/Kolkata",
+day:"2-digit",
+month:"short",
+year:"numeric"
+});
+}
+
+function showLogin() {
+$("loginView").classList.remove("hidden");
+$("appView").classList.add("hidden");
+$("topState").textContent = "CLUB OWNER PORTAL";
+}
+
+function showApp() {
+$("loginView").classList.add("hidden");
+$("appView").classList.remove("hidden");
+$("topState").textContent = "CLUB VERIFIED";
+}
+
+function statusClass(status) {
+const s = String(status || "").toLowerCase();
+
+if (["active","ongoing","live"].includes(s)) return "active";
+if (["suspended","cancelled","inactive"].includes(s)) return "suspended";
+
+return "inactive";
+}
+
+async function verifyUser() {
+
+const {data:{user},error} = await db.auth.getUser();
+
+if (error) throw error;
+if (!user) return false;
+
+currentUser = user;
+
+const {data:memberRows,error:memberError} = await db
+.from("client_members")
+.select("client_id,role")
+.eq("user_id",user.id);
+
+if (memberError) throw memberError;
+
+memberships = memberRows || [];
+
+if (!memberships.length) {
+throw new Error("No club membership found for this account. Please contact Super Admin.");
+}
+
+const clientIds = [...new Set(memberships.map(m=>m.client_id))];
+
+const {data:clientRows,error:clientError} = await db
+.from("clients")
+.select("id,name,slug,status")
+.in("id",clientIds);
+
+if (clientError) throw clientError;
+
+if (!clientRows || !clientRows.length) {
+throw new Error("Your club account is unavailable.");
+}
+
+memberships = memberships.map(m=>({
+...m,
+client:clientRows.find(c=>c.id===m.client_id)
+})).filter(m=>m.client);
+
+if (!memberships.length) {
+throw new Error("No active club access found.");
+}
+
+if (memberships.length > 1) {
+$("clientSelector").classList.remove("hidden");
+$("clientSelector").innerHTML = memberships.map((m,i)=>
+`<option value="${i}">${esc(m.client.name)}</option>`
+).join("");
+} else {
+$("clientSelector").classList.add("hidden");
+}
+
+await selectClient(0);
+
+showApp();
+return true;
+}
+
+async function selectClient(index) {
+
+const membership = memberships[index];
+
+if (!membership) throw new Error("Invalid club selection.");
+
+currentClient = membership.client;
+currentRole = membership.role;
+
+if (currentClient.status !== "active") {
+throw new Error("Your club account is currently suspended. Contact Super Admin.");
+}
+
+$("clubTitle").textContent = currentClient.name;
+$("welcome").textContent =
+"Signed in as " + (currentUser.email || "Club User");
+
+$("rolePill").textContent = String(currentRole).toUpperCase();
+
+await loadDashboard();
+}
+
+async function loadDashboard() {
+
+if (!currentClient) return;
+
+showMsg("dashboardMsg","Loading club data...");
+
+const cid = currentClient.id;
+
+const results = await Promise.all([
+
+db.from("tournaments")
+.select("id,name,season,venue,start_date,end_date,status,created_at")
+.eq("client_id",cid)
+.order("created_at",{ascending:false}),
+
+db.from("teams")
+.select("id,name,short_name,logo_url,tournament_id,created_at")
+.eq("client_id",cid)
+.order("created_at",{ascending:false}),
+
+db.from("players")
+.select("id,name,jersey_number,position,photo_url,team_id,created_at")
+.eq("client_id",cid)
+.order("created_at",{ascending:false}),
+
+db.from("matches")
+.select("id,tournament_id,team_a_id,team_b_id,team_a_score,team_b_score,match_status,created_at")
+.eq("client_id",cid)
+.order("created_at",{ascending:false}),
+
+db.from("subscriptions")
+.select("id,plan_name,amount,start_date,end_date,status")
+.eq("client_id",cid)
+.order("created_at",{ascending:false})
+.limit(10)
+
+]);
+
+for (const result of results) {
+if (result.error) throw result.error;
+}
+
+tournaments = results[0].data || [];
+teams = results[1].data || [];
+players = results[2].data || [];
+matches = results[3].data || [];
+subscriptions = results[4].data || [];
+
+$("totalTournaments").textContent = tournaments.length;
+$("totalTeams").textContent = teams.length;
+$("totalPlayers").textContent = players.length;
+$("totalMatches").textContent = matches.length;
+
+renderSubscriptions();
+renderTournaments();
+renderTeams();
+renderPlayers();
+renderMatches();
+updateSelects();
+
+showMsg("dashboardMsg","Club data updated successfully.");
+}
+
+function renderSubscriptions() {
+
+$("subscriptionBody").innerHTML = subscriptions.length
+? subscriptions.map(s=>`
+<tr>
+<td>${esc(s.plan_name)}</td>
+<td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
+<td>${dateText(s.start_date)}</td>
+<td>${dateText(s.end_date)}</td>
+<td><span class="status ${statusClass(s.status)}">${esc(s.status)}</span></td>
+</tr>
+`).join("")
+: `<tr><td colspan="5" class="empty">No subscription found.</td></tr>`;
+}
+
+function renderTournaments() {
+
+$("tournamentsBody").innerHTML = tournaments.length
+? tournaments.map(t=>`
+<tr>
+<td><b>${esc(t.name)}</b><br>
+<span style="color:#8eaa9a">${esc(t.season || "")}</span></td>
+<td>${esc(t.venue || "—")}</td>
+<td>${dateOnly(t.start_date)}</td>
+<td><span class="status ${statusClass(t.status)}">${esc(t.status || "upcoming")}</span></td>
+</tr>
+`).join("")
+: `<tr><td colspan="4" class="empty">No tournaments created yet.</td></tr>`;
+}
+
+function renderTeams() {
+
+$("teamsBody").innerHTML = teams.length
+? teams.map(t=>{
+const tournament = tournaments.find(x=>x.id===t.tournament_id);
+return `
+<tr>
+<td><b>${esc(t.name)}</b></td>
+<td>${esc(t.short_name || "—")}</td>
+<td>${esc(tournament?.name || "—")}</td>
+</tr>`;
+}).join("")
+: `<tr><td colspan="3" class="empty">No teams registered yet.</td></tr>`;
+}
+
+function renderPlayers() {
+
+$("playersBody").innerHTML = players.length
+? players.map(p=>{
+const team = teams.find(t=>t.id===p.team_id);
+return `
+<tr>
+<td><b>${esc(p.name)}</b></td>
+<td>${esc(p.jersey_number ?? "—")}</td>
+<td>${esc(p.position || "—")}</td>
+<td>${esc(team?.short_name || team?.name || "—")}</td>
+</tr>`;
+}).join("")
+: `<tr><td colspan="4" class="empty">No players registered yet.</td></tr>`;
+}
+
+function renderMatches() {
+
+$("matchesBody").innerHTML = matches.length
+? matches.map(m=>{
+const teamA = teams.find(t=>t.id===m.team_a_id);
+const teamB = teams.find(t=>t.id===m.team_b_id);
+
+return `
+<tr>
+<td>${esc(teamA?.short_name || teamA?.name || "Team A")}</td>
+<td><b>${Number(m.team_a_score||0)} - ${Number(m.team_b_score||0)}</b></td>
+<td>${esc(teamB?.short_name || teamB?.name || "Team B")}</td>
+<td><span class="status ${statusClass(m.match_status)}">${esc(m.match_status)}</span></td>
+</tr>`;
+}).join("")
+: `<tr><td colspan="4" class="empty">No matches created yet.</td></tr>`;
+}
+
+function updateSelects() {
+
+const tournamentOptions =
+`<option value="">Select Tournament</option>` +
+tournaments.map(t=>
+`<option value="${esc(t.id)}">${esc(t.name)}</option>`
+).join("");
+
+$("teamTournament").innerHTML = tournamentOptions;
+$("matchTournament").innerHTML = tournamentOptions;
+
+const teamOptions =
+`<option value="">Select Team</option>` +
+teams.map(t=>
+`<option value="${esc(t.id)}">${esc(t.name)}</option>`
+).join("");
+
+$("playerTeam").innerHTML = teamOptions;
+
+$("matchTeamA").innerHTML =
+`<option value="">Select Team A</option>` +
+teams.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+
+$("matchTeamB").innerHTML =
+`<option value="">Select Team B</option>` +
+teams.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+}
+
+// LOGIN
+
+$("loginForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+if (busy) return;
+busy = true;
+
+const btn = $("loginBtn");
+btn.disabled = true;
+btn.textContent = "SIGNING IN...";
+
+showMsg("loginMsg","Checking account...");
+
+try {
+
+const {error} = await db.auth.signInWithPassword({
+email:$("email").value.trim(),
+password:$("password").value
+});
+
+if (error) throw error;
+
+await verifyUser();
+
+showMsg("loginMsg","");
+
+} catch(err) {
+
+showMsg("loginMsg",err.message || "Login failed.",true);
+await db.auth.signOut();
+showLogin();
+
+} finally {
+
+busy = false;
+btn.disabled = false;
+btn.textContent = "LOGIN TO CLUB DASHBOARD";
+
+}
+
+});
+
+// CREATE TOURNAMENT
+
+$("tournamentForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const btn = $("tournamentBtn");
+btn.disabled = true;
+btn.textContent = "CREATING...";
+
+try {
+
+const payload = {
+client_id:currentClient.id,
+name:$("tournamentName").value.trim(),
+season:$("tournamentSeason").value.trim() || null,
+venue:$("tournamentVenue").value.trim() || null,
+start_date:$("tournamentStart").value || null,
+end_date:$("tournamentEnd").value || null,
+status:$("tournamentStatus").value
+};
+
+const {error} = await db.from("tournaments").insert(payload);
+
+if (error) throw error;
+
+$("tournamentForm").reset();
+
+showMsg("tournamentMsg","Tournament created successfully.");
+
+await loadDashboard();
+
+} catch(err) {
+
+showMsg("tournamentMsg",err.message,true);
+
+} finally {
+
+btn.disabled = false;
+btn.textContent = "CREATE TOURNAMENT";
+
+}
+
+});
+
+// CREATE TEAM
+
+$("teamForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const btn = $("teamBtn");
+btn.disabled = true;
+btn.textContent = "ADDING...";
+
+try {
+
+const payload = {
+client_id:currentClient.id,
+tournament_id:$("teamTournament").value || null,
+name:$("teamName").value.trim(),
+short_name:$("teamShortName").value.trim() || null,
+logo_url:$("teamLogo").value.trim() || null
+};
+
+const {error} = await db.from("teams").insert(payload);
+
+if (error) throw error;
+
+$("teamForm").reset();
+
+showMsg("teamMsg","Team added successfully.");
+
+await loadDashboard();
+
+} catch(err) {
+
+showMsg("teamMsg",err.message,true);
+
+} finally {
+
+btn.disabled = false;
+btn.textContent = "ADD TEAM";
+
+}
+
+});
+
+// CREATE PLAYER
+
+$("playerForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const btn = $("playerBtn");
+btn.disabled = true;
+btn.textContent = "ADDING...";
+
+try {
+
+const jersey = $("playerJersey").value;
+
+const payload = {
+client_id:currentClient.id,
+team_id:$("playerTeam").value || null,
+name:$("playerName").value.trim(),
+jersey_number:jersey === "" ? null : Number(jersey),
+position:$("playerPosition").value || null,
+photo_url:$("playerPhoto").value.trim() || null
+};
+
+const {error} = await db.from("players").insert(payload);
+
+if (error) throw error;
+
+$("playerForm").reset();
+
+showMsg("playerMsg","Player added successfully.");
+
+await loadDashboard();
+
+} catch(err) {
+
+showMsg("playerMsg",err.message,true);
+
+} finally {
+
+btn.disabled = false;
+btn.textContent = "ADD PLAYER";
+
+}
+
+});
+
+// CREATE MATCH
+
+$("matchForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const btn = $("matchBtn");
+btn.disabled = true;
+btn.textContent = "CREATING...";
+
+try {
+
+const teamA = $("matchTeamA").value;
+const teamB = $("matchTeamB").value;
+
+if (!teamA || !teamB) {
+throw new Error("Please select both teams.");
+}
+
+if (teamA === teamB) {
+throw new Error("Team A and Team B must be different.");
+}
+
+const payload = {
+client_id:currentClient.id,
+tournament_id:$("matchTournament").value || null,
+team_a_id:teamA,
+team_b_id:teamB,
+team_a_score:0,
+team_b_score:0,
+match_status:$("matchStatus").value,
+current_half:1,
+raid_timer:30,
+match_timer:1200
+};
+
+const {error} = await db.from("matches").insert(payload);
+
+if (error) throw error;
+
+$("matchForm").reset();
+
+showMsg("matchMsg","Match created successfully.");
+
+await loadDashboard();
+
+} catch(err) {
+
+showMsg("matchMsg",err.message,true);
+
+} finally {
+
+btn.disabled = false;
+btn.textContent = "CREATE MATCH";
+
+}
+
+});
+
+// CLIENT SWITCH
+
+$("clientSelector").addEventListener("change",async()=>{
+
+try {
+
+await selectClient(Number($("clientSelector").value));
+
+} catch(err) {
+
+showMsg("dashboardMsg",err.message,true);
+
+}
+
+});
+
+// REFRESH
+
+$("refreshBtn").addEventListener("click",async()=>{
+
+const btn = $("refreshBtn");
+btn.disabled = true;
+
+try {
+
+await loadDashboard();
+
+} catch(err) {
+
+showMsg("dashboardMsg",err.message,true);
+
+} finally {
+
+btn.disabled = false;
+
+}
+
+});
+
+// LOGOUT
+
+$("logoutBtn").addEventListener("click",async()=>{
+
+await db.auth.signOut();
+currentUser = null;
+currentClient = null;
+memberships = [];
+showLogin();
+
+});
+
+// AUTH STATE
+
+db.auth.onAuthStateChange((event)=>{
+
+if (event === "SIGNED_OUT") {
+currentUser = null;
+currentClient = null;
+memberships = [];
+showLogin();
+}
+
+});
+
+// INITIAL SESSION CHECK
+
+(async()=>{
+
+try {
+
+const {data:{session},error} = await db.auth.getSession();
+
+if (error) throw error;
+
+if (session) {
+await verifyUser();
+} else {
+showLogin();
+}
+
+} catch(err) {
+
+showLogin();
+showMsg("loginMsg",err.message || "Unable to verify account.",true);
+
+}
+
+})();
+
+})();
+</script>
+</body>
+</html>
