@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071713">
+<title>GFC KABADDI PRO 2026 | Club Login</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+--bg:#071713;--panel:#10231d;--line:#254238;
+--text:#effaf3;--muted:#9ab3a6;--green:#42dc91;
+}
+*{box-sizing:border-box}
+body{
+margin:0;min-height:100vh;padding:18px;
+display:grid;place-items:center;
+background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);
+color:var(--text);font-family:Arial,sans-serif
+}
+.wrap{width:100%;max-width:430px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:25px}
+.logo{
+width:46px;height:46px;border-radius:14px;
+background:linear-gradient(135deg,var(--green),#138454);
+display:grid;place-items:center;color:#052317;
+font-weight:1000;font-size:22px
+}
+.brand h1{font-size:16px;margin:0}
+.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
+.panel{
+background:linear-gradient(145deg,#122820,#0d1e18);
+border:1px solid var(--line);border-radius:18px;
+padding:25px;box-shadow:0 12px 40px #0003
+}
+h2{margin:0 0 8px}
+.sub{color:var(--muted);font-size:13px;line-height:1.5}
+label{
+display:block;color:#c4d9cd;font-size:12px;
+font-weight:bold;margin:17px 0 7px
+}
+input{
+width:100%;background:#071812;border:1px solid #315344;
+border-radius:10px;padding:13px;color:var(--text);outline:none
+}
+input:focus{border-color:var(--green)}
+button{
+width:100%;margin-top:20px;border:0;border-radius:10px;
+padding:13px;font-weight:bold;background:var(--green);
+color:#052317;cursor:pointer
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+.msg{font-size:12px;color:#ff9ba0;margin-top:13px;line-height:1.5;overflow-wrap:anywhere}
+.footer{text-align:center;color:#688576;font-size:11px;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="brand">
+<div class="logo">G</div>
+<div>
+<h1>GFC KABADDI PRO 2026</h1>
+<p>CLUB MANAGEMENT PORTAL</p>
+</div>
+</div>
+
+<section class="panel">
+<h2>Club Owner Login</h2>
+<p class="sub">Login to manage your club, tournaments, teams and players.</p>
+
+<form id="loginForm">
+<label>Email Address</label>
+<input id="email" type="email" required
+autocomplete="username" placeholder="Owner Email">
+
+<label>Password</label>
+<input id="password" type="password" required
+autocomplete="current-password" placeholder="Password">
+
+<button id="loginBtn" type="submit">LOGIN TO CLUB DASHBOARD</button>
+</form>
+
+<div class="msg" id="loginMsg"></div>
+</section>
+
+<div class="footer">
+GFC KABADDI PRO 2026 · Club Management Portal
+</div>
+</div>
+
+<script>
+(() => {
+const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+const $ = id => document.getElementById(id);
+let busy = false;
+
+function message(text,error=false){
+$("loginMsg").textContent = text;
+$("loginMsg").style.color = error ? "#ff9ba0" : "#f5c56b";
+}
+
+$("loginForm").addEventListener("submit",async e=>{
+e.preventDefault();
+if(busy) return;
+
+busy = true;
+const btn = $("loginBtn");
+btn.disabled = true;
+btn.textContent = "SIGNING IN...";
+message("Checking account...");
+
+try{
+const {error} = await db.auth.signInWithPassword({
+email:$("email").value.trim(),
+password:$("password").value
+});
+
+if(error) throw error;
+
+// Dashboard will independently verify membership
+// and subscription status before showing club data.
+window.location.replace("club-dashboard.html");
+
+}catch(err){
+message(err.message || "Login failed.",true);
+await db.auth.signOut();
+}finally{
+busy = false;
+btn.disabled = false;
+btn.textContent = "LOGIN TO CLUB DASHBOARD";
+}
+});
+
+// Existing signed-in users can continue to dashboard.
+(async()=>{
+try{
+const {data:{session},error} = await db.auth.getSession();
+if(error) throw error;
+
+if(session){
+window.location.replace("club-dashboard.html");
+}
+}catch(err){
+message(err.message || "Unable to check login session.",true);
+}
+})();
+})();
+</script>
+</body>
+</html>
