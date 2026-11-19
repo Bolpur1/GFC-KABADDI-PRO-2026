@@ -8,607 +8,339 @@
 <title>GFC KABADDI PRO 2026 | Super Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
---bg:#071713;--panel:#10231d;--line:#254238;
---text:#effaf3;--muted:#9ab3a6;
---green:#42dc91;--red:#ff6b72
-}
+:root{--bg:#071713;--panel:#10231d;--line:#254238;--text:#effaf3;--muted:#9ab3a6;--green:#42dc91;--red:#ff6b72}
 *{box-sizing:border-box}
-body{
-margin:0;background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);
-color:var(--text);font-family:Arial,sans-serif;min-height:100vh
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
+body{margin:0;background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 .wrap{max-width:1180px;margin:auto;padding:20px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:25px}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{
-width:46px;height:46px;border-radius:14px;
-background:linear-gradient(135deg,var(--green),#138454);
-display:grid;place-items:center;color:#052317;font-weight:1000;font-size:22px
-}
-.brand h1{font-size:16px;margin:0}
-.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
+.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--green),#138454);display:grid;place-items:center;color:#052317;font-weight:1000;font-size:22px}
+.brand h1{font-size:16px;margin:0}.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
 .pill{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--muted);font-size:11px}
-.panel{
-background:linear-gradient(145deg,#122820,#0d1e18);
-border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 40px #0003
-}
+.panel{background:linear-gradient(145deg,#122820,#0d1e18);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 40px #0003}
 .login{max-width:430px;margin:8vh auto;padding:25px}
-.login h2{margin:0 0 8px}
-.sub{color:var(--muted);font-size:13px;line-height:1.5}
+.login h2{margin:0 0 8px}.sub{color:var(--muted);font-size:13px;line-height:1.5}
 label{display:block;color:#c4d9cd;font-size:12px;font-weight:bold;margin:14px 0 7px}
-input,select{
-width:100%;background:#071812;border:1px solid #315344;
-border-radius:10px;padding:12px;color:var(--text);outline:none
-}
+input,select{width:100%;background:#071812;border:1px solid #315344;border-radius:10px;padding:12px;color:var(--text);outline:none}
 input:focus,select:focus{border-color:var(--green)}
-.btn{
-border:0;border-radius:10px;padding:12px 15px;font-weight:bold;
-background:var(--green);color:#052317
-}
+.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:bold;background:var(--green);color:#052317}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.secondary{background:#1a382c;color:white;border:1px solid #315344}
 .btn.danger{background:#51252a;color:#ffdadd;border:1px solid #873d45}
-.btn.small{padding:8px 10px;font-size:11px}
-.full{width:100%;margin-top:17px}
+.btn.small{padding:8px 10px;font-size:11px}.full{width:100%;margin-top:17px}
 .msg{font-size:12px;color:#f5c56b;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
 .heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 18px}
-.heading h2{margin:0;font-size:24px}
-.heading p{color:var(--muted);font-size:12px}
+.heading h2{margin:0;font-size:24px}.heading p{color:var(--muted);font-size:12px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:17px}
-.stat{padding:17px}
-.stat .k{color:var(--muted);font-size:11px}
-.stat .v{font-size:28px;font-weight:900;margin-top:9px}
-.stat .hint{font-size:11px;color:var(--green);margin-top:5px}
+.stat{padding:17px}.stat .k{color:var(--muted);font-size:11px}
+.stat .v{font-size:28px;font-weight:900;margin-top:9px}.stat .hint{font-size:11px;color:var(--green);margin-top:5px}
 .grid{display:grid;grid-template-columns:1fr 1.4fr;gap:15px}
-.section{padding:18px}
-.section h3{margin:0 0 5px;font-size:16px}
+.section{padding:18px}.section h3{margin:0 0 5px;font-size:16px}
 .desc{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-.span2{grid-column:1/-1}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.span2{grid-column:1/-1}
 .note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;padding:10px;background:#0a1b14;border-radius:10px;border:1px solid #203b2e}
-.tablewrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:560px}
-th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #203b30;font-size:12px}
-th{color:var(--muted)}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #203b30;font-size:12px;vertical-align:top}
+th{color:var(--muted)}td{overflow-wrap:anywhere}
 .status{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:bold;text-transform:uppercase}
-.active{background:#123f2c;color:#6ff0ac}
-.suspended{background:#48252a;color:#ff9ba0}
-.inactive{background:#303a35;color:#c2cec6}
+.active{background:#123f2c;color:#6ff0ac}.suspended{background:#48252a;color:#ff9ba0}.inactive{background:#303a35;color:#c2cec6}
 .empty{color:var(--muted);text-align:center;padding:25px;font-size:13px}
-.toolbar{display:flex;gap:8px;align-items:center}
-.toolbar input{max-width:230px;padding:10px}
+.toolbar{display:flex;gap:8px;align-items:center}.toolbar input{max-width:230px;padding:10px}
 .footer{text-align:center;color:#688576;font-size:11px;padding:25px}
-
-/* MANAGEMENT MODAL */
-.modal{
-position:fixed;inset:0;z-index:99;background:#000b;
-display:flex;align-items:center;justify-content:center;padding:15px;
-overflow-y:auto
-}
-.modalbox{
-width:100%;max-width:570px;max-height:94vh;overflow-y:auto;
-background:#10231d;border:1px solid #315344;border-radius:18px;padding:21px;
-box-shadow:0 20px 80px #0009
-}
+.clubname{color:var(--green);font-weight:bold;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.clubname:hover{color:#a2ffd0}
+.detailgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:15px}
+.detailstat{padding:15px}.detailstat .k{font-size:10px;color:var(--muted)}.detailstat .v{font-size:24px;font-weight:bold;margin-top:8px}
+.detailsection{padding:17px;margin-top:14px}
+.detailsection h3{margin:0 0 12px}
+.infoGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.infoItem{background:#091b14;border:1px solid #254238;border-radius:10px;padding:12px;min-width:0}
+.infoItem small{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}
+.infoItem strong{font-size:13px;overflow-wrap:anywhere}
+.modal{position:fixed;inset:0;z-index:99;background:#000b;display:flex;align-items:center;justify-content:center;padding:15px;overflow-y:auto}
+.modalbox{width:100%;max-width:570px;max-height:94vh;overflow-y:auto;background:#10231d;border:1px solid #315344;border-radius:18px;padding:21px;box-shadow:0 20px 80px #0009}
 .modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.modalhead h2{font-size:19px;margin:0}
-.closebtn{background:#263c32;color:white;border:0;border-radius:8px;padding:8px 12px}
+.modalhead h2{font-size:19px;margin:0}.closebtn{background:#263c32;color:white;border:0;border-radius:8px;padding:8px 12px}
 .divider{border:0;border-top:1px solid #29483a;margin:18px 0}
 .modalnote{font-size:11px;color:#a9c3b3;line-height:1.6;margin-top:8px}
-@media(max-width:850px){
-.stats{grid-template-columns:repeat(2,1fr)}
-.grid{grid-template-columns:1fr}
-.heading{align-items:flex-start;flex-direction:column}
-.toolbar{width:100%}
-.toolbar input{max-width:none;flex:1}
-}
-@media(max-width:520px){
-.wrap{padding:13px}
-.brand h1{font-size:13px}
-.logo{width:40px;height:40px}
-.login{padding:21px;margin:5vh auto}
-.stat{padding:13px}
-.stat .v{font-size:24px}
-.section{padding:14px}
-.formgrid{grid-template-columns:1fr}
-.span2{grid-column:auto}
-.heading h2{font-size:21px}
-.modalbox{padding:15px}
-}
+@media(max-width:850px){.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.heading{align-items:flex-start;flex-direction:column}.toolbar{width:100%}.toolbar input{max-width:none;flex:1}.detailgrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.wrap{padding:13px}.brand h1{font-size:13px}.logo{width:40px;height:40px}.login{padding:21px;margin:5vh auto}.stat{padding:13px}.stat .v{font-size:24px}.section{padding:14px}.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}.heading h2{font-size:21px}.modalbox{padding:15px}.detailgrid{grid-template-columns:repeat(2,1fr)}.infoGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <header class="top">
-<div class="brand">
-<div class="logo">G</div>
-<div>
-<h1>GFC KABADDI PRO 2026</h1>
-<p>COMMERCIAL SPORTS PLATFORM</p>
-</div>
-</div>
-<div class="pill" id="topState">SUPER ADMIN PORTAL</div>
+ <div class="brand"><div class="logo">G</div><div><h1>GFC KABADDI PRO 2026</h1><p>COMMERCIAL SPORTS PLATFORM</p></div></div>
+ <div class="pill" id="topState">SUPER ADMIN PORTAL</div>
 </header>
 
 <section id="loginView" class="panel login">
-<h2>Super Admin Login</h2>
-<p class="sub">Login to manage clients, subscriptions and live matches.</p>
-<form id="loginForm">
-<label>Admin Email</label>
-<input id="email" type="email" required autocomplete="username" placeholder="Admin Email">
-<label>Password</label>
-<input id="password" type="password" required autocomplete="current-password" placeholder="Password">
-<button class="btn full" id="loginBtn" type="submit">LOGIN TO DASHBOARD</button>
-</form>
-<div class="msg" id="loginMsg"></div>
+ <h2>Super Admin Login</h2><p class="sub">Login to manage clubs, subscriptions and matches.</p>
+ <form id="loginForm">
+  <label>Admin Email</label><input id="email" type="email" required autocomplete="username" placeholder="Admin Email">
+  <label>Password</label><input id="password" type="password" required autocomplete="current-password" placeholder="Password">
+  <button class="btn full" id="loginBtn" type="submit">LOGIN TO DASHBOARD</button>
+ </form><div class="msg" id="loginMsg"></div>
 </section>
 
 <main id="appView" class="hidden">
-<div class="heading">
-<div>
-<h2>Super Admin Dashboard</h2>
-<p id="welcome">Platform Overview</p>
-</div>
-<div class="toolbar">
-<span class="pill">Owner Control</span>
-<button class="btn secondary small" id="refreshBtn">Refresh</button>
-<button class="btn danger small" id="logoutBtn">Logout</button>
-</div>
-</div>
+ <div id="dashboardView">
+  <div class="heading">
+   <div><h2>Super Admin Dashboard</h2><p id="welcome">Platform Overview</p></div>
+   <div class="toolbar"><span class="pill">Owner Control</span><button class="btn secondary small" id="refreshBtn">Refresh</button><button class="btn danger small" id="logoutBtn">Logout</button></div>
+  </div>
+  <section class="stats">
+   <div class="panel stat"><div class="k">TOTAL CLIENTS</div><div class="v" id="totalClients">—</div><div class="hint">Registered organizations</div></div>
+   <div class="panel stat"><div class="k">ACTIVE CLIENTS</div><div class="v" id="activeClients">—</div><div class="hint">Currently enabled</div></div>
+   <div class="panel stat"><div class="k">TOURNAMENTS</div><div class="v" id="totalTournaments">—</div><div class="hint">All tournaments</div></div>
+   <div class="panel stat"><div class="k">LIVE MATCHES</div><div class="v" id="liveMatches">—</div><div class="hint">Currently live</div></div>
+  </section>
+  <div class="grid">
+   <section class="panel section">
+    <h3>Create New Client</h3><p class="desc">Create a club account and assign a subscription.</p>
+    <form id="clientForm"><div class="formgrid">
+     <div class="span2"><label>Club / Organization Name *</label><input id="clientName" required placeholder="Bolpur Kabaddi Club"></div>
+     <div><label>Unique Slug *</label><input id="clientSlug" required placeholder="bolpur-kabaddi"></div>
+     <div><label>Phone</label><input id="clientPhone" placeholder="+91..."></div>
+     <div class="span2"><label>Contact Email</label><input id="clientEmail" type="email" placeholder="club@example.com"></div>
+     <div class="span2"><label>Owner Auth User UUID *</label><input id="ownerId" required placeholder="Paste Supabase Auth UUID"></div>
+     <div><label>Subscription Plan *</label><select id="plan"><option>Single Tournament</option><option>Monthly</option><option>Quarterly</option><option>Yearly</option><option>Custom</option></select></div>
+     <div><label>Amount (INR) *</label><input id="amount" type="number" min="0" step="0.01" value="499" required></div>
+     <div class="span2"><label>Subscription Duration (Days) *</label><input id="days" type="number" min="1" max="3650" value="30" required></div>
+    </div>
+    <div class="note"><b>Important:</b> আগে Supabase Authentication → Users থেকে Client Owner-এর Auth User তৈরি করতে হবে। তারপর তার UUID এখানে দিতে হবে।</div>
+    <button class="btn full" id="createBtn" type="submit">CREATE CLIENT ACCOUNT</button></form>
+    <div class="msg" id="clientMsg"></div>
+   </section>
+   <section class="panel section">
+    <h3>Client Organizations</h3><p class="desc">Club-এর নাম ক্লিক করে Club Details, Tournament, Team, Player ও Match দেখুন।</p>
+    <div class="toolbar" style="margin-bottom:12px"><input id="searchClients" placeholder="Search club..."></div>
+    <div class="tablewrap"><table><thead><tr><th>CLUB</th><th>STATUS</th><th>CREATED</th><th>ACTION</th></tr></thead><tbody id="clientsBody"><tr><td colspan="4" class="empty">Loading clubs...</td></tr></tbody></table></div>
+    <div class="msg" id="listMsg"></div>
+   </section>
+  </div>
+  <section class="panel section" style="margin-top:16px">
+   <h3>Subscription Overview</h3><p class="desc">Latest client subscriptions.</p>
+   <div class="tablewrap"><table><thead><tr><th>CLIENT ID</th><th>PLAN</th><th>AMOUNT</th><th>END DATE</th><th>STATUS</th></tr></thead><tbody id="subsBody"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody></table></div>
+  </section>
+ </div>
 
-<section class="stats">
-<div class="panel stat"><div class="k">TOTAL CLIENTS</div><div class="v" id="totalClients">—</div><div class="hint">Registered organizations</div></div>
-<div class="panel stat"><div class="k">ACTIVE CLIENTS</div><div class="v" id="activeClients">—</div><div class="hint">Currently enabled</div></div>
-<div class="panel stat"><div class="k">TOURNAMENTS</div><div class="v" id="totalTournaments">—</div><div class="hint">All tournaments</div></div>
-<div class="panel stat"><div class="k">LIVE MATCHES</div><div class="v" id="liveMatches">—</div><div class="hint">Currently live</div></div>
-</section>
-
-<div class="grid">
-<section class="panel section">
-<h3>Create New Client</h3>
-<p class="desc">Create a club account and assign a subscription.</p>
-<form id="clientForm">
-<div class="formgrid">
-<div class="span2"><label>Club / Organization Name *</label><input id="clientName" required placeholder="Bolpur Kabaddi Club"></div>
-<div><label>Unique Slug *</label><input id="clientSlug" required placeholder="bolpur-kabaddi"></div>
-<div><label>Phone</label><input id="clientPhone" placeholder="+91..."></div>
-<div class="span2"><label>Contact Email</label><input id="clientEmail" type="email" placeholder="club@example.com"></div>
-<div class="span2"><label>Owner Auth User UUID *</label><input id="ownerId" required placeholder="Paste Supabase Auth UUID"></div>
-<div><label>Subscription Plan *</label><select id="plan"><option>Single Tournament</option><option>Monthly</option><option>Quarterly</option><option>Yearly</option><option>Custom</option></select></div>
-<div><label>Amount (INR) *</label><input id="amount" type="number" min="0" step="0.01" value="499" required></div>
-<div class="span2"><label>Subscription Duration (Days) *</label><input id="days" type="number" min="1" max="3650" value="30" required></div>
-</div>
-<div class="note"><b>Important:</b> আগে Supabase Authentication → Users থেকে Client Owner-এর Auth User তৈরি করতে হবে। তারপর তার UUID এখানে দিতে হবে। এই ফর্ম নিজে Auth User তৈরি করে না।</div>
-<button class="btn full" id="createBtn" type="submit">CREATE CLIENT ACCOUNT</button>
-</form>
-<div class="msg" id="clientMsg"></div>
-</section>
-
-<section class="panel section">
-<h3>Client Organizations</h3>
-<p class="desc">View, edit, activate or suspend client organizations and owner login accounts.</p>
-<div class="toolbar" style="margin-bottom:12px"><input id="searchClients" placeholder="Search client..."></div>
-<div class="tablewrap">
-<table>
-<thead><tr><th>CLIENT</th><th>STATUS</th><th>CREATED</th><th>ACTION</th></tr></thead>
-<tbody id="clientsBody"><tr><td colspan="4" class="empty">Loading clients...</td></tr></tbody>
-</table>
-</div>
-<div class="msg" id="listMsg"></div>
-</section>
-</div>
-
-<section class="panel section" style="margin-top:16px">
-<h3>Subscription Overview</h3>
-<p class="desc">Latest client subscriptions.</p>
-<div class="tablewrap">
-<table>
-<thead><tr><th>CLIENT ID</th><th>PLAN</th><th>AMOUNT</th><th>END DATE</th><th>STATUS</th></tr></thead>
-<tbody id="subsBody"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody>
-</table>
-</div>
-</section>
+ <div id="clubDetailsView" class="hidden">
+  <div class="heading">
+   <div><h2 id="detailClubTitle">Club Details</h2><p id="detailClubSubtitle">Club overview</p></div>
+   <div class="toolbar"><button class="btn secondary small" id="backBtn">← Back to Clubs</button><button class="btn secondary small" id="detailRefreshBtn">Refresh</button></div>
+  </div>
+  <section class="detailgrid">
+   <div class="panel detailstat"><div class="k">TOURNAMENTS</div><div class="v" id="clubTournamentCount">—</div></div>
+   <div class="panel detailstat"><div class="k">TEAMS</div><div class="v" id="clubTeamCount">—</div></div>
+   <div class="panel detailstat"><div class="k">PLAYERS</div><div class="v" id="clubPlayerCount">—</div></div>
+   <div class="panel detailstat"><div class="k">TOTAL MATCHES</div><div class="v" id="clubMatchCount">—</div></div>
+   <div class="panel detailstat"><div class="k">LIVE MATCHES</div><div class="v" id="clubLiveCount">—</div></div>
+  </section>
+  <section class="panel detailsection">
+   <h3>Club Information</h3><div class="infoGrid" id="clubInfo"></div>
+   <div style="margin-top:14px"><button class="btn small" id="detailManageBtn">Edit Club / Owner Login</button></div>
+  </section>
+  <section class="panel detailsection"><h3>Owner Information</h3><div class="infoGrid" id="ownerInfo"><div class="empty">Loading owner...</div></div></section>
+  <section class="panel detailsection"><h3>Tournaments</h3><div class="tablewrap"><table><thead id="tournamentsHead"></thead><tbody id="tournamentsBody"></tbody></table></div></section>
+  <section class="panel detailsection"><h3>Teams</h3><div class="tablewrap"><table><thead id="teamsHead"></thead><tbody id="teamsBody"></tbody></table></div></section>
+  <section class="panel detailsection"><h3>Players</h3><div class="tablewrap"><table><thead id="playersHead"></thead><tbody id="playersBody"></tbody></table></div></section>
+  <section class="panel detailsection"><h3>Matches</h3><div class="tablewrap"><table><thead id="matchesHead"></thead><tbody id="matchesBody"></tbody></table></div></section>
+  <div class="msg" id="detailMsg"></div>
+ </div>
 </main>
-
 <div class="footer">GFC KABADDI PRO 2026 · Commercial Multi-Client Platform</div>
 </div>
 
-<!-- CLIENT / OWNER MANAGEMENT MODAL -->
 <div id="manageModal" class="modal hidden">
-<div class="modalbox">
-<div class="modalhead">
-<h2>Manage Client & Owner</h2>
-<button class="closebtn" id="closeModal" type="button">✕</button>
-</div>
-<p class="desc">Update club information and Owner login credentials.</p>
-
-<form id="manageForm">
-<input type="hidden" id="manageClientId">
-<input type="hidden" id="manageUserId">
-
-<label>Club / Organization Name *</label>
-<input id="manageName" required>
-
-<label>Unique Slug *</label>
-<input id="manageSlug" required>
-
-<label>Contact Email</label>
-<input id="manageContactEmail" type="email">
-
-<label>Phone</label>
-<input id="managePhone">
-
-<hr class="divider">
-
-<h3>Owner Login Information</h3>
-<label>Current Login Email</label>
-<input id="manageLoginEmail" type="email" required>
-
-<label>New Password</label>
-<input id="managePassword" type="password" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password">
-<p class="modalnote">নতুন Password না দিলে পুরোনো Password অপরিবর্তিত থাকবে। Password কমপক্ষে ৮ অক্ষরের হতে হবে।</p>
-
-<button class="btn full" id="saveManageBtn" type="submit">SAVE CHANGES</button>
-</form>
-<div class="msg" id="manageMsg"></div>
-</div>
+ <div class="modalbox">
+  <div class="modalhead"><h2>Manage Client & Owner</h2><button class="closebtn" id="closeModal" type="button">✕</button></div>
+  <p class="desc">Update club information and Owner login credentials.</p>
+  <form id="manageForm" class="hidden">
+   <input type="hidden" id="manageClientId"><input type="hidden" id="manageUserId">
+   <label>Club / Organization Name *</label><input id="manageName" required>
+   <label>Unique Slug *</label><input id="manageSlug" required>
+   <label>Contact Email</label><input id="manageContactEmail" type="email">
+   <label>Phone</label><input id="managePhone">
+   <hr class="divider"><h3>Owner Login Information</h3>
+   <label>Current Login Email</label><input id="manageLoginEmail" type="email" required>
+   <label>New Password</label><input id="managePassword" type="password" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password">
+   <p class="modalnote">নতুন Password না দিলে পুরোনো Password অপরিবর্তিত থাকবে। Password কমপক্ষে ৮ অক্ষরের হতে হবে। বর্তমান Password দেখা যাবে না।</p>
+   <button class="btn full" id="saveManageBtn" type="submit">SAVE CHANGES</button>
+  </form>
+  <div class="msg" id="manageMsg"></div>
+ </div>
 </div>
 
 <script>
 (() => {
 "use strict";
+const SUPABASE_URL="https://wpefjtjcnvdnbsenfukg.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+const FUNCTION_URL=SUPABASE_URL+"/functions/v1/super-admin-update-client";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+let allClients=[],currentClubId=null,busy=false;
 
-const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
-const FUNCTION_URL = SUPABASE_URL + "/functions/v1/super-admin-update-client";
-
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-let allClients = [];
-let busy = false;
-
-const $ = id => document.getElementById(id);
-
-const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-
-const showMsg = (id,text,error=false) => {
-$(id).textContent = text;
-$(id).style.color = error ? "#ff9ba0" : "#f5c56b";
-};
-
-function dateText(value){
-if(!value)return "—";
-const date = new Date(value);
-if(isNaN(date.getTime()))return "—";
-return date.toLocaleString("en-IN",{
-timeZone:"Asia/Kolkata",day:"2-digit",month:"short",
-year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true
-});
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const showMsg=(id,text,error=false)=>{$(id).textContent=text;$(id).style.color=error?"#ff9ba0":"#f5c56b";};
+function dateText(v){if(!v)return "—";const d=new Date(v);return isNaN(d)? "—":d.toLocaleString("en-IN",{timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}
+function showLogin(){$("loginView").classList.remove("hidden");$("appView").classList.add("hidden");$("topState").textContent="SUPER ADMIN PORTAL";}
+function showApp(email){$("loginView").classList.add("hidden");$("appView").classList.remove("hidden");$("topState").textContent="ADMIN VERIFIED";$("welcome").textContent="Signed in as "+(email||"Super Admin");}
+async function edgeCall(payload){
+ const {data:{session},error}=await db.auth.getSession();if(error)throw error;if(!session)throw new Error("Admin session expired. Please login again.");
+ const response=await fetch(FUNCTION_URL,{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+session.access_token},body:JSON.stringify(payload)});
+ const result=await response.json().catch(()=>({error:"Invalid Edge Function response"}));
+ if(!response.ok||result.error)throw new Error(result.error||"Server request failed.");
+ return result;
 }
-
-function showLogin(){
-$("loginView").classList.remove("hidden");
-$("appView").classList.add("hidden");
-$("topState").textContent="SUPER ADMIN PORTAL";
-}
-
-function showApp(email){
-$("loginView").classList.add("hidden");
-$("appView").classList.remove("hidden");
-$("topState").textContent="ADMIN VERIFIED";
-$("welcome").textContent="Signed in as "+(email||"Super Admin");
-}
-
 async function verifyAdmin(){
-const {data:{user},error:userError}=await db.auth.getUser();
-if(userError)throw userError;
-if(!user)return false;
-
-const {data,error}=await db.rpc("is_platform_admin");
-if(error)throw error;
-if(data!==true)throw new Error("This account is not registered as Platform Super Admin.");
-
-showApp(user.email);
-await loadDashboard();
-return true;
+ const {data:{user},error:userError}=await db.auth.getUser();if(userError)throw userError;if(!user)return false;
+ const {data,error}=await db.rpc("is_platform_admin");if(error)throw error;if(data!==true)throw new Error("This account is not registered as Platform Super Admin.");
+ showApp(user.email);await loadDashboard();return true;
 }
-
 async function loadDashboard(){
-showMsg("listMsg","Refreshing platform data...");
-
-const [clientsRes,subsRes,tournamentsRes,matchesRes]=await Promise.all([
-db.from("clients")
-.select("id,name,slug,contact_email,phone,status,created_at")
-.order("created_at",{ascending:false}),
-
-db.from("subscriptions")
-.select("id,client_id,plan_name,amount,end_date,status,created_at")
-.order("created_at",{ascending:false}).limit(100),
-
-db.from("tournaments").select("id",{count:"exact",head:true}),
-
-db.from("matches").select("id",{count:"exact",head:true})
-.eq("match_status","live")
-]);
-
-for(const r of [clientsRes,subsRes,tournamentsRes,matchesRes]){
-if(r.error)throw r.error;
+ showMsg("listMsg","Refreshing platform data...");
+ const [c,s,t,m]=await Promise.all([
+  db.from("clients").select("id,name,slug,contact_email,phone,status,created_at").order("created_at",{ascending:false}),
+  db.from("subscriptions").select("id,client_id,plan_name,amount,end_date,status,created_at").order("created_at",{ascending:false}).limit(100),
+  db.from("tournaments").select("id",{count:"exact",head:true}),
+  db.from("matches").select("id",{count:"exact",head:true}).eq("match_status","live")
+ ]);
+ for(const r of [c,s,t,m])if(r.error)throw r.error;
+ allClients=c.data||[];
+ $("totalClients").textContent=allClients.length;
+ $("activeClients").textContent=allClients.filter(x=>x.status==="active").length;
+ $("totalTournaments").textContent=t.count??0;$("liveMatches").textContent=m.count??0;
+ renderClients();renderSubscriptions(s.data||[]);showMsg("listMsg","Data updated successfully.");
 }
-
-allClients=clientsRes.data||[];
-$("totalClients").textContent=allClients.length;
-$("activeClients").textContent=allClients.filter(c=>c.status==="active").length;
-$("totalTournaments").textContent=tournamentsRes.count??0;
-$("liveMatches").textContent=matchesRes.count??0;
-
-renderClients();
-renderSubscriptions(subsRes.data||[]);
-showMsg("listMsg","Data updated successfully.");
-}
-
 function renderClients(){
-const term=$("searchClients").value.trim().toLowerCase();
-const rows=allClients.filter(c=>
-(c.name+" "+c.slug+" "+(c.contact_email||"")+" "+(c.phone||"")).toLowerCase().includes(term)
-);
-
-$("clientsBody").innerHTML=rows.length?rows.map(c=>`
-<tr>
-<td><b>${esc(c.name)}</b><br><span style="color:#8eaa9a">${esc(c.slug)}</span></td>
-<td><span class="status ${esc(c.status)}">${esc(c.status)}</span></td>
-<td>${dateText(c.created_at)}</td>
-<td>
-<button class="btn secondary small" data-manage="${esc(c.id)}">Manage</button>
-${c.status==="active"
-?`<button class="btn danger small" data-client="${esc(c.id)}" data-status="suspended">Suspend</button>`
-:`<button class="btn secondary small" data-client="${esc(c.id)}" data-status="active">Activate</button>`}
-</td>
-</tr>`).join("")
-:`<tr><td colspan="4" class="empty">No clients found.</td></tr>`;
+ const term=$("searchClients").value.trim().toLowerCase();
+ const rows=allClients.filter(c=>(c.name+" "+c.slug+" "+(c.contact_email||"")+" "+(c.phone||"")).toLowerCase().includes(term));
+ $("clientsBody").innerHTML=rows.length?rows.map(c=>`
+ <tr><td><span class="clubname" data-open-club="${esc(c.id)}">${esc(c.name)}</span><br><span style="color:#8eaa9a">${esc(c.slug)}</span></td>
+ <td><span class="status ${esc(c.status)}">${esc(c.status)}</span></td><td>${dateText(c.created_at)}</td>
+ <td><button class="btn secondary small" data-manage="${esc(c.id)}">Manage</button>
+ ${c.status==="active"?`<button class="btn danger small" data-client="${esc(c.id)}" data-status="suspended">Suspend</button>`:`<button class="btn secondary small" data-client="${esc(c.id)}" data-status="active">Activate</button>`}</td></tr>`).join("")
+ :`<tr><td colspan="4" class="empty">No clubs found.</td></tr>`;
 }
-
 function renderSubscriptions(rows){
-$("subsBody").innerHTML=rows.length?rows.map(s=>`
-<tr>
-<td>${esc(String(s.client_id).slice(0,8))}...</td>
-<td>${esc(s.plan_name)}</td>
-<td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
-<td>${dateText(s.end_date)}</td>
-<td><span class="status ${s.status==="active"?"active":"suspended"}">${esc(s.status)}</span></td>
-</tr>`).join("")
-:`<tr><td colspan="5" class="empty">No subscriptions yet.</td></tr>`;
+ $("subsBody").innerHTML=rows.length?rows.map(s=>`<tr><td>${esc(String(s.client_id).slice(0,8))}...</td><td>${esc(s.plan_name)}</td><td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td><td>${dateText(s.end_date)}</td><td><span class="status ${s.status==="active"?"active":"suspended"}">${esc(s.status)}</span></td></tr>`).join(""):`<tr><td colspan="5" class="empty">No subscriptions yet.</td></tr>`;
 }
-
-// CREATE CLIENT
 $("clientForm").addEventListener("submit",async e=>{
-e.preventDefault();
-const btn=$("createBtn");
-btn.disabled=true;
-btn.textContent="CREATING CLIENT...";
-showMsg("clientMsg","Creating client and subscription...");
-
-const name=$("clientName").value.trim();
-const slug=$("clientSlug").value.trim().toLowerCase()
-.replace(/[^a-z0-9-]/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
-
-const args={
-p_name:name,
-p_slug:slug,
-p_email:$("clientEmail").value.trim(),
-p_phone:$("clientPhone").value.trim(),
-p_owner_user_id:$("ownerId").value.trim(),
-p_plan_name:$("plan").value,
-p_amount:Number($("amount").value),
-p_days:Number($("days").value)
-};
-
-try{
-const {data,error}=await db.rpc("create_client_account",args);
-if(error)throw error;
-
-showMsg("clientMsg","Client created successfully. Client ID: "+data);
-$("clientForm").reset();
-$("amount").value="499";
-$("days").value="30";
-await loadDashboard();
-}catch(err){
-showMsg("clientMsg",err.message||"Client creation failed.",true);
-}finally{
-btn.disabled=false;
-btn.textContent="CREATE CLIENT ACCOUNT";
-}
+ e.preventDefault();const btn=$("createBtn");btn.disabled=true;btn.textContent="CREATING CLIENT...";
+ showMsg("clientMsg","Creating client and subscription...");
+ const slug=$("clientSlug").value.trim().toLowerCase().replace(/[^a-z0-9-]/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+ const args={p_name:$("clientName").value.trim(),p_slug:slug,p_email:$("clientEmail").value.trim(),p_phone:$("clientPhone").value.trim(),p_owner_user_id:$("ownerId").value.trim(),p_plan_name:$("plan").value,p_amount:Number($("amount").value),p_days:Number($("days").value)};
+ try{const {data,error}=await db.rpc("create_client_account",args);if(error)throw error;showMsg("clientMsg","Client created successfully. Client ID: "+data);$("clientForm").reset();$("amount").value="499";$("days").value="30";await loadDashboard();}
+ catch(err){showMsg("clientMsg",err.message||"Client creation failed.",true);}
+ finally{btn.disabled=false;btn.textContent="CREATE CLIENT ACCOUNT";}
 });
 
-// OPEN MANAGEMENT MODAL
-async function openManage(clientId){
-showMsg("manageMsg","Loading owner information...");
-$("manageModal").classList.remove("hidden");
-$("manageForm").classList.add("hidden");
-
-try{
-const client=allClients.find(c=>c.id===clientId);
-if(!client)throw new Error("Client not found.");
-
-const {data:member,error:memberError}=await db
-.from("client_members")
-.select("user_id,role")
-.eq("client_id",clientId)
-.eq("role","owner")
-.maybeSingle();
-
-if(memberError)throw memberError;
-if(!member)throw new Error("Owner membership not found for this client.");
-
-const {data:{session},error:sessionError}=await db.auth.getSession();
-if(sessionError)throw sessionError;
-if(!session)throw new Error("Admin session expired. Please login again.");
-
-const {data:authData,error:authError}=await db.auth.admin;
- // Admin Auth API is intentionally not available in the browser.
- // Login email is loaded securely through the Edge Function in the next step.
- // The owner email is entered manually if it is not already known.
-
-$("manageClientId").value=client.id;
-$("manageUserId").value=member.user_id;
-$("manageName").value=client.name||"";
-$("manageSlug").value=client.slug||"";
-$("manageContactEmail").value=client.contact_email||"";
-$("managePhone").value=client.phone||"";
-$("manageLoginEmail").value=client.contact_email||"";
-$("managePassword").value="";
-
-$("manageForm").classList.remove("hidden");
-showMsg("manageMsg","Owner account linked. Enter the correct Owner Login Email before saving.");
-}catch(err){
-showMsg("manageMsg",err.message||"Unable to load owner.",true);
+// Club Details: table fields are generated from returned rows, so schema-specific
+// column names are displayed without assuming a fixed set of columns.
+const preferredFields={
+ tournaments:["name","title","slug","status","start_date","end_date","created_at"],
+ teams:["name","team_name","short_name","tournament_id","created_at"],
+ players:["name","player_name","jersey_number","position","team_id","created_at"],
+ matches:["match_name","title","match_status","status","team_a_id","team_b_id","start_time","created_at"]
+};
+function displayValue(key,value){
+ if(value===null||value===undefined||value==="")return "—";
+ if(typeof value==="object")return JSON.stringify(value);
+ if(/date|time|created_at|updated_at/i.test(key))return dateText(value);
+ return String(value);
 }
+function renderDataTable(prefix,rows,kind){
+ const head=$(prefix+"Head"),body=$(prefix+"Body");
+ if(!rows||!rows.length){head.innerHTML="";body.innerHTML='<tr><td class="empty">No data found for this club.</td></tr>';return;}
+ const keys=preferredFields[kind].filter(k=>rows.some(r=>Object.prototype.hasOwnProperty.call(r,k)));
+ const extra=Object.keys(rows[0]).filter(k=>!keys.includes(k)&&!["client_id"].includes(k));
+ const cols=[...keys,...extra].slice(0,7);
+ head.innerHTML="<tr>"+cols.map(k=>"<th>"+esc(k.replace(/_/g," ").toUpperCase())+"</th>").join("")+"</tr>";
+ body.innerHTML=rows.map(r=>"<tr>"+cols.map(k=>"<td>"+esc(displayValue(k,r[k]))+"</td>").join("")+"</tr>").join("");
 }
-
+function infoItem(label,value){return `<div class="infoItem"><small>${esc(label)}</small><strong>${esc(value||"—")}</strong></div>`;}
+async function openClubDetails(clientId){
+ const club=allClients.find(c=>c.id===clientId);if(!club)throw new Error("Club not found.");
+ currentClubId=clientId;$("dashboardView").classList.add("hidden");$("clubDetailsView").classList.remove("hidden");
+ $("detailClubTitle").textContent=club.name;$("detailClubSubtitle").textContent="Club ID: "+club.id;
+ $("clubInfo").innerHTML=infoItem("CLUB NAME",club.name)+infoItem("SLUG",club.slug)+infoItem("CONTACT EMAIL",club.contact_email)+infoItem("PHONE",club.phone)+infoItem("STATUS",club.status)+infoItem("CREATED",dateText(club.created_at));
+ ["tournaments","teams","players","matches"].forEach(k=>{ $(k+"Head").innerHTML="";$(k+"Body").innerHTML='<tr><td class="empty">Loading...</td></tr>';});
+ $("ownerInfo").innerHTML='<div class="empty">Loading owner information...</div>';
+ showMsg("detailMsg","Loading club records...");
+ try{
+  const [t,tm,p,m,owner]=await Promise.all([
+   db.from("tournaments").select("*").eq("client_id",clientId),
+   db.from("teams").select("*").eq("client_id",clientId),
+   db.from("players").select("*").eq("client_id",clientId),
+   db.from("matches").select("*").eq("client_id",clientId),
+   edgeCall({action:"get",client_id:clientId})
+  ]);
+  for(const r of [t,tm,p,m])if(r.error)throw r.error;
+  const tr=t.data||[],teams=tm.data||[],players=p.data||[],matches=m.data||[];
+  $("clubTournamentCount").textContent=tr.length;$("clubTeamCount").textContent=teams.length;$("clubPlayerCount").textContent=players.length;$("clubMatchCount").textContent=matches.length;
+  $("clubLiveCount").textContent=matches.filter(x=>String(x.match_status||x.status||"").toLowerCase()==="live").length;
+  renderDataTable("tournaments",tr,"tournaments");renderDataTable("teams",teams,"teams");renderDataTable("players",players,"players");renderDataTable("matches",matches,"matches");
+  const o=owner.owner||{};
+  $("ownerInfo").innerHTML=infoItem("OWNER USER ID",o.user_id)+infoItem("OWNER LOGIN EMAIL",o.email)+infoItem("OWNER PHONE",o.phone)+infoItem("MEMBERSHIP ROLE",o.role);
+  showMsg("detailMsg","Club information loaded successfully.");
+ }catch(err){showMsg("detailMsg",err.message||"Unable to load club details.",true);$("ownerInfo").innerHTML='<div class="empty">Owner details could not be loaded.</div>';}
+}
 $("clientsBody").addEventListener("click",async e=>{
-const manageBtn=e.target.closest("button[data-manage]");
-if(manageBtn){
-openManage(manageBtn.dataset.manage);
-return;
-}
-
-const btn=e.target.closest("button[data-client]");
-if(!btn)return;
-
-btn.disabled=true;
-try{
-const {error}=await db.from("clients")
-.update({status:btn.dataset.status})
-.eq("id",btn.dataset.client);
-if(error)throw error;
-await loadDashboard();
-}catch(err){
-showMsg("listMsg",err.message||"Status update failed.",true);
-btn.disabled=false;
-}
+ const open=e.target.closest("[data-open-club]");
+ if(open){try{await openClubDetails(open.dataset.openClub);}catch(err){showMsg("listMsg",err.message,true);}return;}
+ const manage=e.target.closest("button[data-manage]");
+ if(manage){openManage(manage.dataset.manage);return;}
+ const btn=e.target.closest("button[data-client]");if(!btn)return;
+ btn.disabled=true;
+ try{const {error}=await db.from("clients").update({status:btn.dataset.status}).eq("id",btn.dataset.client);if(error)throw error;await loadDashboard();}
+ catch(err){showMsg("listMsg",err.message||"Status update failed.",true);btn.disabled=false;}
 });
+$("backBtn").addEventListener("click",()=>{$("clubDetailsView").classList.add("hidden");$("dashboardView").classList.remove("hidden");currentClubId=null;});
+$("detailRefreshBtn").addEventListener("click",async()=>{if(currentClubId)await openClubDetails(currentClubId);});
+$("detailManageBtn").addEventListener("click",()=>{if(currentClubId)openManage(currentClubId);});
 
-// SAVE CLIENT + OWNER
+async function openManage(clientId){
+ showMsg("manageMsg","Loading owner information...");$("manageModal").classList.remove("hidden");$("manageForm").classList.add("hidden");
+ try{
+  const client=allClients.find(c=>c.id===clientId);if(!client)throw new Error("Client not found.");
+  const result=await edgeCall({action:"get",client_id:clientId});
+  const owner=result.owner||{};
+  if(!owner.user_id)throw new Error("Owner membership not found for this client.");
+  $("manageClientId").value=client.id;$("manageUserId").value=owner.user_id;
+  $("manageName").value=client.name||"";$("manageSlug").value=client.slug||"";
+  $("manageContactEmail").value=client.contact_email||"";$("managePhone").value=client.phone||"";
+  $("manageLoginEmail").value=owner.email||"";$("managePassword").value="";
+  $("manageForm").classList.remove("hidden");showMsg("manageMsg","Owner account loaded securely.");
+ }catch(err){showMsg("manageMsg",err.message||"Unable to load owner.",true);}
+}
 $("manageForm").addEventListener("submit",async e=>{
-e.preventDefault();
-const btn=$("saveManageBtn");
-btn.disabled=true;
-btn.textContent="SAVING...";
-showMsg("manageMsg","Updating client and owner account...");
-
-try{
-const {data:{session},error:sessionError}=await db.auth.getSession();
-if(sessionError)throw sessionError;
-if(!session)throw new Error("Admin session expired. Please login again.");
-
-const payload={
-client_id:$("manageClientId").value,
-user_id:$("manageUserId").value,
-name:$("manageName").value.trim(),
-slug:$("manageSlug").value.trim(),
-contact_email:$("manageContactEmail").value.trim(),
-phone:$("managePhone").value.trim(),
-login_email:$("manageLoginEmail").value.trim(),
-new_password:$("managePassword").value
-};
-
-const response=await fetch(FUNCTION_URL,{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"apikey":SUPABASE_ANON_KEY,
-"Authorization":"Bearer "+session.access_token
-},
-body:JSON.stringify(payload)
+ e.preventDefault();const btn=$("saveManageBtn");btn.disabled=true;btn.textContent="SAVING...";
+ showMsg("manageMsg","Updating club and Owner account...");
+ try{
+  const payload={action:"update",client_id:$("manageClientId").value,user_id:$("manageUserId").value,name:$("manageName").value.trim(),slug:$("manageSlug").value.trim(),contact_email:$("manageContactEmail").value.trim(),phone:$("managePhone").value.trim(),login_email:$("manageLoginEmail").value.trim(),new_password:$("managePassword").value};
+  await edgeCall(payload);
+  showMsg("manageMsg","Club and Owner login information updated successfully.");$("managePassword").value="";
+  await loadDashboard();
+  if(currentClubId)await openClubDetails(currentClubId);
+ }catch(err){showMsg("manageMsg",err.message||"Update failed.",true);}
+ finally{btn.disabled=false;btn.textContent="SAVE CHANGES";}
 });
-
-const result=await response.json();
-if(!response.ok||result.error)throw new Error(result.error||"Update failed.");
-
-showMsg("manageMsg","Client and Owner login information updated successfully.");
-$("managePassword").value="";
-await loadDashboard();
-}catch(err){
-showMsg("manageMsg",err.message||"Update failed.",true);
-}finally{
-btn.disabled=false;
-btn.textContent="SAVE CHANGES";
-}
-});
-
-// CLOSE MODAL
-$("closeModal").addEventListener("click",()=>{
-$("manageModal").classList.add("hidden");
-});
-
-$("manageModal").addEventListener("click",e=>{
-if(e.target===$("manageModal"))$("manageModal").classList.add("hidden");
-});
-
-// SEARCH
+$("closeModal").addEventListener("click",()=>$("manageModal").classList.add("hidden"));
+$("manageModal").addEventListener("click",e=>{if(e.target===$("manageModal"))$("manageModal").classList.add("hidden");});
 $("searchClients").addEventListener("input",renderClients);
-
-// REFRESH
-$("refreshBtn").addEventListener("click",async()=>{
-try{await loadDashboard();}
-catch(e){showMsg("listMsg",e.message,true);}
-});
-
-// LOGOUT
-$("logoutBtn").addEventListener("click",async()=>{
-await db.auth.signOut();
-showLogin();
-});
-
-// AUTH SESSION
-db.auth.onAuthStateChange(event=>{
-if(event==="SIGNED_OUT")showLogin();
-});
-
-// ADMIN LOGIN
+$("refreshBtn").addEventListener("click",async()=>{try{await loadDashboard();}catch(e){showMsg("listMsg",e.message,true);}});
+$("logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();showLogin();});
+db.auth.onAuthStateChange(event=>{if(event==="SIGNED_OUT")showLogin();});
 $("loginForm").addEventListener("submit",async e=>{
-e.preventDefault();
-if(busy)return;
-busy=true;
-
-const btn=$("loginBtn");
-btn.disabled=true;
-btn.textContent="SIGNING IN...";
-showMsg("loginMsg","Checking account...");
-
-try{
-const {error}=await db.auth.signInWithPassword({
-email:$("email").value.trim(),
-password:$("password").value
+ e.preventDefault();if(busy)return;busy=true;const btn=$("loginBtn");btn.disabled=true;btn.textContent="SIGNING IN...";showMsg("loginMsg","Checking account...");
+ try{const {error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)throw error;await verifyAdmin();showMsg("loginMsg","");}
+ catch(err){showMsg("loginMsg",err.message||"Login failed.",true);await db.auth.signOut();showLogin();}
+ finally{busy=false;btn.disabled=false;btn.textContent="LOGIN TO DASHBOARD";}
 });
-if(error)throw error;
-await verifyAdmin();
-showMsg("loginMsg","");
-}catch(err){
-showMsg("loginMsg",err.message||"Login failed.",true);
-await db.auth.signOut();
-showLogin();
-}finally{
-busy=false;
-btn.disabled=false;
-btn.textContent="LOGIN TO DASHBOARD";
-}
-});
-
-// INITIAL CHECK
-(async()=>{
-try{await verifyAdmin();}
-catch(e){
-showLogin();
-showMsg("loginMsg",e.message,true);
-}
-})();
-
+(async()=>{try{await verifyAdmin();}catch(e){showLogin();showMsg("loginMsg",e.message,true);}})();
 })();
 </script>
 </body>
