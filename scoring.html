@@ -45,64 +45,48 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .overlaybar .ovteams{flex:1;text-align:center;font-weight:bold}
 .overlaybar .ovalert{font-size:19px;font-weight:900;color:var(--gold);text-align:center}
 .overlaybar .ovmeta{font-size:12px;color:#c4d4e5;text-align:center}
-#alertBanner{position:fixed;top:18%;left:50%;transform:translate(-50%,-20px) scale(.8);opacity:0;background:#a51f35;color:white;font-size:clamp(22px,5vw,48px);font-weight:1000;padding:20px 35px;border:3px solid var(--gold);border-radius:14px;text-align:center;white-space:normal;max-width:92vw;z-index:5;pointer-events:none}
+#alertBanner{position:fixed;top:18%;left:50%;transform:translate(-50%,-20px) scale(.8);opacity:0;background:#a51f35;color:white;font-size:clamp(22px,5vw,48px);font-weight:1000;padding:20px 35px;border:3px solid var(--gold);border-radius:14px;text-align:center;max-width:92vw;z-index:5;pointer-events:none}
 #alertBanner.show{animation:alertIn 3s ease both}
 @keyframes alertIn{
  0%{opacity:0;transform:translate(-50%,-20px) scale(.8)}
  12%,78%{opacity:1;transform:translate(-50%,0) scale(1)}
  100%{opacity:0;transform:translate(-50%,-15px) scale(1.05)}
 }
-.pulse{animation:pulse .7s infinite alternate}
-@keyframes pulse{to{filter:brightness(1.8);box-shadow:0 0 25px var(--gold)}}
 #overlayPage{position:fixed;inset:0;z-index:10;background:transparent;pointer-events:none}
 #overlayPage .overlaybar{position:absolute;bottom:5%;left:50%;transform:translateX(-50%)}
-#overlayPage #alertBanner{pointer-events:none}
 .timerbox{padding:18px 8px;background:#0a192b;border:1px solid var(--line);border-radius:12px;text-align:center}
 .timerbox .timer{font-size:clamp(27px,5vw,38px)}
 .timer-label{font-size:12px;color:var(--muted);font-weight:bold}
 .timer-warning{color:var(--red)!important}
-.timer-success{color:var(--green)!important}
 .section-note{font-size:12px;color:var(--muted);line-height:1.6}
 
-/* RAIDER PANEL */
-.raider-card{
- background:#0a192b;
- border:1px solid var(--gold);
- border-radius:14px;
- padding:15px;
- margin-top:12px;
- display:flex;
- align-items:center;
- gap:15px;
- min-height:105px;
-}
-.raider-photo{
- width:76px;
- height:76px;
- border-radius:50%;
- object-fit:cover;
- border:3px solid var(--gold);
- background:#263b54;
- flex-shrink:0;
-}
+/* Raider panel */
+.raider-card{background:#0a192b;border:1px solid var(--gold);border-radius:14px;padding:15px;margin-top:12px;display:flex;align-items:center;gap:15px;min-height:105px}
+.raider-photo{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);background:#263b54;flex-shrink:0}
 .raider-details{flex:1;min-width:0}
 .raider-details h3{margin:0 0 6px;color:var(--gold)}
 .raider-details p{margin:4px 0;color:var(--muted);font-size:13px}
-.raid-buttons{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
- margin-top:12px;
-}
-.raid-status{
- margin-top:12px;
- padding:10px;
- border-radius:8px;
- background:#132a40;
- color:var(--green);
- text-align:center;
- font-weight:bold;
-}
+.raid-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.raid-status{margin-top:12px;padding:10px;border-radius:8px;background:#132a40;color:var(--green);text-align:center;font-weight:bold}
+
+/* Quick scoring */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.quick-btn{min-height:82px;border:1px solid #36516f;background:#142b43;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.quick-btn strong{font-size:28px;color:var(--gold)}
+.quick-btn span{font-size:12px;color:#e4edf7}
+.quick-btn:active{transform:scale(.97);filter:brightness(1.3)}
+.quick-btn.green-btn{background:#075b46}
+.quick-btn.red-btn{background:#702637}
+.quick-heading{font-size:13px;color:var(--muted);margin:12px 0 5px}
+
+/* Half-time popup */
+.modal-backdrop{position:fixed;inset:0;background:#000c;z-index:50;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-box{width:min(100%,430px);background:#102238;border:2px solid var(--gold);border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 55px #000b}
+.modal-icon{font-size:42px;margin-bottom:10px}
+.modal-box h2{color:var(--gold);font-size:22px;margin:0 0 12px}
+.modal-box p{color:#d5e0ec;line-height:1.6}
+.modal-box button{width:100%;margin-top:12px;min-height:52px;font-size:15px}
+.modal-box .secondary-btn{background:#29415e}
 
 @media(max-width:600px){
  main{padding:10px}
@@ -114,12 +98,13 @@ button:disabled{opacity:.4;cursor:not-allowed}
  .row{gap:7px}
  .row button{font-size:12px;padding:11px 7px}
  .raider-photo{width:65px;height:65px}
+ .quick-grid{grid-template-columns:repeat(2,1fr)}
+ .quick-btn{min-height:75px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
  <div class="brand">🏆 GFC KABADDI PRO 2026</div>
  <div class="row" style="flex:0 1 auto">
@@ -128,7 +113,6 @@ button:disabled{opacity:.4;cursor:not-allowed}
 </header>
 
 <main id="app">
-
  <section class="panel" id="loginPanel">
   <h2>Club Login</h2>
   <input id="email" type="email" placeholder="Registered Email">
@@ -139,20 +123,15 @@ button:disabled{opacity:.4;cursor:not-allowed}
  <div id="message">Please login to continue.</div>
 
  <section id="dashboard" class="hidden">
-
   <section class="panel">
    <h2>Match Selection</h2>
-   <select id="matchSelect">
-    <option value="">Select Match</option>
-   </select>
+   <select id="matchSelect"><option value="">Select Match</option></select>
    <div class="row">
     <button class="green" id="startBtn">▶ START / RESUME MATCH</button>
     <button id="refreshBtn">↻ Refresh</button>
    </div>
    <p class="muted" id="matchInfo">Select a match.</p>
   </section>
-
-  <!-- MATCH SCOREBOARD -->
 
   <section class="panel">
    <div class="scoreboard">
@@ -165,101 +144,66 @@ button:disabled{opacity:.4;cursor:not-allowed}
      <div class="score" id="scoreB">0</div>
     </div>
    </div>
-
    <div class="grid" style="margin-top:12px;text-align:center">
-    <div class="team">
-     <small>MATCH STATUS</small>
-     <div id="status">UPCOMING</div>
-    </div>
-    <div class="team">
-     <small>HALF</small>
-     <div id="half">1</div>
-    </div>
+    <div class="team"><small>MATCH STATUS</small><div id="status">UPCOMING</div></div>
+    <div class="team"><small>HALF</small><div id="half">1</div></div>
    </div>
   </section>
 
-  <!-- TIMER CONTROL -->
-
   <section class="panel" id="timerPanel">
    <h2>⏱ MATCH TIMER CONTROL</h2>
-
    <div class="scoreboard">
     <div class="timerbox">
      <div class="timer-label">MATCH HALF</div>
      <h3 id="timerHalf">FIRST HALF</h3>
      <div class="timer" id="matchTimerDisplay">20:00</div>
     </div>
-
     <div class="timerbox">
      <div class="timer-label">RAID TIMER</div>
      <div class="timer" id="raidTimerDisplay">00:30</div>
     </div>
    </div>
-
    <div class="timerbox" style="margin-top:12px">
     <div class="timer-label">HALF TIME BREAK</div>
     <div class="timer" id="breakTimerDisplay">00:00</div>
     <p id="timerMessage" class="muted">Waiting for match...</p>
-
     <button id="manualHalfBtn" class="primary" style="width:100%;margin-top:10px" disabled>
      END HALF TIME & START 2ND HALF
     </button>
    </div>
-
    <div class="row" style="margin-top:12px">
     <button id="pauseBtn" class="red" disabled>⏸ PAUSE MATCH</button>
     <button id="resumeBtn" class="green" disabled>▶ RESUME MATCH</button>
    </div>
-
    <p class="section-note">
     First Half শেষ হলে Half Time শুরু হবে। Break শেষ হলে Second Half Automatic শুরু হবে। চাইলে Manual Button ব্যবহার করতে পারবেন।
    </p>
   </section>
 
-  <!-- MATCH SETTINGS -->
-
   <section class="panel hidden" id="settingsPanel">
    <h2>⚙ CUSTOM MATCH SETTINGS</h2>
-
    <label>First Half Duration (Minutes)</label>
    <input type="number" id="firstHalfInput" min="1" max="120" value="20">
-
    <label>Half Time Break (Minutes)</label>
    <input type="number" id="breakInput" min="0" max="60" value="5">
-
    <label>Second Half Duration (Minutes)</label>
    <input type="number" id="secondHalfInput" min="1" max="120" value="20">
-
    <label>Raid Timer (Seconds)</label>
    <input type="number" id="raidInput" min="5" max="300" value="30">
-
-   <button id="saveSettingsBtn" class="primary" style="width:100%">
-    SAVE MATCH SETTINGS
-   </button>
-
-   <p class="section-note">
-    শুধুমাত্র Club Owner/Admin Match শুরু হওয়ার আগে এই Settings পরিবর্তন করতে পারবেন।
-   </p>
+   <button id="saveSettingsBtn" class="primary" style="width:100%">SAVE MATCH SETTINGS</button>
+   <p class="section-note">শুধুমাত্র Club Owner/Admin Match শুরু হওয়ার আগে এই Settings পরিবর্তন করতে পারবেন।</p>
   </section>
 
   <!-- RAIDER SELECTION -->
-
   <section class="panel" id="raiderPanel">
-   <h2>🏃 RAID CONTROL — SELECT RAIDER</h2>
-
+   <h2>🏃 RAID CONTROL — SELECT RAIDER (OPTIONAL)</h2>
    <label>Raiding Team</label>
-   <select id="raiderTeam">
-    <option value="">Select Raiding Team</option>
-   </select>
-
-   <label>Select Raider / Player</label>
-   <select id="raiderSelect">
-    <option value="">Select Player</option>
-   </select>
+   <select id="raiderTeam"><option value="">Select Raiding Team</option></select>
+   <label>Select Raider / Player (Optional)</label>
+   <select id="raiderSelect"><option value="">No Raider Selected</option></select>
 
    <div class="raider-card">
     <img id="raiderPhoto" class="raider-photo" alt="Raider Photo">
-
     <div class="raider-details">
      <h3 id="raiderName">No Raider Selected</h3>
      <p id="raiderJersey">Jersey: --</p>
@@ -267,38 +211,49 @@ button:disabled{opacity:.4;cursor:not-allowed}
     </div>
    </div>
 
-   <div class="raid-status" id="raidStatus">
-    NO ACTIVE RAID
-   </div>
-
+   <div class="raid-status" id="raidStatus">NO ACTIVE RAID</div>
    <div class="raid-buttons">
-    <button class="green" id="startRaidBtn">
-     ▶ START RAID
-    </button>
-
-    <button class="red" id="stopRaidBtn">
-     ■ STOP RAID
-    </button>
+    <button class="green" id="startRaidBtn">▶ START RAID</button>
+    <button class="red" id="stopRaidBtn">■ STOP RAID</button>
    </div>
-
    <p class="section-note">
-    Raiding Team নির্বাচন করুন। তারপর সেই দলের Player নির্বাচন করে Start Raid চাপুন।
+    Raider নির্বাচন করা বাধ্যতামূলক নয়। Team নির্বাচন করে Player ছাড়াই Start Raid করা যাবে।
    </p>
   </section>
 
-  <!-- SCORING CONTROL -->
-
+  <!-- EASY SCORING -->
   <section class="panel">
-   <h2>Scoring Control</h2>
-
+   <h2>⚡ QUICK SCORING</h2>
    <label>Scoring Team</label>
-   <select id="scoringTeam">
-    <option value="">Select Team</option>
-   </select>
+   <select id="scoringTeam"><option value="">Select Team</option></select>
 
+   <div class="quick-heading">এক ক্লিকেই স্কোর যোগ করুন</div>
+   <div class="quick-grid">
+    <button class="quick-btn" data-quick="raid_touch" data-points="1">
+     <strong>+1</strong><span>RAID TOUCH</span>
+    </button>
+    <button class="quick-btn" data-quick="bonus" data-points="1">
+     <strong>+1</strong><span>BONUS</span>
+    </button>
+    <button class="quick-btn green-btn" data-quick="tackle" data-points="1">
+     <strong>+1</strong><span>TACKLE</span>
+    </button>
+    <button class="quick-btn green-btn" data-quick="super_tackle" data-points="2">
+     <strong>+2</strong><span>SUPER TACKLE</span>
+    </button>
+    <button class="quick-btn" data-quick="super_raid" data-points="3">
+     <strong>+3</strong><span>SUPER RAID</span>
+    </button>
+    <button class="quick-btn red-btn" data-quick="all_out" data-points="2">
+     <strong>+2</strong><span>ALL OUT BONUS</span>
+    </button>
+   </div>
+
+   <p class="section-note">Quick Button চাপলে নির্বাচিত Scoring Team-এর স্কোর সরাসরি আপডেট হবে। Event ও Points প্রয়োজন অনুযায়ী যাচাই করুন।</p>
+
+   <h2 style="margin-top:22px">Manual Scoring</h2>
    <label>Points</label>
    <input type="number" id="points" min="0" max="20" value="1">
-
    <label>Event</label>
    <select id="eventType">
     <option value="raid_touch">Touch / Raid Touch</option>
@@ -315,28 +270,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <option value="yellow_card">Yellow Card</option>
     <option value="red_card">Red Card</option>
    </select>
-
-   <button class="primary" id="recordBtn" style="width:100%;margin-top:12px">
-    ✓ RECORD EVENT
-   </button>
-
-   <p class="muted">
-    Points নিজে যাচাই করে দিন। বর্তমান Database Function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।
-   </p>
-
-   <button class="red" id="undoBtn" style="width:100%">
-    ↶ UNDO LAST EVENT
-   </button>
+   <button class="primary" id="recordBtn" style="width:100%;margin-top:12px">✓ RECORD EVENT</button>
+   <p class="muted">Points নিজে যাচাই করে দিন। বর্তমান Database Function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।</p>
+   <button class="red" id="undoBtn" style="width:100%">↶ UNDO LAST EVENT</button>
   </section>
-
-  <!-- BROADCAST ALERTS -->
 
   <section class="panel">
    <h2>🎬 Broadcast Animation Control</h2>
-   <p class="muted">
-    নিচের Alert নির্বাচন করলে Overlay-তে Animation দেখাবে। এগুলি আলাদা Broadcast Alert; Match Score পরিবর্তন করবে না।
-   </p>
-
+   <p class="muted">নিচের Alert নির্বাচন করলে Overlay-তে Animation দেখাবে। এগুলি আলাদা Broadcast Alert; Match Score পরিবর্তন করবে না।</p>
    <div class="actions">
     <button class="red" data-alert="🔥 FINAL RAID">🔥 FINAL RAID</button>
     <button data-alert="⏳ LAST MINUTE RAID">LAST MINUTE RAID</button>
@@ -347,112 +288,81 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <button data-alert="⭐ MATCH POINT">MATCH POINT</button>
     <button data-alert="🏆 WINNER">WINNER</button>
    </div>
-
    <div style="margin-top:12px">
-    <button id="overlayLinkBtn" class="primary" style="width:100%">
-     OPEN BROADCAST OVERLAY
-    </button>
+    <button id="overlayLinkBtn" class="primary" style="width:100%">OPEN BROADCAST OVERLAY</button>
    </div>
   </section>
-
  </section>
 </main>
 
-<!-- BROADCAST OVERLAY -->
-
+<!-- INTERNAL BROADCAST OVERLAY -->
 <div id="overlayPage" class="hidden">
  <div id="alertBanner"></div>
-
  <div class="overlaybar">
   <div class="ovscore" id="ovA">0</div>
-
   <div class="ovteams">
    <div id="ovNames">TEAM A vs TEAM B</div>
    <div class="ovmeta" id="ovMeta">GFC KABADDI PRO 2026</div>
    <div class="ovalert" id="ovAlert">LIVE</div>
   </div>
-
   <div class="ovscore" id="ovB">0</div>
  </div>
 </div>
 
+<!-- HALF TIME POPUP -->
+<div id="halfTimeModal" class="modal-backdrop hidden">
+ <div class="modal-box">
+  <div class="modal-icon">⏸️</div>
+  <h2>HALF TIME BREAK চলছে</h2>
+  <p>এই মুহূর্তে Raid শুরু বা Score Update করা যাবে না। খেলা চালু করতে আগে Half Time Break শেষ করুন।</p>
+  <button class="primary" id="endBreakPopupBtn">▶ END HALF TIME BREAK</button>
+  <button class="secondary-btn" id="closeBreakPopupBtn">CLOSE</button>
+ </div>
+</div>
+
 <script>
-/* =====================================
-   SUPABASE CONFIGURATION
-===================================== */
+/* SUPABASE CONFIGURATION */
+const SUPABASE_URL="https://wpefjtjcnvdnbsenfukg.supabase.co";
+const SUPABASE_KEY="sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-const SUPABASE_URL =
- "https://wpefjtjcnvdnbsenfukg.supabase.co";
-
-const SUPABASE_KEY =
- "sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
-
-const db = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
-
-/* =====================================
-   GLOBAL VARIABLES
-===================================== */
-
-let currentUser=null;
-let clientId=null;
-let currentRole=null;
-let currentMatch=null;
-
-let matchChannel=null;
-let overlayChannel=null;
-
-let timerInterval=null;
-let transitionBusy=false;
-
-let raidPlayers=[];
-let selectedRaider=null;
-let playerLoadRequest=0;
+/* GLOBAL VARIABLES */
+let currentUser=null,clientId=null,currentRole=null,currentMatch=null;
+let matchChannel=null,overlayChannel=null,timerInterval=null;
+let transitionBusy=false,raidPlayers=[],selectedRaider=null,playerLoadRequest=0;
 
 const params=new URLSearchParams(location.search);
 const isOverlay=params.get("overlay")==="1";
 const requestedMatch=params.get("match");
-
 const $=id=>document.getElementById(id);
 
-/* =====================================
-   COMMON FUNCTIONS
-===================================== */
-
+/* COMMON */
 function msg(text,error=false){
  $("message").textContent=text;
  $("message").style.color=error?"#ff8490":"#b9f5d9";
 }
-
 function escapeHtml(s){
- return String(s??"").replace(/[&<>"']/g,c=>({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
- }[c]));
+ return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
+function teamName(team){return team?.short_name||team?.name||"TEAM";}
+function matchTitle(m){return m.match_mode==="standalone"?"SINGLE MATCH":m.tournaments?.name||"TOURNAMENT";}
+function showDashboard(){$("loginPanel").classList.add("hidden");$("dashboard").classList.remove("hidden");}
+function showLogin(){$("loginPanel").classList.remove("hidden");$("dashboard").classList.add("hidden");}
+function isHalfTime(){return currentMatch?.match_status==="halftime";}
 
-function teamName(team){
- return team?.short_name || team?.name || "TEAM";
+function showHalfTimePopup(){
+ $("halfTimeModal").classList.remove("hidden");
 }
-
-function matchTitle(m){
- if(m.match_mode==="standalone")return "SINGLE MATCH";
- return m.tournaments?.name || "TOURNAMENT";
+function hideHalfTimePopup(){
+ $("halfTimeModal").classList.add("hidden");
 }
-
-function showDashboard(){
- $("loginPanel").classList.add("hidden");
- $("dashboard").classList.remove("hidden");
-}
-
-function showLogin(){
- $("loginPanel").classList.remove("hidden");
- $("dashboard").classList.add("hidden");
+function blockDuringHalfTime(){
+ if(isHalfTime()){
+  showHalfTimePopup();
+  msg("Half Time Break চলছে। আগে Break শেষ করুন।",true);
+  return true;
+ }
+ return false;
 }
 
 function resetRaiderPreview(){
@@ -461,1345 +371,614 @@ function resetRaiderPreview(){
  $("raiderJersey").textContent="Jersey: --";
  $("raiderPosition").textContent="Position: --";
  $("raiderPhoto").removeAttribute("src");
+ $("raiderPhoto").alt="No Raider Selected";
 }
 
-/* =====================================
-   AUTHENTICATION
-===================================== */
-
+/* AUTHENTICATION */
 async function login(){
- const email=$("email").value.trim();
- const password=$("password").value;
-
- if(!email||!password){
-  msg("Email এবং Password দিন।",true);
-  return;
- }
-
- const {data,error}=await db.auth.signInWithPassword({
-  email,password
- });
-
- if(error){
-  msg(error.message,true);
-  return;
- }
-
+ const email=$("email").value.trim(),password=$("password").value;
+ if(!email||!password){msg("Email এবং Password দিন।",true);return;}
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){msg(error.message,true);return;}
  currentUser=data.user;
  await initialize();
 }
-
 async function initialize(){
  const {data:userData,error:userError}=await db.auth.getUser();
-
- if(userError){
-  msg(userError.message,true);
-  return;
- }
-
+ if(userError){msg(userError.message,true);return;}
  currentUser=userData?.user;
+ if(!currentUser){showLogin();msg("Please login.");return;}
 
- if(!currentUser){
-  showLogin();
-  msg("Please login.");
-  return;
- }
+ const {data:members,error}=await db.from("client_members")
+  .select("client_id,role").eq("user_id",currentUser.id);
+ if(error){msg("Client access পাওয়া যায়নি: "+error.message,true);return;}
 
- const {data:members,error}=await db
-  .from("client_members")
-  .select("client_id,role")
-  .eq("user_id",currentUser.id);
-
- if(error){
-  msg("Client access পাওয়া যায়নি: "+error.message,true);
-  return;
- }
-
- const membership=(members||[]).find(m=>
-  ["owner","admin","scorer","viewer"].includes(m.role)
- );
-
- if(!membership){
-  msg("এই Login-এর সঙ্গে কোনো Club যুক্ত নেই।",true);
-  return;
- }
+ const membership=(members||[]).find(m=>["owner","admin","scorer","viewer"].includes(m.role));
+ if(!membership){msg("এই Login-এর সঙ্গে কোনো Club যুক্ত নেই।",true);return;}
 
  clientId=membership.client_id;
  currentRole=membership.role;
-
  showDashboard();
-
  await loadMatches();
 }
 
-/* =====================================
-   MATCH LOADING
-===================================== */
-
+/* MATCH LOADING */
 async function loadMatches(){
- const {data,error}=await db
-  .from("matches")
-  .select(`
-   id,client_id,tournament_id,match_mode,
-   team_a_id,team_b_id,
-   team_a_score,team_b_score,
-   match_status,current_half,
-   raid_timer,match_timer,
-   current_raiding_team_id,created_at,
-   teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
-   teamsB:teams!matches_team_b_id_fkey(id,name,short_name),
-   tournaments(name)
-  `)
-  .eq("client_id",clientId)
-  .order("created_at",{ascending:false});
+ const {data,error}=await db.from("matches").select(`
+  id,client_id,tournament_id,match_mode,team_a_id,team_b_id,
+  team_a_score,team_b_score,match_status,current_half,raid_timer,
+  match_timer,current_raiding_team_id,created_at,
+  teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
+  teamsB:teams!matches_team_b_id_fkey(id,name,short_name),
+  tournaments(name)
+ `).eq("client_id",clientId).order("created_at",{ascending:false});
 
- if(error){
-  msg("Match load error: "+error.message,true);
-  return;
- }
+ if(error){msg("Match load error: "+error.message,true);return;}
 
  const select=$("matchSelect");
  select.innerHTML='<option value="">Select Match</option>';
-
  (data||[]).forEach(m=>{
-  const label=
-   (m.teamsA?.name||"Team A")+
-   " vs "+
-   (m.teamsB?.name||"Team B")+
-   " ("+m.match_status+")";
-
+  const label=(m.teamsA?.name||"Team A")+" vs "+(m.teamsB?.name||"Team B")+" ("+m.match_status+")";
   select.add(new Option(label,m.id));
  });
 
  const wanted=requestedMatch||select.value;
-
- if(wanted && (data||[]).some(m=>m.id===wanted)){
-  select.value=wanted;
-  await selectMatch(wanted);
+ if(wanted&&(data||[]).some(m=>m.id===wanted)){
+  select.value=wanted;await selectMatch(wanted);
  }else if(data?.length){
-  select.value=data[0].id;
-  await selectMatch(data[0].id);
+  select.value=data[0].id;await selectMatch(data[0].id);
  }else{
-  currentMatch=null;
-  msg("এই Club-এ এখনও কোনো Match তৈরি করা হয়নি।");
+  currentMatch=null;msg("এই Club-এ এখনও কোনো Match তৈরি করা হয়নি।");
  }
 }
 
 async function selectMatch(id){
  if(!id)return;
+ const {data,error}=await db.from("matches").select(`
+  *,
+  teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
+  teamsB:teams!matches_team_b_id_fkey(id,name,short_name),
+  tournaments(name)
+ `).eq("id",id).eq("client_id",clientId).single();
 
- const {data,error}=await db
-  .from("matches")
-  .select(`
-   *,
-   teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
-   teamsB:teams!matches_team_b_id_fkey(id,name,short_name),
-   tournaments(name)
-  `)
-  .eq("id",id)
-  .eq("client_id",clientId)
-  .single();
-
- if(error){
-  msg("Match পাওয়া যায়নি: "+error.message,true);
-  return;
- }
-
+ if(error){msg("Match পাওয়া যায়নি: "+error.message,true);return;}
  currentMatch=data;
-
  renderMatch();
  subscribeMatch();
 }
 
-/* =====================================
-   MATCH DISPLAY
-===================================== */
-
+/* MATCH DISPLAY */
 function renderMatch(){
  if(!currentMatch)return;
+ const m=currentMatch,a=teamName(m.teamsA),b=teamName(m.teamsB);
 
- const m=currentMatch;
-
- const a=teamName(m.teamsA);
- const b=teamName(m.teamsB);
-
- $("teamA").textContent=a;
- $("teamB").textContent=b;
-
- $("scoreA").textContent=m.team_a_score;
- $("scoreB").textContent=m.team_b_score;
-
+ $("teamA").textContent=a;$("teamB").textContent=b;
+ $("scoreA").textContent=m.team_a_score;$("scoreB").textContent=m.team_b_score;
  $("status").textContent=(m.match_status||"").toUpperCase();
  $("half").textContent=m.current_half||1;
+ $("matchInfo").textContent=matchTitle(m)+" • "+m.id;
 
- $("matchInfo").textContent=
-  matchTitle(m)+" • "+m.id;
-
- $("scoringTeam").innerHTML=
-  '<option value="">Select Team</option>'+
+ $("scoringTeam").innerHTML='<option value="">Select Team</option>'+
   '<option value="'+m.team_a_id+'">'+escapeHtml(a)+'</option>'+
   '<option value="'+m.team_b_id+'">'+escapeHtml(b)+'</option>';
 
- $("startBtn").disabled=
-  !["upcoming","paused"].includes(m.match_status);
+ $("startBtn").disabled=!["upcoming","paused"].includes(m.match_status);
+ $("startBtn").textContent=m.match_status==="paused"?"▶ RESUME MATCH":"▶ START MATCH";
 
- $("startBtn").textContent=
-  m.match_status==="paused"
-   ?"▶ RESUME MATCH"
-   :"▶ START MATCH";
+ const canEditSettings=currentRole==="owner"||currentRole==="admin";
+ $("settingsPanel").classList.toggle("hidden",!canEditSettings||m.match_status!=="upcoming");
+ $("firstHalfInput").value=(m.first_half_seconds||1200)/60;
+ $("breakInput").value=(m.halftime_break_seconds??300)/60;
+ $("secondHalfInput").value=(m.second_half_seconds||1200)/60;
+ $("raidInput").value=m.default_raid_seconds||30;
 
- const canEditSettings=
-  currentRole==="owner"||currentRole==="admin";
+ const raidActive=!!m.raid_started_at;
+ $("raidStatus").textContent=raidActive
+  ?(m.current_raider_name?"ACTIVE RAIDER: "+m.current_raider_name:"ACTIVE RAID • NO PLAYER SELECTED")
+  :"NO ACTIVE RAID";
 
- $("settingsPanel").classList.toggle(
-  "hidden",
-  !canEditSettings||m.match_status!=="upcoming"
- );
+ $("startRaidBtn").disabled=m.match_status!=="live"||raidActive;
+ $("stopRaidBtn").disabled=m.match_status!=="live"||!raidActive;
 
- $("firstHalfInput").value=
-  (m.first_half_seconds||1200)/60;
+ $("raiderName").textContent=m.current_raider_name||"No Raider Selected";
+ if(!m.current_raider_name){
+  $("raiderJersey").textContent="Jersey: --";
+  $("raiderPosition").textContent="Position: --";
+  $("raiderPhoto").removeAttribute("src");
+ }
 
- $("breakInput").value=
-  (m.halftime_break_seconds??300)/60;
-
- $("secondHalfInput").value=
-  (m.second_half_seconds||1200)/60;
-
- $("raidInput").value=
-  m.default_raid_seconds||30;
-
- $("raidStatus").textContent=
-  m.current_raider_name
-   ?"ACTIVE RAIDER: "+m.current_raider_name
-   :"NO ACTIVE RAID";
-
- $("startRaidBtn").disabled=
-  m.match_status!=="live";
-
- $("stopRaidBtn").disabled=
-  m.match_status!=="live"||
-  !m.current_raider_name;
+ if(isHalfTime())showHalfTimePopup();
+ else hideHalfTimePopup();
 
  renderOverlay();
  updateTimerDisplay();
-
  loadRaidPlayers();
 }
 
-/* =====================================
-   REALTIME MATCH SUBSCRIPTION
-===================================== */
-
+/* REALTIME */
 function subscribeMatch(){
- if(matchChannel){
-  db.removeChannel(matchChannel);
-  matchChannel=null;
- }
-
+ if(matchChannel){db.removeChannel(matchChannel);matchChannel=null;}
  if(!currentMatch)return;
 
- matchChannel=db
-  .channel("score-"+currentMatch.id)
-
-  .on(
-   "postgres_changes",
-   {
-    event:"UPDATE",
-    schema:"public",
-    table:"matches",
-    filter:"id=eq."+currentMatch.id
-   },
-   payload=>{
-    currentMatch={
-     ...currentMatch,
-     ...payload.new
-    };
-
-    renderMatch();
-   }
-  )
-
-  .on(
-   "postgres_changes",
-   {
-    event:"INSERT",
-    schema:"public",
-    table:"match_events",
-    filter:"match_id=eq."+currentMatch.id
-   },
-   payload=>{
-    const ev=payload.new;
-
-    if(ev.event_data?.overlay_label){
-     showAlert(ev.event_data.overlay_label);
-    }
-   }
-  )
-
-  .subscribe();
+ matchChannel=db.channel("score-"+currentMatch.id)
+ .on("postgres_changes",{
+  event:"UPDATE",schema:"public",table:"matches",filter:"id=eq."+currentMatch.id
+ },payload=>{
+  currentMatch={...currentMatch,...payload.new};
+  renderMatch();
+ })
+ .on("postgres_changes",{
+  event:"INSERT",schema:"public",table:"match_events",filter:"match_id=eq."+currentMatch.id
+ },payload=>{
+  const ev=payload.new;
+  if(ev.event_data?.overlay_label)showAlert(ev.event_data.overlay_label);
+ })
+ .subscribe();
 }
 
-/* =====================================
-   RAIDER PLAYER SELECTION
-===================================== */
-
+/* RAIDER PLAYER SELECTION */
 async function loadRaidPlayers(){
-
  if(!currentMatch)return;
-
  const matchId=currentMatch.id;
  const requestNumber=++playerLoadRequest;
-
- const teamA=currentMatch.team_a_id;
- const teamB=currentMatch.team_b_id;
-
+ const teamA=currentMatch.team_a_id,teamB=currentMatch.team_b_id;
  const teamSelect=$("raiderTeam");
  const previousPlayer=$("raiderSelect").value;
 
- teamSelect.innerHTML=
-  '<option value="">Select Raiding Team</option>'+
-  '<option value="'+teamA+'">'+
-  escapeHtml(teamName(currentMatch.teamsA))+
-  '</option>'+
-  '<option value="'+teamB+'">'+
-  escapeHtml(teamName(currentMatch.teamsB))+
-  '</option>';
+ teamSelect.innerHTML='<option value="">Select Raiding Team</option>'+
+  '<option value="'+teamA+'">'+escapeHtml(teamName(currentMatch.teamsA))+'</option>'+
+  '<option value="'+teamB+'">'+escapeHtml(teamName(currentMatch.teamsB))+'</option>';
 
  let activeTeam=currentMatch.current_raiding_team_id||"";
-
- if(!activeTeam && previousPlayer){
+ if(!activeTeam&&previousPlayer){
   const oldPlayer=raidPlayers.find(p=>p.id===previousPlayer);
   if(oldPlayer)activeTeam=oldPlayer.team_id;
  }
-
- if(!activeTeam && $("scoringTeam").value){
-  activeTeam=$("scoringTeam").value;
- }
+ if(!activeTeam&&$("scoringTeam").value)activeTeam=$("scoringTeam").value;
 
  teamSelect.value=activeTeam;
-
- if(activeTeam){
-  await loadPlayersForTeam(activeTeam);
- }else{
+ if(activeTeam)await loadPlayersForTeam(activeTeam);
+ else{
   raidPlayers=[];
-  $("raiderSelect").innerHTML=
-   '<option value="">Select Raiding Team First</option>';
+  $("raiderSelect").innerHTML='<option value="">Select Raiding Team First</option>';
   resetRaiderPreview();
  }
-
- if(requestNumber!==playerLoadRequest)return;
- if(!currentMatch||currentMatch.id!==matchId)return;
+ if(requestNumber!==playerLoadRequest||!currentMatch||currentMatch.id!==matchId)return;
 
  const currentPlayerId=currentMatch.current_raider_player_id;
-
  if(currentPlayerId){
   $("raiderSelect").value=currentPlayerId;
-
-  if($("raiderSelect").value){
-   updateRaiderPreview();
-  }else{
-   const {data:player}=await db
-    .from("players")
-    .select("id,name,jersey_number,position,photo_url,team_id")
-    .eq("id",currentPlayerId)
-    .eq("client_id",clientId)
-    .maybeSingle();
-
-   if(
-    player&&
-    (player.team_id===teamA||player.team_id===teamB)
-   ){
-    teamSelect.value=player.team_id;
-    await loadPlayersForTeam(player.team_id);
-    $("raiderSelect").value=player.id;
-    updateRaiderPreview();
-   }
-  }
- }else if(previousPlayer && $("raiderSelect").querySelector('option[value="'+previousPlayer+'"]')){
+  if($("raiderSelect").value)updateRaiderPreview();
+ }else if(previousPlayer&&$("raiderSelect").querySelector('option[value="'+previousPlayer+'"]')){
   $("raiderSelect").value=previousPlayer;
   updateRaiderPreview();
- }else{
+ }else if(!currentMatch.current_raider_name){
   resetRaiderPreview();
  }
 }
 
-
 async function loadPlayersForTeam(teamId){
-
  const requestNumber=++playerLoadRequest;
-
- raidPlayers=[];
- resetRaiderPreview();
-
- $("raiderSelect").innerHTML=
-  '<option value="">Loading Players...</option>';
+ raidPlayers=[];resetRaiderPreview();
+ $("raiderSelect").innerHTML='<option value="">Loading Players...</option>';
 
  if(!teamId){
-  $("raiderSelect").innerHTML=
-   '<option value="">Select Raiding Team First</option>';
+  $("raiderSelect").innerHTML='<option value="">Select Raiding Team First</option>';
   return;
  }
-
- if(
-  !currentMatch||
-  (teamId!==currentMatch.team_a_id&&teamId!==currentMatch.team_b_id)
- ){
-  $("raiderSelect").innerHTML=
-   '<option value="">Invalid Team</option>';
-  return;
+ if(!currentMatch||(teamId!==currentMatch.team_a_id&&teamId!==currentMatch.team_b_id)){
+  $("raiderSelect").innerHTML='<option value="">Invalid Team</option>';return;
  }
 
- const {data,error}=await db
-  .from("players")
+ const {data,error}=await db.from("players")
   .select("id,client_id,team_id,name,jersey_number,position,photo_url")
-  .eq("client_id",clientId)
-  .eq("team_id",teamId)
+  .eq("client_id",clientId).eq("team_id",teamId)
   .order("jersey_number",{ascending:true});
 
  if(requestNumber!==playerLoadRequest)return;
-
  if(error){
-  $("raiderSelect").innerHTML=
-   '<option value="">Player Load Error</option>';
-
-  msg("Player Load Error: "+error.message,true);
-  return;
+  $("raiderSelect").innerHTML='<option value="">Player Load Error</option>';
+  msg("Player Load Error: "+error.message,true);return;
  }
 
  raidPlayers=data||[];
-
- $("raiderSelect").innerHTML=
-  '<option value="">Select Raider</option>';
-
+ $("raiderSelect").innerHTML='<option value="">No Raider Selected</option>';
  raidPlayers.forEach(p=>{
-  const jersey=p.jersey_number!==null&&p.jersey_number!==undefined
-   ?" #"+p.jersey_number
-   :"";
-
-  $("raiderSelect").add(
-   new Option((p.name||"Unnamed Player")+jersey,p.id)
-  );
+  const jersey=p.jersey_number!==null&&p.jersey_number!==undefined?" #"+p.jersey_number:"";
+  $("raiderSelect").add(new Option((p.name||"Unnamed Player")+jersey,p.id));
  });
-
- if(!raidPlayers.length){
-  $("raiderSelect").innerHTML=
-   '<option value="">No Player Found</option>';
- }
+ if(!raidPlayers.length)$("raiderSelect").innerHTML='<option value="">No Player Found</option>';
 }
-
 
 function updateRaiderPreview(){
-
  const id=$("raiderSelect").value;
-
- selectedRaider=
-  raidPlayers.find(p=>p.id===id)||null;
-
- if(!selectedRaider){
-  resetRaiderPreview();
-  return;
- }
+ selectedRaider=raidPlayers.find(p=>p.id===id)||null;
+ if(!selectedRaider){resetRaiderPreview();return;}
 
  $("raiderName").textContent=selectedRaider.name||"PLAYER";
-
- $("raiderJersey").textContent=
-  "Jersey: "+
-  (selectedRaider.jersey_number??"--");
-
- $("raiderPosition").textContent=
-  "Position: "+
-  (selectedRaider.position||"--");
+ $("raiderJersey").textContent="Jersey: "+(selectedRaider.jersey_number??"--");
+ $("raiderPosition").textContent="Position: "+(selectedRaider.position||"--");
 
  const photo=$("raiderPhoto");
-
- photo.onerror=()=>{
-  photo.onerror=null;
-  photo.removeAttribute("src");
-  photo.alt="Player photo unavailable";
- };
-
+ photo.onerror=()=>{photo.onerror=null;photo.removeAttribute("src");photo.alt="Player photo unavailable";};
  if(selectedRaider.photo_url){
-  photo.src=selectedRaider.photo_url;
-  photo.alt=selectedRaider.name||"Raider";
+  photo.src=selectedRaider.photo_url;photo.alt=selectedRaider.name||"Raider";
  }else{
-  photo.removeAttribute("src");
-  photo.alt="No player photo uploaded";
+  photo.removeAttribute("src");photo.alt="No player photo uploaded";
  }
 }
 
-
-/* =====================================
-   START RAID
-===================================== */
-
+/* START RAID - PLAYER OPTIONAL */
 async function startRaid(){
+ if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
+ if(blockDuringHalfTime())return;
+ if(currentMatch.match_status!=="live"){msg("শুধুমাত্র Live Match-এ Raid শুরু করা যাবে।",true);return;}
+ if(currentMatch.raid_started_at){msg("আগের Raid শেষ না করে নতুন Raid শুরু করা যাবে না।",true);return;}
 
- if(!currentMatch){
-  msg("আগে Match নির্বাচন করুন।",true);
-  return;
- }
-
- if(currentMatch.match_status!=="live"){
-  msg("শুধুমাত্র Live Match-এ Raid শুরু করা যাবে।",true);
-  return;
- }
-
- if(currentMatch.current_raider_name){
-  msg("আগের Raid শেষ না করে নতুন Raid শুরু করা যাবে না।",true);
-  return;
- }
-
- const teamId=$("raiderTeam").value;
-
- if(!teamId){
-  msg("Raiding Team নির্বাচন করুন।",true);
-  return;
- }
-
- if(
-  currentMatch.current_raiding_team_id&&
-  currentMatch.current_raiding_team_id!==teamId
- ){
-  msg("Database-এ নির্ধারিত Raiding Team নির্বাচন করুন।",true);
-  return;
+ const teamId=$("raiderTeam").value||currentMatch.current_raiding_team_id||"";
+ if(!teamId){msg("Raiding Team নির্বাচন করুন।",true);return;}
+ if(currentMatch.current_raiding_team_id&&currentMatch.current_raiding_team_id!==teamId){
+  msg("Database-এ নির্ধারিত Raiding Team নির্বাচন করুন।",true);return;
  }
 
  const playerId=$("raiderSelect").value;
-
- if(!playerId){
-  msg("একজন Raider নির্বাচন করুন।",true);
-  return;
- }
-
- const player=raidPlayers.find(p=>p.id===playerId);
-
- if(!player||player.team_id!==teamId){
-  msg("সঠিক দলের Player নির্বাচন করুন।",true);
-  return;
+ let player=null;
+ if(playerId){
+  player=raidPlayers.find(p=>p.id===playerId);
+  if(!player||player.team_id!==teamId){msg("সঠিক দলের Player নির্বাচন করুন।",true);return;}
  }
 
  $("startRaidBtn").disabled=true;
-
- const {error}=await db.rpc(
-  "start_kabaddi_raid",
-  {
-   p_match_id:currentMatch.id,
-   p_raider_name:player.name,
-   p_raider_player_id:player.id,
-   p_raid_seconds:currentMatch.default_raid_seconds||30
-  }
- );
+ const {error}=await db.rpc("start_kabaddi_raid",{
+  p_match_id:currentMatch.id,
+  p_raider_name:player?.name||null,
+  p_raider_player_id:player?.id||null,
+  p_raid_seconds:currentMatch.default_raid_seconds||30
+ });
 
  if(error){
   $("startRaidBtn").disabled=false;
-  msg("Raid Start হয়নি: "+error.message,true);
-  return;
+  msg("Raid Start হয়নি: "+error.message,true);return;
  }
-
  await selectMatch(currentMatch.id);
-
- msg("Raid শুরু হয়েছে: "+player.name);
+ msg(player?"Raid শুরু হয়েছে: "+player.name:"Raid Timer শুরু হয়েছে। Raider নির্বাচন করা হয়নি।");
 }
 
-
-/* =====================================
-   STOP RAID
-===================================== */
-
+/* STOP RAID - CHECK TIMER, NOT PLAYER NAME */
 async function stopRaid(){
-
  if(!currentMatch)return;
-
- if(currentMatch.match_status!=="live"){
-  msg("Match Live নেই।",true);
-  return;
- }
-
- if(!currentMatch.current_raider_name){
-  msg("কোনো Active Raid নেই।",true);
-  return;
- }
+ if(blockDuringHalfTime())return;
+ if(currentMatch.match_status!=="live"){msg("Match Live নেই।",true);return;}
+ if(!currentMatch.raid_started_at){msg("কোনো Active Raid নেই।",true);return;}
 
  $("stopRaidBtn").disabled=true;
-
- const {error}=await db.rpc(
-  "stop_kabaddi_raid",
-  {
-   p_match_id:currentMatch.id
-  }
- );
-
+ const {error}=await db.rpc("stop_kabaddi_raid",{p_match_id:currentMatch.id});
  if(error){
   $("stopRaidBtn").disabled=false;
-  msg("Raid Stop হয়নি: "+error.message,true);
-  return;
+  msg("Raid Stop হয়নি: "+error.message,true);return;
  }
-
  await selectMatch(currentMatch.id);
-
  msg("Raid শেষ হয়েছে।");
 }
 
-
-/* =====================================
-   OVERLAY DISPLAY
-===================================== */
-
+/* OVERLAY */
 function renderOverlay(){
  if(!currentMatch)return;
-
  $("ovA").textContent=currentMatch.team_a_score;
  $("ovB").textContent=currentMatch.team_b_score;
-
- $("ovNames").textContent=
-  teamName(currentMatch.teamsA)+
-  " VS "+
-  teamName(currentMatch.teamsB);
-
- $("ovMeta").textContent=
-  matchTitle(currentMatch)+
-  " • "+
-  (currentMatch.match_status||"").toUpperCase()+
-  " • HALF "+
-  (currentMatch.current_half||1);
+ $("ovNames").textContent=teamName(currentMatch.teamsA)+" VS "+teamName(currentMatch.teamsB);
+ $("ovMeta").textContent=matchTitle(currentMatch)+" • "+(currentMatch.match_status||"").toUpperCase()+" • HALF "+(currentMatch.current_half||1);
 }
-
 function showAlert(text){
  const el=$("alertBanner");
-
- el.textContent=text;
- el.classList.remove("show");
-
- void el.offsetWidth;
-
- el.classList.add("show");
-
+ el.textContent=text;el.classList.remove("show");
+ void el.offsetWidth;el.classList.add("show");
  $("ovAlert").textContent=text;
 }
-
 async function sendBroadcastAlert(text){
- if(!currentMatch){
-  msg("আগে Match নির্বাচন করুন।",true);
-  return;
- }
-
+ if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
  if(!overlayChannel){
-  overlayChannel=db.channel(
-   "overlay-"+currentMatch.id,
-   {config:{broadcast:{self:false}}}
-  );
-
-  await new Promise(resolve=>{
-   overlayChannel.subscribe(resolve);
-  });
+  overlayChannel=db.channel("overlay-"+currentMatch.id,{config:{broadcast:{self:false}}});
+  await new Promise(resolve=>overlayChannel.subscribe(resolve));
  }
-
- await overlayChannel.send({
-  type:"broadcast",
-  event:"overlay_alert",
-  payload:{text}
- });
-
- showAlert(text);
- msg("Overlay Alert পাঠানো হয়েছে।");
+ await overlayChannel.send({type:"broadcast",event:"overlay_alert",payload:{text}});
+ showAlert(text);msg("Overlay Alert পাঠানো হয়েছে।");
 }
-
 function openOverlay(){
  if(!currentMatch)return;
-
- const url=
-  location.origin+
-  location.pathname+
-  "?overlay=1&match="+currentMatch.id;
-
- window.open(
-  url,
-  "GFC_KABADDI_OVERLAY",
-  "width=1200,height=700"
- );
+ const url=location.origin+location.pathname+"?overlay=1&match="+currentMatch.id;
+ window.open(url,"GFC_KABADDI_OVERLAY","width=1200,height=700");
 }
 
-/* =====================================
-   TIMER ENGINE
-===================================== */
-
+/* TIMER */
 function formatTime(seconds){
  seconds=Math.max(0,Math.floor(seconds||0));
-
- const minutes=Math.floor(seconds/60);
- const secs=seconds%60;
-
- return String(minutes).padStart(2,"0")+
-  ":"+
-  String(secs).padStart(2,"0");
+ return String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
 }
-
 function getMatchRemaining(){
- const m=currentMatch;
-
- if(!m)return 0;
-
+ const m=currentMatch;if(!m)return 0;
  let remaining=Number(m.match_timer||0);
-
  if(m.match_status==="live"&&m.match_started_at){
-  const elapsed=Math.floor(
-   (Date.now()-new Date(m.match_started_at).getTime())/1000
-  );
-
+  const elapsed=Math.floor((Date.now()-new Date(m.match_started_at).getTime())/1000);
   remaining=Math.max(0,remaining-elapsed);
  }
-
  return remaining;
 }
-
 function getRaidRemaining(){
- const m=currentMatch;
-
- if(!m)return 0;
-
+ const m=currentMatch;if(!m)return 0;
  let remaining=Number(m.raid_timer||0);
-
  if(m.match_status==="live"&&m.raid_started_at){
-  const elapsed=Math.floor(
-   (Date.now()-new Date(m.raid_started_at).getTime())/1000
-  );
-
+  const elapsed=Math.floor((Date.now()-new Date(m.raid_started_at).getTime())/1000);
   remaining=Math.max(0,remaining-elapsed);
  }
-
  return remaining;
 }
-
 function getBreakRemaining(){
- const m=currentMatch;
-
- if(!m||!m.halftime_started_at)return 0;
-
- const elapsed=Math.floor(
-  (Date.now()-new Date(m.halftime_started_at).getTime())/1000
- );
-
- return Math.max(
-  0,
-  Number(m.halftime_break_seconds||0)-elapsed
- );
+ const m=currentMatch;if(!m||!m.halftime_started_at)return 0;
+ const elapsed=Math.floor((Date.now()-new Date(m.halftime_started_at).getTime())/1000);
+ return Math.max(0,Number(m.halftime_break_seconds||0)-elapsed);
 }
-
 function updateTimerDisplay(){
  if(!currentMatch)return;
+ const m=currentMatch,matchRemaining=getMatchRemaining(),raidRemaining=getRaidRemaining(),breakRemaining=getBreakRemaining();
+ $("matchTimerDisplay").textContent=formatTime(matchRemaining);
+ $("raidTimerDisplay").textContent=formatTime(raidRemaining);
+ $("breakTimerDisplay").textContent=formatTime(breakRemaining);
+ $("timerHalf").textContent=Number(m.current_half)===2?"SECOND HALF":"FIRST HALF";
+ $("matchTimerDisplay").classList.toggle("timer-warning",matchRemaining<=60&&m.match_status==="live");
+ $("manualHalfBtn").disabled=!(m.match_status==="halftime"&&Number(m.current_half)===1);
+ $("pauseBtn").disabled=m.match_status!=="live";
+ $("resumeBtn").disabled=m.match_status!=="paused";
 
- const m=currentMatch;
-
- const matchRemaining=getMatchRemaining();
- const raidRemaining=getRaidRemaining();
- const breakRemaining=getBreakRemaining();
-
- $("matchTimerDisplay").textContent=
-  formatTime(matchRemaining);
-
- $("raidTimerDisplay").textContent=
-  formatTime(raidRemaining);
-
- $("breakTimerDisplay").textContent=
-  formatTime(breakRemaining);
-
- $("timerHalf").textContent=
-  Number(m.current_half)===2
-   ?"SECOND HALF"
-   :"FIRST HALF";
-
- $("matchTimerDisplay").classList.toggle(
-  "timer-warning",
-  matchRemaining<=60&&m.match_status==="live"
- );
-
- $("manualHalfBtn").disabled=
-  !(m.match_status==="halftime"&&Number(m.current_half)===1);
-
- $("pauseBtn").disabled=
-  m.match_status!=="live";
-
- $("resumeBtn").disabled=
-  m.match_status!=="paused";
-
- if(m.match_status==="upcoming"){
-  $("timerMessage").textContent="MATCH NOT STARTED";
- }else if(m.match_status==="paused"){
-  $("timerMessage").textContent="⏸ MATCH PAUSED";
- }else if(m.match_status==="halftime"){
-  $("timerMessage").textContent=
-   breakRemaining>0
-    ?"HALF TIME BREAK"
-    :"BREAK FINISHED";
- }else if(m.match_status==="live"&&matchRemaining===0){
-  $("timerMessage").textContent=
-   Number(m.current_half)===1
-    ?"FIRST HALF FINISHED"
-    :"SECOND HALF TIME UP - FINISH MATCH";
- }else if(m.match_status==="completed"){
-  $("timerMessage").textContent="MATCH COMPLETED";
- }else{
-  $("timerMessage").textContent="● MATCH LIVE";
- }
+ if(m.match_status==="upcoming")$("timerMessage").textContent="MATCH NOT STARTED";
+ else if(m.match_status==="paused")$("timerMessage").textContent="⏸ MATCH PAUSED";
+ else if(m.match_status==="halftime")$("timerMessage").textContent=breakRemaining>0?"HALF TIME BREAK":"BREAK FINISHED";
+ else if(m.match_status==="live"&&matchRemaining===0)$("timerMessage").textContent=Number(m.current_half)===1?"FIRST HALF FINISHED":"SECOND HALF TIME UP - FINISH MATCH";
+ else if(m.match_status==="completed")$("timerMessage").textContent="MATCH COMPLETED";
+ else $("timerMessage").textContent="● MATCH LIVE";
 }
 
-/* =====================================
-   AUTOMATIC FIRST HALF END
-===================================== */
-
+/* HALF TRANSITIONS */
 async function finishFirstHalfAutomatically(){
- if(transitionBusy||!currentMatch)return;
-
- if(currentMatch.match_status!=="live")return;
- if(Number(currentMatch.current_half)!==1)return;
- if(getMatchRemaining()>0)return;
-
+ if(transitionBusy||!currentMatch||currentMatch.match_status!=="live"||Number(currentMatch.current_half)!==1||getMatchRemaining()>0)return;
  transitionBusy=true;
-
  try{
-  const {error}=await db.rpc(
-   "finish_kabaddi_half",
-   {p_match_id:currentMatch.id}
-  );
-
+  const {error}=await db.rpc("finish_kabaddi_half",{p_match_id:currentMatch.id});
   if(error)throw error;
-
   await selectMatch(currentMatch.id);
-
   msg("First Half শেষ। Half Time শুরু হয়েছে।");
-
- }catch(error){
-  msg("Half Time শুরু হয়নি: "+error.message,true);
- }finally{
-  transitionBusy=false;
- }
+ }catch(error){msg("Half Time শুরু হয়নি: "+error.message,true);}
+ finally{transitionBusy=false;}
 }
-
-/* =====================================
-   AUTOMATIC SECOND HALF START
-===================================== */
-
 async function advanceHalfAutomatically(){
- if(transitionBusy||!currentMatch)return;
-
- if(currentMatch.match_status!=="halftime")return;
- if(getBreakRemaining()>0)return;
-
+ if(transitionBusy||!currentMatch||currentMatch.match_status!=="halftime"||getBreakRemaining()>0)return;
  transitionBusy=true;
-
  try{
-  const {data,error}=await db.rpc(
-   "advance_kabaddi_half_if_ready",
-   {p_match_id:currentMatch.id}
-  );
-
+  const {data,error}=await db.rpc("advance_kabaddi_half_if_ready",{p_match_id:currentMatch.id});
   if(error)throw error;
-
   if(data?.transitioned){
    await selectMatch(currentMatch.id);
-
+   hideHalfTimePopup();
    msg("Automatic Second Half শুরু হয়েছে।");
   }
-
- }catch(error){
-  msg("Second Half শুরু হয়নি: "+error.message,true);
- }finally{
-  transitionBusy=false;
- }
+ }catch(error){msg("Second Half শুরু হয়নি: "+error.message,true);}
+ finally{transitionBusy=false;}
 }
 
-/* =====================================
-   MANUAL HALF TIME END
-===================================== */
-
-async function manualEndHalfTime(){
+/* MANUAL HALF TIME END */
+async function manualEndHalfTime(fromPopup=false){
  if(!currentMatch)return;
+ if(currentMatch.match_status!=="halftime"){msg("Match এখন Half Time-এ নেই।",true);hideHalfTimePopup();return;}
 
- if(currentMatch.match_status!=="halftime"){
-  msg("Match এখন Half Time-এ নেই।",true);
-  return;
- }
+ if(!fromPopup&&!confirm("Half Time এখনই শেষ করে Second Half শুরু করবেন?"))return;
 
- if(!confirm(
-  "Half Time এখনই শেষ করে Second Half শুরু করবেন?"
- ))return;
+ $("endBreakPopupBtn").disabled=true;
+ $("manualHalfBtn").disabled=true;
 
- const {data,error}=await db.rpc(
-  "end_kabaddi_halftime_now",
-  {p_match_id:currentMatch.id}
- );
+ const {data,error}=await db.rpc("end_kabaddi_halftime_now",{p_match_id:currentMatch.id});
+ $("endBreakPopupBtn").disabled=false;
 
  if(error){
-  msg("Second Half শুরু হয়নি: "+error.message,true);
-  return;
+  $("manualHalfBtn").disabled=false;
+  msg("Second Half শুরু হয়নি: "+error.message,true);return;
  }
 
  await selectMatch(currentMatch.id);
-
- msg("Manual Second Half শুরু হয়েছে।");
+ hideHalfTimePopup();
+ msg("Half Time শেষ। Second Half শুরু হয়েছে।");
 }
 
-/* =====================================
-   MATCH START / RESUME
-===================================== */
-
+/* MATCH START / RESUME */
 async function startMatch(){
  if(!currentMatch)return;
-
  let rpcName;
+ if(currentMatch.match_status==="upcoming")rpcName="start_kabaddi_match";
+ else if(currentMatch.match_status==="paused")rpcName="resume_kabaddi_match";
+ else{msg("এই Match এখন Start বা Resume করা যাবে না।",true);return;}
 
- if(currentMatch.match_status==="upcoming"){
-  rpcName="start_kabaddi_match";
- }else if(currentMatch.match_status==="paused"){
-  rpcName="resume_kabaddi_match";
- }else{
-  msg("এই Match এখন Start বা Resume করা যাবে না।",true);
-  return;
- }
-
- const {error}=await db.rpc(rpcName,{
-  p_match_id:currentMatch.id
- });
-
- if(error){
-  msg("Match Start হয়নি: "+error.message,true);
-  return;
- }
-
+ const {error}=await db.rpc(rpcName,{p_match_id:currentMatch.id});
+ if(error){msg("Match Start হয়নি: "+error.message,true);return;}
  await selectMatch(currentMatch.id);
-
  msg("Match সফলভাবে Start / Resume হয়েছে।");
 }
-
-/* =====================================
-   MATCH PAUSE
-===================================== */
-
 async function pauseMatch(){
  if(!currentMatch)return;
-
- if(currentMatch.match_status!=="live"){
-  msg("শুধুমাত্র Live Match Pause করা যাবে।",true);
-  return;
- }
-
- const {error}=await db.rpc(
-  "pause_kabaddi_match",
-  {p_match_id:currentMatch.id}
- );
-
- if(error){
-  msg("Pause হয়নি: "+error.message,true);
-  return;
- }
-
+ if(currentMatch.match_status!=="live"){msg("শুধুমাত্র Live Match Pause করা যাবে।",true);return;}
+ const {error}=await db.rpc("pause_kabaddi_match",{p_match_id:currentMatch.id});
+ if(error){msg("Pause হয়নি: "+error.message,true);return;}
  await selectMatch(currentMatch.id);
-
  msg("Match Paused হয়েছে।");
 }
 
-/* =====================================
-   CUSTOM MATCH SETTINGS
-===================================== */
-
+/* SETTINGS */
 async function saveMatchSettings(){
  if(!currentMatch)return;
+ if(!["owner","admin"].includes(currentRole)){msg("শুধুমাত্র Owner/Admin Settings পরিবর্তন করতে পারবেন।",true);return;}
 
- if(!["owner","admin"].includes(currentRole)){
-  msg("শুধুমাত্র Owner/Admin Settings পরিবর্তন করতে পারবেন।",true);
-  return;
+ const first=Number($("firstHalfInput").value),breakMinutes=Number($("breakInput").value);
+ const second=Number($("secondHalfInput").value),raid=Number($("raidInput").value);
+
+ if(!Number.isInteger(first)||first<1||first>120||
+ !Number.isInteger(breakMinutes)||breakMinutes<0||breakMinutes>60||
+ !Number.isInteger(second)||second<1||second>120||
+ !Number.isInteger(raid)||raid<5||raid>300){
+  msg("সঠিক Timer Settings দিন।",true);return;
  }
 
- const first=Number($("firstHalfInput").value);
- const breakMinutes=Number($("breakInput").value);
- const second=Number($("secondHalfInput").value);
- const raid=Number($("raidInput").value);
-
- if(
-  !Number.isInteger(first)||first<1||first>120||
-  !Number.isInteger(breakMinutes)||breakMinutes<0||breakMinutes>60||
-  !Number.isInteger(second)||second<1||second>120||
-  !Number.isInteger(raid)||raid<5||raid>300
- ){
-  msg("সঠিক Timer Settings দিন।",true);
-  return;
- }
-
- const {error}=await db.rpc(
-  "update_kabaddi_match_settings",
-  {
-   p_match_id:currentMatch.id,
-   p_first_half_seconds:first*60,
-   p_halftime_break_seconds:breakMinutes*60,
-   p_second_half_seconds:second*60,
-   p_raid_seconds:raid
-  }
- );
-
- if(error){
-  msg("Settings Save হয়নি: "+error.message,true);
-  return;
- }
-
+ const {error}=await db.rpc("update_kabaddi_match_settings",{
+  p_match_id:currentMatch.id,
+  p_first_half_seconds:first*60,
+  p_halftime_break_seconds:breakMinutes*60,
+  p_second_half_seconds:second*60,
+  p_raid_seconds:raid
+ });
+ if(error){msg("Settings Save হয়নি: "+error.message,true);return;}
  await selectMatch(currentMatch.id);
-
  msg("Custom Match Settings Save হয়েছে।");
 }
 
-/* =====================================
-   TIMER LOOP
-===================================== */
-
+/* TIMER LOOP */
 function startTimerLoop(){
  if(timerInterval)clearInterval(timerInterval);
-
  timerInterval=setInterval(async()=>{
   if(!currentMatch)return;
-
   updateTimerDisplay();
-
-  if(
-   currentMatch.match_status==="live"&&
-   Number(currentMatch.current_half)===1&&
-   getMatchRemaining()===0
-  ){
-   await finishFirstHalfAutomatically();
-  }
-
-  if(
-   currentMatch.match_status==="halftime"&&
-   getBreakRemaining()===0
-  ){
-   await advanceHalfAutomatically();
-  }
-
+  if(currentMatch.match_status==="live"&&Number(currentMatch.current_half)===1&&getMatchRemaining()===0)await finishFirstHalfAutomatically();
+  if(currentMatch.match_status==="halftime"&&getBreakRemaining()===0)await advanceHalfAutomatically();
  },1000);
 }
 
-/* =====================================
-   SCORING EVENT
-===================================== */
+/* SCORING EVENT */
+const eventLabels={
+ raid_touch:"PLAYER TOUCHED",bonus:"BONUS",tackle:"PLAYER CAUGHT",
+ super_raid:"SUPER RAID",super_tackle:"SUPER TACKLE",all_out:"ALL OUT",
+ empty_raid:"EMPTY RAID",do_or_die_success:"DO-OR-DIE SUCCESS",
+ do_or_die_failed:"DO-OR-DIE FAILED",player_out:"PLAYER OUT",
+ player_in:"PLAYER IN",yellow_card:"YELLOW CARD",red_card:"RED CARD"
+};
 
-async function recordEvent(){
- if(!currentMatch){
-  msg("আগে Match নির্বাচন করুন।",true);
-  return;
- }
-
- if(currentMatch.match_status!=="live"){
-  msg("শুধুমাত্র Live Match-এ Score Record করা যাবে।",true);
-  return;
- }
+async function submitScoreEvent(type,points){
+ if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
+ if(blockDuringHalfTime())return;
+ if(currentMatch.match_status!=="live"){msg("শুধুমাত্র Live Match-এ Score Record করা যাবে।",true);return;}
 
  const team=$("scoringTeam").value;
- const type=$("eventType").value;
- const points=Number($("points").value);
+ if(!team){msg("আগে Scoring Team নির্বাচন করুন।",true);return;}
+ if(!Number.isInteger(points)||points<0||points>20){msg("সঠিক Points দিন।",true);return;}
 
- if(!team){
-  msg("Scoring Team নির্বাচন করুন।",true);
-  return;
- }
-
- if(
-  !Number.isInteger(points)||
-  points<0||
-  points>20
- ){
-  msg("সঠিক Points দিন।",true);
-  return;
- }
-
- const labels={
-  raid_touch:"PLAYER TOUCHED",
-  bonus:"BONUS",
-  tackle:"PLAYER CAUGHT",
-  super_raid:"SUPER RAID",
-  super_tackle:"SUPER TACKLE",
-  all_out:"ALL OUT",
-  empty_raid:"EMPTY RAID",
-  do_or_die_success:"DO-OR-DIE SUCCESS",
-  do_or_die_failed:"DO-OR-DIE FAILED",
-  player_out:"PLAYER OUT",
-  player_in:"PLAYER IN",
-  yellow_card:"YELLOW CARD",
-  red_card:"RED CARD"
- };
-
- const playerId=
-  selectedRaider&&
-  selectedRaider.team_id===team
-   ?selectedRaider.id
-   :null;
-
- const {error}=await db.rpc(
-  "record_kabaddi_score_event",
-  {
-   p_match_id:currentMatch.id,
-   p_event_type:type,
-   p_team_id:team,
-   p_points:points,
-   p_overlay_label:labels[type]||type,
-   p_player_id:playerId
-  }
- );
-
- if(error){
-  msg("Event save হয়নি: "+error.message,true);
-  return;
- }
+ const playerId=selectedRaider&&selectedRaider.team_id===team?selectedRaider.id:null;
+ const {error}=await db.rpc("record_kabaddi_score_event",{
+  p_match_id:currentMatch.id,
+  p_event_type:type,
+  p_team_id:team,
+  p_points:points,
+  p_overlay_label:eventLabels[type]||type,
+  p_player_id:playerId
+ });
+ if(error){msg("Event save হয়নি: "+error.message,true);return;}
 
  await selectMatch(currentMatch.id);
-
- showAlert(labels[type]||type);
-
- msg("Event সফলভাবে Save হয়েছে।");
+ showAlert(eventLabels[type]||type);
+ msg((eventLabels[type]||type)+" • "+points+" Point সফলভাবে Save হয়েছে।");
 }
 
-/* =====================================
-   UNDO LAST EVENT
-===================================== */
+async function recordEvent(){
+ const points=Number($("points").value);
+ await submitScoreEvent($("eventType").value,points);
+}
 
+/* UNDO */
 async function undoEvent(){
  if(!currentMatch)return;
-
+ if(isHalfTime()){showHalfTimePopup();msg("Half Time Break চলাকালীন Undo করা যাবে না।",true);return;}
  if(!confirm("সর্বশেষ Scoring Event Undo করবেন?"))return;
-
- const {data,error}=await db.rpc(
-  "undo_last_match_event",
-  {p_match_id:currentMatch.id}
- );
-
- if(error){
-  msg("Undo হয়নি: "+error.message,true);
-  return;
- }
-
+ const {data,error}=await db.rpc("undo_last_match_event",{p_match_id:currentMatch.id});
+ if(error){msg("Undo হয়নি: "+error.message,true);return;}
  await selectMatch(currentMatch.id);
-
  msg("Last event Undo হয়েছে।");
 }
 
-/* =====================================
-   BROADCAST OVERLAY PAGE
-===================================== */
-
+/* OVERLAY PAGE */
 async function initOverlay(){
  $("app").classList.add("hidden");
  $("overlayPage").classList.remove("hidden");
  $("logoutBtn").classList.add("hidden");
 
  const {data:userData}=await db.auth.getUser();
-
  if(!userData?.user){
   $("overlayPage").classList.add("hidden");
   $("app").classList.remove("hidden");
-  showLogin();
-  msg("Overlay দেখার জন্য এই Browser-এ Club Login প্রয়োজন।",true);
-  return;
+  showLogin();msg("Overlay দেখার জন্য এই Browser-এ Club Login প্রয়োজন।",true);return;
  }
+ if(!requestedMatch){$("ovAlert").textContent="MATCH ID REQUIRED";return;}
 
- if(!requestedMatch){
-  $("ovAlert").textContent="MATCH ID REQUIRED";
-  return;
- }
+ const {data,error}=await db.from("matches").select(`
+  *,teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
+  teamsB:teams!matches_team_b_id_fkey(id,name,short_name),tournaments(name)
+ `).eq("id",requestedMatch).single();
 
- const {data,error}=await db
-  .from("matches")
-  .select(`
-   *,
-   teamsA:teams!matches_team_a_id_fkey(id,name,short_name),
-   teamsB:teams!matches_team_b_id_fkey(id,name,short_name),
-   tournaments(name)
-  `)
-  .eq("id",requestedMatch)
-  .single();
+ if(error){$("ovAlert").textContent="MATCH LOAD ERROR";return;}
+ currentMatch=data;renderOverlay();
 
- if(error){
-  $("ovAlert").textContent="MATCH LOAD ERROR";
-  return;
- }
-
- currentMatch=data;
-
- renderOverlay();
-
- overlayChannel=db
-  .channel("overlay-"+requestedMatch,{config:{broadcast:{self:false}}})
-
-  .on(
-   "broadcast",
-   {event:"overlay_alert"},
-   ({payload})=>{
-    if(payload?.text)showAlert(payload.text);
-   }
-  )
-
-  .on(
-   "postgres_changes",
-   {
-    event:"UPDATE",
-    schema:"public",
-    table:"matches",
-    filter:"id=eq."+requestedMatch
-   },
-   payload=>{
-    currentMatch={
-     ...currentMatch,
-     ...payload.new
-    };
-
-    renderOverlay();
-   }
-  )
-
-  .on(
-   "postgres_changes",
-   {
-    event:"INSERT",
-    schema:"public",
-    table:"match_events",
-    filter:"match_id=eq."+requestedMatch
-   },
-   payload=>{
-    if(payload.new.event_data?.overlay_label){
-     showAlert(payload.new.event_data.overlay_label);
-    }
-   }
-  )
-
-  .subscribe();
+ overlayChannel=db.channel("overlay-"+requestedMatch,{config:{broadcast:{self:false}}})
+ .on("broadcast",{event:"overlay_alert"},({payload})=>{if(payload?.text)showAlert(payload.text);})
+ .on("postgres_changes",{event:"UPDATE",schema:"public",table:"matches",filter:"id=eq."+requestedMatch},payload=>{
+  currentMatch={...currentMatch,...payload.new};renderOverlay();
+ })
+ .on("postgres_changes",{event:"INSERT",schema:"public",table:"match_events",filter:"match_id=eq."+requestedMatch},payload=>{
+  if(payload.new.event_data?.overlay_label)showAlert(payload.new.event_data.overlay_label);
+ })
+ .subscribe();
 }
 
-/* =====================================
-   EVENT LISTENERS
-===================================== */
-
+/* EVENT LISTENERS */
 $("loginBtn").addEventListener("click",login);
-
-$("logoutBtn").addEventListener(
- "click",
- async()=>{
-  await db.auth.signOut();
-  location.reload();
- }
-);
-
-$("matchSelect").addEventListener(
- "change",
- e=>selectMatch(e.target.value)
-);
-
+$("logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
+$("matchSelect").addEventListener("change",e=>selectMatch(e.target.value));
 $("startBtn").addEventListener("click",startMatch);
+$("refreshBtn").addEventListener("click",loadMatches);
+$("recordBtn").addEventListener("click",recordEvent);
+$("undoBtn").addEventListener("click",undoEvent);
+$("overlayLinkBtn").addEventListener("click",openOverlay);
+$("pauseBtn").addEventListener("click",pauseMatch);
+$("resumeBtn").addEventListener("click",startMatch);
+$("manualHalfBtn").addEventListener("click",()=>manualEndHalfTime(false));
+$("saveSettingsBtn").addEventListener("click",saveMatchSettings);
 
-$("refreshBtn").addEventListener(
- "click",
- loadMatches
-);
-
-$("recordBtn").addEventListener(
- "click",
- recordEvent
-);
-
-$("undoBtn").addEventListener(
- "click",
- undoEvent
-);
-
-$("overlayLinkBtn").addEventListener(
- "click",
- openOverlay
-);
-
-$("pauseBtn").addEventListener(
- "click",
- pauseMatch
-);
-
-$("resumeBtn").addEventListener(
- "click",
- startMatch
-);
-
-$("manualHalfBtn").addEventListener(
- "click",
- manualEndHalfTime
-);
-
-$("saveSettingsBtn").addEventListener(
- "click",
- saveMatchSettings
-);
-
-/* Raider List */
-$("raiderTeam").addEventListener(
- "change",
- async e=>{
+$("raiderTeam").addEventListener("change",async e=>loadPlayersForTeam(e.target.value));
+$("raiderSelect").addEventListener("change",updateRaiderPreview);
+$("scoringTeam").addEventListener("change",async e=>{
+ if(e.target.value){
+  $("raiderTeam").value=e.target.value;
   await loadPlayersForTeam(e.target.value);
  }
-);
+});
+$("startRaidBtn").addEventListener("click",startRaid);
+$("stopRaidBtn").addEventListener("click",stopRaid);
 
-$("raiderSelect").addEventListener(
- "change",
- updateRaiderPreview
-);
+$("endBreakPopupBtn").addEventListener("click",()=>manualEndHalfTime(true));
+$("closeBreakPopupBtn").addEventListener("click",hideHalfTimePopup);
 
-$("scoringTeam").addEventListener(
- "change",
- async e=>{
-  if(e.target.value){
-   $("raiderTeam").value=e.target.value;
-   await loadPlayersForTeam(e.target.value);
-  }
- }
-);
-
-$("startRaidBtn").addEventListener(
- "click",
- startRaid
-);
-
-$("stopRaidBtn").addEventListener(
- "click",
- stopRaid
-);
-
-/* Broadcast Alerts */
-document.querySelectorAll("[data-alert]").forEach(btn=>{
- btn.addEventListener(
-  "click",
-  ()=>sendBroadcastAlert(btn.dataset.alert)
- );
+document.querySelectorAll("[data-quick]").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  submitScoreEvent(btn.dataset.quick,Number(btn.dataset.points));
+ });
 });
 
-/* =====================================
-   APPLICATION START
-===================================== */
+document.querySelectorAll("[data-alert]").forEach(btn=>{
+ btn.addEventListener("click",()=>sendBroadcastAlert(btn.dataset.alert));
+});
 
+/* APPLICATION START */
 (async()=>{
  startTimerLoop();
-
- if(isOverlay){
-  await initOverlay();
-  return;
- }
+ if(isOverlay){await initOverlay();return;}
 
  const {data,error}=await db.auth.getSession();
-
- if(error){
-  showLogin();
-  msg(error.message,true);
-  return;
- }
-
- if(data?.session){
-  await initialize();
- }else{
-  showLogin();
-  msg("Club Login করে Live Scoring শুরু করুন।");
- }
+ if(error){showLogin();msg(error.message,true);return;}
+ if(data?.session)await initialize();
+ else{showLogin();msg("Club Login করে Live Scoring শুরু করুন।");}
 })();
-
 </script>
 </body>
 </html>
