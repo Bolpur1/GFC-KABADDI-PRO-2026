@@ -1,0 +1,668 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071713">
+<title>GFC KABADDI PRO 2026 | Super Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--bg:#071713;--panel:#10231d;--line:#254238;
+--text:#effaf3;--muted:#9ab3a6;
+--green:#42dc91;--red:#ff6b72;
+}
+*{box-sizing:border-box}
+body{
+margin:0;background:radial-gradient(circle at 80% 0%,#123b2b,transparent 34%),var(--bg);
+color:var(--text);font-family:Arial,sans-serif;min-height:100vh
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.wrap{max-width:1180px;margin:auto;padding:20px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:25px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+width:46px;height:46px;border-radius:14px;
+background:linear-gradient(135deg,var(--green),#138454);
+display:grid;place-items:center;color:#052317;
+font-weight:1000;font-size:22px
+}
+.brand h1{font-size:16px;margin:0}
+.brand p{font-size:10px;color:var(--muted);letter-spacing:1px}
+.pill{border:1px solid var(--line);border-radius:30px;padding:8px 12px;color:var(--muted);font-size:11px}
+.panel{
+background:linear-gradient(145deg,#122820,#0d1e18);
+border:1px solid var(--line);border-radius:18px;
+box-shadow:0 12px 40px #0003
+}
+.login{max-width:430px;margin:8vh auto;padding:25px}
+.login h2{margin:0 0 8px}
+.sub{color:var(--muted);font-size:13px;line-height:1.5}
+label{display:block;color:#c4d9cd;font-size:12px;font-weight:bold;margin:14px 0 7px}
+input,select{
+width:100%;background:#071812;border:1px solid #315344;
+border-radius:10px;padding:12px;color:var(--text);outline:none
+}
+input:focus,select:focus{border-color:var(--green)}
+.btn{
+border:0;border-radius:10px;padding:12px 15px;
+font-weight:bold;background:var(--green);color:#052317
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:#1a382c;color:white;border:1px solid #315344}
+.btn.danger{background:#51252a;color:#ffdadd;border:1px solid #873d45}
+.btn.small{padding:8px 10px;font-size:11px}
+.full{width:100%;margin-top:17px}
+.msg{font-size:12px;color:#f5c56b;margin-top:12px;line-height:1.5;overflow-wrap:anywhere}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:12px 0 18px}
+.heading h2{margin:0;font-size:24px}
+.heading p{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:17px}
+.stat{padding:17px}
+.stat .k{color:var(--muted);font-size:11px}
+.stat .v{font-size:28px;font-weight:900;margin-top:9px}
+.stat .hint{font-size:11px;color:var(--green);margin-top:5px}
+.grid{display:grid;grid-template-columns:1fr 1.4fr;gap:15px}
+.section{padding:18px}
+.section h3{margin:0 0 5px;font-size:16px}
+.desc{color:var(--muted);font-size:12px;line-height:1.5;margin-bottom:15px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.span2{grid-column:1/-1}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px;padding:10px;background:#0a1b14;border-radius:10px;border:1px solid #203b2e}
+.tablewrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:510px}
+th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #203b30;font-size:12px}
+th{color:var(--muted)}
+.status{display:inline-block;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:bold;text-transform:uppercase}
+.active{background:#123f2c;color:#6ff0ac}
+.suspended{background:#48252a;color:#ff9ba0}
+.inactive{background:#303a35;color:#c2cec6}
+.empty{color:var(--muted);text-align:center;padding:25px;font-size:13px}
+.toolbar{display:flex;gap:8px;align-items:center}
+.toolbar input{max-width:230px;padding:10px}
+.footer{text-align:center;color:#688576;font-size:11px;padding:25px}
+@media(max-width:850px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.grid{grid-template-columns:1fr}
+.heading{align-items:flex-start;flex-direction:column}
+.toolbar{width:100%}
+.toolbar input{max-width:none;flex:1}
+}
+@media(max-width:520px){
+.wrap{padding:13px}
+.brand h1{font-size:13px}
+.logo{width:40px;height:40px}
+.login{padding:21px;margin:5vh auto}
+.stat{padding:13px}
+.stat .v{font-size:24px}
+.section{padding:14px}
+.formgrid{grid-template-columns:1fr}
+.span2{grid-column:auto}
+.heading h2{font-size:21px}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="top">
+<div class="brand">
+<div class="logo">G</div>
+<div>
+<h1>GFC KABADDI PRO 2026</h1>
+<p>COMMERCIAL SPORTS PLATFORM</p>
+</div>
+</div>
+<div class="pill" id="topState">SUPER ADMIN PORTAL</div>
+</header>
+
+<!-- LOGIN -->
+<section id="loginView" class="panel login">
+<h2>Super Admin Login</h2>
+<p class="sub">Login to manage clients, subscriptions and live matches.</p>
+
+<form id="loginForm">
+<label>Admin Email</label>
+<input id="email" type="email" required autocomplete="username" placeholder="Admin Email">
+
+<label>Password</label>
+<input id="password" type="password" required autocomplete="current-password" placeholder="Password">
+
+<button class="btn full" id="loginBtn" type="submit">LOGIN TO DASHBOARD</button>
+</form>
+<div class="msg" id="loginMsg"></div>
+</section>
+
+<!-- DASHBOARD -->
+<main id="appView" class="hidden">
+
+<div class="heading">
+<div>
+<h2>Super Admin Dashboard</h2>
+<p id="welcome">Platform Overview</p>
+</div>
+<div class="toolbar">
+<span class="pill">Owner Control</span>
+<button class="btn secondary small" id="refreshBtn">Refresh</button>
+<button class="btn danger small" id="logoutBtn">Logout</button>
+</div>
+</div>
+
+<!-- STATISTICS -->
+<section class="stats">
+<div class="panel stat">
+<div class="k">TOTAL CLIENTS</div>
+<div class="v" id="totalClients">—</div>
+<div class="hint">Registered organizations</div>
+</div>
+
+<div class="panel stat">
+<div class="k">ACTIVE CLIENTS</div>
+<div class="v" id="activeClients">—</div>
+<div class="hint">Currently enabled</div>
+</div>
+
+<div class="panel stat">
+<div class="k">TOURNAMENTS</div>
+<div class="v" id="totalTournaments">—</div>
+<div class="hint">All tournaments</div>
+</div>
+
+<div class="panel stat">
+<div class="k">LIVE MATCHES</div>
+<div class="v" id="liveMatches">—</div>
+<div class="hint">Currently live</div>
+</div>
+</section>
+
+<div class="grid">
+
+<!-- CREATE CLIENT -->
+<section class="panel section">
+<h3>Create New Client</h3>
+<p class="desc">Create a club account and assign a subscription.</p>
+
+<form id="clientForm">
+<div class="formgrid">
+
+<div class="span2">
+<label>Club / Organization Name *</label>
+<input id="clientName" required placeholder="Bolpur Kabaddi Club">
+</div>
+
+<div>
+<label>Unique Slug *</label>
+<input id="clientSlug" required placeholder="bolpur-kabaddi">
+</div>
+
+<div>
+<label>Phone</label>
+<input id="clientPhone" placeholder="+91...">
+</div>
+
+<div class="span2">
+<label>Contact Email</label>
+<input id="clientEmail" type="email" placeholder="club@example.com">
+</div>
+
+<div class="span2">
+<label>Owner Auth User UUID *</label>
+<input id="ownerId" required placeholder="Paste Supabase Auth UUID">
+</div>
+
+<div>
+<label>Subscription Plan *</label>
+<select id="plan">
+<option>Single Tournament</option>
+<option>Monthly</option>
+<option>Quarterly</option>
+<option>Yearly</option>
+<option>Custom</option>
+</select>
+</div>
+
+<div>
+<label>Amount (INR) *</label>
+<input id="amount" type="number" min="0" step="0.01" value="499" required>
+</div>
+
+<div class="span2">
+<label>Subscription Duration (Days) *</label>
+<input id="days" type="number" min="1" max="3650" value="30" required>
+</div>
+
+</div>
+
+<div class="note">
+<b>Important:</b> আগে Supabase Authentication → Users থেকে Client Owner-এর Auth User তৈরি করতে হবে। তারপর তার UUID এখানে দিতে হবে। এই ফর্ম নিজে Auth User তৈরি করে না।
+</div>
+
+<button class="btn full" id="createBtn" type="submit">CREATE CLIENT ACCOUNT</button>
+</form>
+
+<div class="msg" id="clientMsg"></div>
+</section>
+
+<!-- CLIENT LIST -->
+<section class="panel section">
+<h3>Client Organizations</h3>
+<p class="desc">View, activate or suspend client organizations.</p>
+
+<div class="toolbar" style="margin-bottom:12px">
+<input id="searchClients" placeholder="Search client...">
+</div>
+
+<div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th>CLIENT</th>
+<th>STATUS</th>
+<th>CREATED</th>
+<th>ACTION</th>
+</tr>
+</thead>
+<tbody id="clientsBody">
+<tr><td colspan="4" class="empty">Loading clients...</td></tr>
+</tbody>
+</table>
+</div>
+<div class="msg" id="listMsg"></div>
+</section>
+</div>
+
+<!-- SUBSCRIPTIONS -->
+<section class="panel section" style="margin-top:16px">
+<h3>Subscription Overview</h3>
+<p class="desc">Latest client subscriptions.</p>
+
+<div class="tablewrap">
+<table>
+<thead>
+<tr>
+<th>CLIENT ID</th>
+<th>PLAN</th>
+<th>AMOUNT</th>
+<th>END DATE</th>
+<th>STATUS</th>
+</tr>
+</thead>
+<tbody id="subsBody">
+<tr><td colspan="5" class="empty">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+</main>
+
+<div class="footer">
+GFC KABADDI PRO 2026 · Commercial Multi-Client Platform
+</div>
+</div>
+
+<script>
+(() => {
+
+const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_S4f62Pm60kGqVx9T-6rf7A_oGMDBmfw";
+
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
+);
+
+let allClients = [];
+let busy = false;
+
+const $ = id => document.getElementById(id);
+
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+}[c]));
+
+const showMsg = (id,text,error=false) => {
+$(id).textContent = text;
+$(id).style.color = error ? "#ff9ba0" : "#f5c56b";
+};
+
+const dateText = value =>
+value ? new Date(value).toLocaleDateString() : "—";
+
+function showLogin(){
+$("loginView").classList.remove("hidden");
+$("appView").classList.add("hidden");
+$("topState").textContent = "SUPER ADMIN PORTAL";
+}
+
+function showApp(email){
+$("loginView").classList.add("hidden");
+$("appView").classList.remove("hidden");
+$("topState").textContent = "ADMIN VERIFIED";
+$("welcome").textContent = "Signed in as " + (email || "Super Admin");
+}
+
+async function verifyAdmin(){
+const {data:{user},error:userError} = await db.auth.getUser();
+
+if(userError) throw userError;
+if(!user) return false;
+
+const {data,error} = await db.rpc("is_platform_admin");
+
+if(error) throw error;
+
+if(data !== true){
+throw new Error("This account is not registered as Platform Super Admin.");
+}
+
+showApp(user.email);
+await loadDashboard();
+return true;
+}
+
+async function loadDashboard(){
+
+showMsg("listMsg","Refreshing platform data...");
+
+const [clientsRes,subsRes,tournamentsRes,matchesRes] =
+await Promise.all([
+
+db.from("clients")
+.select("id,name,slug,status,created_at")
+.order("created_at",{ascending:false}),
+
+db.from("subscriptions")
+.select("id,client_id,plan_name,amount,end_date,status,created_at")
+.order("created_at",{ascending:false})
+.limit(100),
+
+db.from("tournaments")
+.select("id",{count:"exact",head:true}),
+
+db.from("matches")
+.select("id",{count:"exact",head:true})
+.eq("match_status","live")
+
+]);
+
+for(const r of [clientsRes,subsRes,tournamentsRes,matchesRes]){
+if(r.error) throw r.error;
+}
+
+allClients = clientsRes.data || [];
+
+$("totalClients").textContent = allClients.length;
+
+$("activeClients").textContent =
+allClients.filter(c=>c.status==="active").length;
+
+$("totalTournaments").textContent =
+tournamentsRes.count ?? 0;
+
+$("liveMatches").textContent =
+matchesRes.count ?? 0;
+
+renderClients();
+renderSubscriptions(subsRes.data || []);
+
+showMsg("listMsg","Data updated successfully.");
+}
+
+function renderClients(){
+
+const term = $("searchClients").value.trim().toLowerCase();
+
+const rows = allClients.filter(c =>
+(c.name+" "+c.slug).toLowerCase().includes(term)
+);
+
+$("clientsBody").innerHTML = rows.length
+? rows.map(c=>`
+
+<tr>
+<td>
+<b>${esc(c.name)}</b><br>
+<span style="color:#8eaa9a">${esc(c.slug)}</span>
+</td>
+
+<td>
+<span class="status ${esc(c.status)}">${esc(c.status)}</span>
+</td>
+
+<td>${dateText(c.created_at)}</td>
+
+<td>
+${c.status==="active"
+? `<button class="btn danger small" data-client="${esc(c.id)}" data-status="suspended">Suspend</button>`
+: `<button class="btn secondary small" data-client="${esc(c.id)}" data-status="active">Activate</button>`
+}
+</td>
+</tr>
+
+`).join("")
+: `<tr><td colspan="4" class="empty">No clients found.</td></tr>`;
+}
+
+function renderSubscriptions(rows){
+
+$("subsBody").innerHTML = rows.length
+? rows.map(s=>`
+
+<tr>
+<td>${esc(s.client_id.slice(0,8))}...</td>
+<td>${esc(s.plan_name)}</td>
+<td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
+<td>${dateText(s.end_date)}</td>
+<td>
+<span class="status ${s.status==="active"?"active":"suspended"}">
+${esc(s.status)}
+</span>
+</td>
+</tr>
+
+`).join("")
+: `<tr><td colspan="5" class="empty">No subscriptions yet.</td></tr>`;
+}
+
+// ADMIN LOGIN
+
+$("loginForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+if(busy) return;
+busy=true;
+
+const btn=$("loginBtn");
+btn.disabled=true;
+btn.textContent="SIGNING IN...";
+
+showMsg("loginMsg","Checking account...");
+
+try{
+
+const {error}=await db.auth.signInWithPassword({
+email:$("email").value.trim(),
+password:$("password").value
+});
+
+if(error) throw error;
+
+await verifyAdmin();
+
+showMsg("loginMsg","");
+
+}catch(err){
+
+showMsg("loginMsg",err.message || "Login failed.",true);
+await db.auth.signOut();
+showLogin();
+
+}finally{
+
+busy=false;
+btn.disabled=false;
+btn.textContent="LOGIN TO DASHBOARD";
+
+}
+
+});
+
+// CREATE CLIENT
+
+$("clientForm").addEventListener("submit",async e=>{
+
+e.preventDefault();
+
+const btn=$("createBtn");
+btn.disabled=true;
+btn.textContent="CREATING CLIENT...";
+
+showMsg("clientMsg","Creating client and subscription...");
+
+const name=$("clientName").value.trim();
+
+const slug=$("clientSlug").value
+.trim()
+.toLowerCase()
+.replace(/[^a-z0-9-]/g,"-")
+.replace(/-+/g,"-")
+.replace(/^-|-$/g,"");
+
+const args={
+
+p_name:name,
+p_slug:slug,
+p_email:$("clientEmail").value.trim(),
+p_phone:$("clientPhone").value.trim(),
+p_owner_user_id:$("ownerId").value.trim(),
+p_plan_name:$("plan").value,
+p_amount:Number($("amount").value),
+p_days:Number($("days").value)
+
+};
+
+try{
+
+const {data,error}=await db.rpc(
+"create_client_account",
+args
+);
+
+if(error) throw error;
+
+showMsg(
+"clientMsg",
+"Client created successfully. Client ID: "+data
+);
+
+$("clientForm").reset();
+$("amount").value="499";
+$("days").value="30";
+
+await loadDashboard();
+
+}catch(err){
+
+showMsg("clientMsg",err.message || "Client creation failed.",true);
+
+}finally{
+
+btn.disabled=false;
+btn.textContent="CREATE CLIENT ACCOUNT";
+
+}
+
+});
+
+// ACTIVATE / SUSPEND CLIENT
+
+$("clientsBody").addEventListener("click",async e=>{
+
+const btn=e.target.closest("button[data-client]");
+
+if(!btn) return;
+
+btn.disabled=true;
+
+try{
+
+const {error}=await db.from("clients")
+.update({status:btn.dataset.status})
+.eq("id",btn.dataset.client);
+
+if(error) throw error;
+
+await loadDashboard();
+
+}catch(err){
+
+showMsg("listMsg",err.message || "Status update failed.",true);
+btn.disabled=false;
+
+}
+
+});
+
+// SEARCH
+
+$("searchClients").addEventListener("input",renderClients);
+
+// REFRESH
+
+$("refreshBtn").addEventListener("click",async()=>{
+
+try{
+await loadDashboard();
+}catch(e){
+showMsg("listMsg",e.message,true);
+}
+
+});
+
+// LOGOUT
+
+$("logoutBtn").addEventListener("click",async()=>{
+await db.auth.signOut();
+showLogin();
+});
+
+// AUTH SESSION
+
+db.auth.onAuthStateChange((event,session)=>{
+
+if(event==="SIGNED_OUT"){
+showLogin();
+}
+
+});
+
+// INITIAL CHECK
+
+(async()=>{
+
+try{
+await verifyAdmin();
+}catch(e){
+showLogin();
+showMsg("loginMsg",e.message,true);
+}
+
+})();
+
+})();
+</script>
+</body>
+</html>
