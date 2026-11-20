@@ -5,7 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GFC KABADDI PRO 2026 | Backup Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
 <style>
 :root{
   --bg:#071b17;
@@ -116,6 +119,7 @@ th{color:#8ee8b7;background:#15372e}
 footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -146,8 +150,8 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
     <div class="card">
       <h3>Backup Management</h3>
       <p class="muted">
-        View backup records, create a full Club backup, download JSON
-        and restore deleted Club data.
+        View backup records, create a full Club backup, download JSON,
+        export CSV files and restore deleted Club data.
       </p>
       <div class="top-actions">
         <button onclick="loadBackups()">↻ Refresh Backups</button>
@@ -201,6 +205,18 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
     </div>
 
     <div class="card">
+      <h3>📤 Data Export</h3>
+      <p class="muted">
+        JSON export contains the complete backup snapshot.
+        CSV ZIP export contains separate CSV files for the available tables.
+        Streaming keys are redacted in CSV exports.
+      </p>
+      <p class="muted">
+        To export CSV, use the Download CSV ZIP button beside a backup record.
+      </p>
+    </div>
+
+    <div class="card">
       <h3>⚠️ গুরুত্বপূর্ণ তথ্য</h3>
       <p class="muted">
         ১. কোনও ক্লাব ডিলিট করার আগে স্বয়ংক্রিয়ভাবে একটি ব্যাকআপ তৈরি করা হয়।
@@ -211,7 +227,9 @@ footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
         <br><br>
         ৪. JSON Backup ফাইলে গুরুত্বপূর্ণ ও সংবেদনশীল তথ্য থাকতে পারে, যেমন Streaming Configuration এবং Stream Key। তাই ডাউনলোড করা ব্যাকআপ ফাইল নিরাপদে সংরক্ষণ করুন।
         <br><br>
-        ৫. Restore প্রক্রিয়া ব্যর্থ হলে ডেটাবেসে কিছু তথ্য আংশিকভাবে Restore হয়ে যেতে পারে। পুনরায় Restore করার আগে ডেটাবেস পরীক্ষা করে নিন।
+        ৫. CSV Export-এ Streaming Configuration-এর stream_key গোপন রাখা হয়। সম্পূর্ণ তথ্যের জন্য সুরক্ষিত JSON Backup ব্যবহার করুন।
+        <br><br>
+        ৬. Restore প্রক্রিয়া ব্যর্থ হলে ডেটাবেসে কিছু তথ্য আংশিকভাবে Restore হয়ে যেতে পারে। পুনরায় Restore করার আগে ডেটাবেস পরীক্ষা করে নিন।
       </p>
     </div>
 
@@ -448,8 +466,13 @@ function renderBackups() {
         <div class="actions">
           <button class="secondary"
             onclick="viewBackup('${backup.id}')">View</button>
+
           <button
             onclick="downloadBackup('${backup.id}')">Download JSON</button>
+
+          <button class="secondary"
+            onclick="downloadCSVZip('${backup.id}')">Download CSV ZIP</button>
+
           <button class="danger"
             onclick="restoreBackup('${backup.id}')">Restore</button>
         </div>
@@ -516,7 +539,6 @@ async function createBackup() {
 
 // ======================================================
 // VIEW BACKUP METADATA
-// Does not display sensitive snapshot contents.
 // ======================================================
 
 async function viewBackup(backupId) {
@@ -575,7 +597,7 @@ async function viewBackup(backupId) {
 
       <p class="muted">
         Sensitive snapshot data is not displayed here.
-        Use Download JSON only when you need the complete backup.
+        Use Download JSON or Download CSV ZIP when required.
       </p>
     `;
 
@@ -628,12 +650,211 @@ async function downloadBackup(backupId) {
     link.click();
     link.remove();
 
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 
     showMessage("mainMessage", "JSON backup downloaded.");
 
   } catch (error) {
     showMessage("mainMessage", error.message, true);
+  }
+}
+
+// ======================================================
+// CSV EXPORT HELPERS
+// ======================================================
+
+const EXPORT_TABLES = [
+  "clients",
+  "client_members",
+  "subscriptions",
+  "tournaments",
+  "teams",
+  "players",
+  "matches",
+  "match_events",
+  "match_overlays",
+  "streaming_configs",
+  "profiles"
+];
+
+function csvCell(value) {
+  let textValue = "";
+
+  if (value === null || value === undefined) {
+    textValue = "";
+  } else if (typeof value === "object") {
+    textValue = JSON.stringify(value);
+  } else {
+    textValue = String(value);
+  }
+
+  // Protect spreadsheet users from CSV formula injection.
+  if (/^[\s]*[=+\-@]/.test(textValue)) {
+    textValue = "'" + textValue;
+  }
+
+  return '"' + textValue.replace(/"/g, '""') + '"';
+}
+
+function convertRowsToCSV(rows, tableName) {
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return "No records available\n";
+  }
+
+  const columns = [
+    ...new Set(
+      rows.flatMap(row =>
+        row && typeof row === "object"
+          ? Object.keys(row)
+          : []
+      )
+    )
+  ];
+
+  // Never expose streaming keys through CSV.
+  const safeRows = rows.map(row => {
+    const copy = { ...row };
+
+    if (tableName === "streaming_configs" &&
+        Object.prototype.hasOwnProperty.call(copy, "stream_key")) {
+      copy.stream_key = "[REDACTED]";
+    }
+
+    return copy;
+  });
+
+  const header = columns.map(csvCell).join(",");
+
+  const data = safeRows.map(row =>
+    columns.map(column => csvCell(row[column])).join(",")
+  );
+
+  return "\uFEFF" + [header, ...data].join("\r\n");
+}
+
+// ======================================================
+// DOWNLOAD CSV ZIP
+// ======================================================
+
+async function downloadCSVZip(backupId) {
+  if (typeof JSZip === "undefined") {
+    showMessage(
+      "mainMessage",
+      "ZIP library could not load. Please refresh the page and try again.",
+      true
+    );
+    return;
+  }
+
+  if (!confirm(
+    "Download CSV ZIP for this backup?\n\n" +
+    "The ZIP will contain separate CSV files for each available table.\n" +
+    "Streaming keys will be redacted."
+  )) return;
+
+  const buttons = document.querySelectorAll("button");
+  buttons.forEach(button => {
+    if (button.getAttribute("onclick")?.includes("downloadCSVZip")) {
+      button.disabled = true;
+    }
+  });
+
+  try {
+    showMessage(
+      "mainMessage",
+      "Preparing CSV files. Please wait..."
+    );
+
+    const result = await edgeCall({
+      action: "backup_get",
+      backup_id: backupId
+    });
+
+    const backup = result.backup;
+
+    if (!backup || !backup.snapshot) {
+      throw new Error("Backup snapshot not found.");
+    }
+
+    const snapshot = backup.snapshot;
+    const zip = new JSZip();
+
+    let exportedTables = 0;
+    let totalRecords = 0;
+
+    for (const tableName of EXPORT_TABLES) {
+      const rows = Array.isArray(snapshot[tableName])
+        ? snapshot[tableName]
+        : [];
+
+      const csv = convertRowsToCSV(rows, tableName);
+
+      zip.file(tableName + ".csv", csv);
+
+      exportedTables++;
+      totalRecords += rows.length;
+    }
+
+    const readme = [
+      "GFC KABADDI PRO 2026 - CSV EXPORT",
+      "",
+      "Club: " + (backup.client_name || ""),
+      "Backup ID: " + (backup.id || ""),
+      "Backup Type: " + (backup.backup_type || ""),
+      "Created At: " + (backup.created_at || ""),
+      "",
+      "Files:",
+      ...EXPORT_TABLES.map(name => name + ".csv"),
+      "",
+      "SECURITY NOTICE:",
+      "The stream_key field in streaming_configs.csv is redacted.",
+      "Use the protected JSON backup for complete sensitive configuration.",
+      "",
+      "This export contains " + exportedTables + " table files.",
+      "Total records: " + totalRecords
+    ].join("\n");
+
+    zip.file("README.txt", readme);
+
+    showMessage(
+      "mainMessage",
+      "Generating ZIP file..."
+    );
+
+    const blob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      compressionOptions: { level: 6 }
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download =
+      "GFC-KABADDI-CSV-" + backup.id + ".zip";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+
+    showMessage(
+      "mainMessage",
+      "CSV ZIP downloaded successfully!\n" +
+      "Tables: " + exportedTables + "\n" +
+      "Total records: " + totalRecords
+    );
+
+  } catch (error) {
+    showMessage(
+      "mainMessage",
+      "CSV Export failed:\n" + error.message,
+      true
+    );
+  } finally {
+    buttons.forEach(button => button.disabled = false);
   }
 }
 
