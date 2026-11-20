@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GFC KABADDI PRO 2026 | Backup Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#071b17;
+  --panel:#102c25;
+  --panel2:#15372e;
+  --green:#20c779;
+  --text:#f1fff8;
+  --muted:#9ab7aa;
+  --red:#ef5350;
+  --border:#285044;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:20px;
+  background:#0d2921;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+header h2{margin:0;font-size:19px}
+header p{margin:5px 0 0;color:var(--muted);font-size:12px}
+.container{max-width:1100px;margin:auto;padding:20px}
+.card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+}
+h3{margin:0 0 15px;font-size:17px}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#071f19;
+  color:white;
+  outline:none;
+  margin:6px 0 12px;
+}
+label{font-size:13px;color:var(--muted)}
+button{
+  border:0;
+  border-radius:8px;
+  padding:11px 15px;
+  cursor:pointer;
+  font-weight:700;
+  margin:4px;
+  background:var(--green);
+  color:#062116;
+}
+button.secondary{background:#29483e;color:white}
+button.danger{background:var(--red);color:white}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hidden{display:none!important}
+.muted{color:var(--muted);font-size:13px}
+.status{
+  padding:12px;
+  border-radius:8px;
+  margin:12px 0;
+  background:#183a2e;
+  color:#baffd8;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.status.error{background:#482323;color:#ffd0d0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th,td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:13px;
+}
+th{color:#8ee8b7;background:#15372e}
+.actions{display:flex;flex-wrap:wrap;gap:4px}
+.badge{
+  display:inline-block;
+  padding:5px 8px;
+  border-radius:20px;
+  background:#174d38;
+  color:#8dffc0;
+  font-size:11px;
+}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;
+}
+.stat{
+  padding:15px;
+  border-radius:10px;
+  background:var(--panel2);
+}
+.stat strong{display:block;font-size:23px;color:#72f0ae}
+.stat span{font-size:12px;color:var(--muted)}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h2>🏆 GFC KABADDI PRO 2026</h2>
+    <p>Super Admin · Backup & Restore Management</p>
+  </div>
+  <div class="top-actions">
+    <button class="secondary" onclick="location.href='index.html'">← Super Admin</button>
+    <button class="danger hidden" id="logoutBtn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div id="loginSection" class="card">
+    <h3>🔐 Super Admin Login</h3>
+    <label>Email Address</label>
+    <input id="loginEmail" type="email" placeholder="Admin email">
+    <label>Password</label>
+    <input id="loginPassword" type="password" placeholder="Password">
+    <button id="loginBtn" onclick="login()">Login</button>
+    <div id="loginMessage" class="status hidden"></div>
+  </div>
+
+  <div id="dashboard" class="hidden">
+
+    <div class="card">
+      <h3>Backup Management</h3>
+      <p class="muted">
+        View backup records, create a full Club backup, download JSON
+        and restore deleted Club data.
+      </p>
+      <div class="top-actions">
+        <button onclick="loadBackups()">↻ Refresh Backups</button>
+        <button class="secondary" onclick="createBackup()">＋ Create Manual Backup</button>
+      </div>
+      <div id="mainMessage" class="status hidden"></div>
+    </div>
+
+    <div class="card">
+      <h3>Backup Summary</h3>
+      <div class="stat-grid">
+        <div class="stat">
+          <strong id="totalBackups">0</strong>
+          <span>Total Backups</span>
+        </div>
+        <div class="stat">
+          <strong id="clubCount">0</strong>
+          <span>Clubs Backed Up</span>
+        </div>
+        <div class="stat">
+          <strong id="deleteCount">0</strong>
+          <span>Pre-Delete Backups</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📦 All Backup Records</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Club Name</th>
+              <th>Backup Type</th>
+              <th>Created At</th>
+              <th>Backup ID</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="backupTable">
+            <tr><td colspan="5" class="empty">Loading backups...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="detailsCard" class="card hidden">
+      <h3>Backup Details</h3>
+      <div id="backupDetails"></div>
+      <button class="secondary" onclick="closeDetails()">Close Details</button>
+    </div>
+
+    <div class="card">
+      <h3>⚠️ Important Information</h3>
+      <p class="muted">
+        1. A pre-delete backup is automatically created before a Club is deleted.
+        <br><br>
+        2. Restore requires the original Owner Auth account to still exist.
+        <br><br>
+        3. If the original Club slug is already in use, provide a new slug.
+        <br><br>
+        4. JSON backups can contain sensitive information, including streaming
+        configuration and stream keys. Store downloaded files securely.
+        <br><br>
+        5. A failed restore may leave partially restored database records.
+        Check the database before retrying a failed restore.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<footer>GFC KABADDI PRO 2026 · Secure Backup Management</footer>
+
+<script>
+"use strict";
+
+// ======================================================
+// SUPABASE CONFIGURATION
+// ======================================================
+
+const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
+
+const SUPABASE_ANON_KEY =
+"sb_publishable_XeErhCBnSv6AIqdCdb7J6Q_kXoAH46u";
+
+const FUNCTION_URL =
+SUPABASE_URL + "/functions/v1/super-admin-update-client";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+let currentBackups = [];
+
+// ======================================================
+// HELPERS
+// ======================================================
+
+function showMessage(id, message, isError=false) {
+  const el = document.getElementById(id);
+  el.textContent = message;
+  el.classList.remove("hidden");
+  el.classList.toggle("error", isError);
+}
+
+function hideMessage(id) {
+  document.getElementById(id).classList.add("hidden");
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+function formatDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "—"
+    : date.toLocaleString();
+}
+
+function validUUID(value) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+// ======================================================
+// AUTHENTICATION
+// ======================================================
+
+async function getSession() {
+  const { data, error } = await db.auth.getSession();
+  if (error) throw error;
+  return data.session;
+}
+
+async function verifyAdmin() {
+  const session = await getSession();
+
+  if (!session) {
+    showLogin();
+    return false;
+  }
+
+  const { data, error } = await db.rpc("is_platform_admin");
+
+  if (error || data !== true) {
+    await db.auth.signOut();
+    showLogin();
+    showMessage(
+      "loginMessage",
+      "Access denied. Platform Admin permission required.",
+      true
+    );
+    return false;
+  }
+
+  showDashboard();
+  return true;
+}
+
+function showLogin() {
+  document.getElementById("loginSection").classList.remove("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("logoutBtn").classList.add("hidden");
+}
+
+function showDashboard() {
+  document.getElementById("loginSection").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("logoutBtn").classList.remove("hidden");
+}
+
+async function login() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  if (!email || !password) {
+    showMessage("loginMessage", "Enter email and password.", true);
+    return;
+  }
+
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Checking...";
+
+  try {
+    const { error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    const allowed = await verifyAdmin();
+
+    if (allowed) {
+      await loadBackups();
+    }
+  } catch (error) {
+    showMessage("loginMessage", error.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Login";
+  }
+}
+
+async function logout() {
+  await db.auth.signOut();
+  showLogin();
+}
+
+// ======================================================
+// EDGE FUNCTION CALL
+// ======================================================
+
+async function edgeCall(payload) {
+  const session = await getSession();
+
+  if (!session?.access_token) {
+    throw new Error("Session expired. Please login again.");
+  }
+
+  const response = await fetch(FUNCTION_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + session.access_token,
+      "apikey": SUPABASE_ANON_KEY
+    },
+    body: JSON.stringify(payload)
+  });
+
+  let result;
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Invalid server response.");
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || "Request failed.");
+  }
+
+  return result;
+}
+
+// ======================================================
+// LOAD BACKUPS
+// ======================================================
+
+async function loadBackups() {
+  const tbody = document.getElementById("backupTable");
+
+  tbody.innerHTML =
+    '<tr><td colspan="5" class="empty">Loading...</td></tr>';
+
+  try {
+    const result = await edgeCall({
+      action: "backup_list"
+    });
+
+    currentBackups = result.backups || [];
+
+    renderBackups();
+    updateSummary();
+
+  } catch (error) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" class="empty">Could not load backups.</td></tr>';
+
+    showMessage("mainMessage", error.message, true);
+  }
+}
+
+function renderBackups() {
+  const tbody = document.getElementById("backupTable");
+
+  if (!currentBackups.length) {
+    tbody.innerHTML =
+      '<tr><td colspan="5" class="empty">No backups found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = currentBackups.map(backup => `
+    <tr>
+      <td><strong>${escapeHTML(backup.client_name)}</strong></td>
+      <td><span class="badge">${escapeHTML(backup.backup_type)}</span></td>
+      <td>${escapeHTML(formatDate(backup.created_at))}</td>
+      <td>${escapeHTML(backup.id)}</td>
+      <td>
+        <div class="actions">
+          <button class="secondary"
+            onclick="viewBackup('${backup.id}')">View</button>
+          <button
+            onclick="downloadBackup('${backup.id}')">Download JSON</button>
+          <button class="danger"
+            onclick="restoreBackup('${backup.id}')">Restore</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function updateSummary() {
+  document.getElementById("totalBackups").textContent =
+    currentBackups.length;
+
+  const clubs = new Set(
+    currentBackups.map(item => item.client_id)
+  );
+
+  document.getElementById("clubCount").textContent = clubs.size;
+
+  document.getElementById("deleteCount").textContent =
+    currentBackups.filter(item =>
+      item.backup_type === "pre_delete"
+    ).length;
+}
+
+// ======================================================
+// CREATE MANUAL BACKUP
+// ======================================================
+
+async function createBackup() {
+  const clientId = prompt("Enter the Club ID for backup:");
+
+  if (!clientId) return;
+
+  if (!validUUID(clientId.trim())) {
+    showMessage("mainMessage", "Invalid Club ID.", true);
+    return;
+  }
+
+  const notes = prompt("Backup notes (optional):") || "";
+
+  if (!confirm("Create a full backup for this Club?")) return;
+
+  try {
+    showMessage("mainMessage", "Creating backup. Please wait...");
+
+    const result = await edgeCall({
+      action: "backup_create",
+      client_id: clientId.trim(),
+      notes
+    });
+
+    showMessage(
+      "mainMessage",
+      "Backup created successfully.\nBackup ID: " +
+      result.backup.id
+    );
+
+    await loadBackups();
+
+  } catch (error) {
+    showMessage("mainMessage", error.message, true);
+  }
+}
+
+// ======================================================
+// VIEW BACKUP METADATA
+// Does not display sensitive snapshot contents.
+// ======================================================
+
+async function viewBackup(backupId) {
+  try {
+    const result = await edgeCall({
+      action: "backup_get",
+      backup_id: backupId
+    });
+
+    const backup = result.backup;
+    const snapshot = backup.snapshot || {};
+
+    const tables = [
+      "clients",
+      "client_members",
+      "subscriptions",
+      "tournaments",
+      "teams",
+      "players",
+      "matches",
+      "match_events",
+      "match_overlays",
+      "streaming_configs",
+      "profiles"
+    ];
+
+    let rows = "";
+
+    for (const table of tables) {
+      const count = Array.isArray(snapshot[table])
+        ? snapshot[table].length
+        : 0;
+
+      rows += `
+        <tr>
+          <td>${escapeHTML(table)}</td>
+          <td>${count}</td>
+        </tr>
+      `;
+    }
+
+    document.getElementById("backupDetails").innerHTML = `
+      <p><strong>Club:</strong> ${escapeHTML(backup.client_name)}</p>
+      <p><strong>Backup ID:</strong> ${escapeHTML(backup.id)}</p>
+      <p><strong>Type:</strong> ${escapeHTML(backup.backup_type)}</p>
+      <p><strong>Date:</strong> ${escapeHTML(formatDate(backup.created_at))}</p>
+      <p><strong>Notes:</strong> ${escapeHTML(backup.notes || "—")}</p>
+
+      <h3>Backup Table Counts</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Table</th><th>Records</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+
+      <p class="muted">
+        Sensitive snapshot data is not displayed here.
+        Use Download JSON only when you need the complete backup.
+      </p>
+    `;
+
+    document.getElementById("detailsCard").classList.remove("hidden");
+    document.getElementById("detailsCard").scrollIntoView({
+      behavior:"smooth"
+    });
+
+  } catch (error) {
+    showMessage("mainMessage", error.message, true);
+  }
+}
+
+function closeDetails() {
+  document.getElementById("detailsCard").classList.add("hidden");
+}
+
+// ======================================================
+// DOWNLOAD BACKUP JSON
+// ======================================================
+
+async function downloadBackup(backupId) {
+  if (!confirm(
+    "This JSON may contain sensitive streaming keys and configuration. Download securely?"
+  )) return;
+
+  try {
+    showMessage("mainMessage", "Preparing secure JSON download...");
+
+    const result = await edgeCall({
+      action: "backup_get",
+      backup_id: backupId
+    });
+
+    const backup = result.backup;
+
+    const blob = new Blob(
+      [JSON.stringify(backup, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download =
+      "GFC-KABADDI-BACKUP-" + backup.id + ".json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    showMessage("mainMessage", "JSON backup downloaded.");
+
+  } catch (error) {
+    showMessage("mainMessage", error.message, true);
+  }
+}
+
+// ======================================================
+// RESTORE BACKUP
+// ======================================================
+
+async function restoreBackup(backupId) {
+  const backup = currentBackups.find(item => item.id === backupId);
+
+  if (!backup) {
+    showMessage("mainMessage", "Backup record not found.", true);
+    return;
+  }
+
+  const confirmation = confirm(
+    "RESTORE CLUB?\n\n" +
+    "Club: " + backup.client_name + "\n\n" +
+    "This operation will insert the backed-up records. " +
+    "It will not overwrite an existing Club with the same ID.\n\n" +
+    "Continue?"
+  );
+
+  if (!confirmation) return;
+
+  const newSlug = prompt(
+    "New Club slug (leave blank to use the original slug):",
+    ""
+  );
+
+  if (newSlug === null) return;
+
+  const cleanSlug = newSlug.trim();
+
+  if (
+    cleanSlug &&
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug)
+  ) {
+    showMessage("mainMessage", "Invalid slug format.", true);
+    return;
+  }
+
+  if (!confirm(
+    "Final confirmation: Restore " +
+    backup.client_name + " now?"
+  )) return;
+
+  try {
+    showMessage(
+      "mainMessage",
+      "Restoring Club data. Do not close this page..."
+    );
+
+    const result = await edgeCall({
+      action: "backup_restore",
+      backup_id: backupId,
+      new_slug: cleanSlug || undefined,
+      confirm_restore: true
+    });
+
+    showMessage(
+      "mainMessage",
+      "Restore successful!\n" +
+      "Club: " + result.restored.client_name + "\n" +
+      "Club ID: " + result.restored.client_id + "\n" +
+      "Slug: " + result.restored.slug
+    );
+
+    await loadBackups();
+
+  } catch (error) {
+    showMessage(
+      "mainMessage",
+      "Restore failed:\n" + error.message,
+      true
+    );
+  }
+}
+
+// ======================================================
+// INITIALIZE
+// ======================================================
+
+async function initialize() {
+  try {
+    const allowed = await verifyAdmin();
+
+    if (allowed) {
+      await loadBackups();
+    }
+  } catch (error) {
+    showLogin();
+    showMessage("loginMessage", error.message, true);
+  }
+}
+
+db.auth.onAuthStateChange((_event, session) => {
+  if (!session) showLogin();
+});
+
+initialize();
+
+</script>
+</body>
+</html>
