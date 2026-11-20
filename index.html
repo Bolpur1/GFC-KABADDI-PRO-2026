@@ -83,52 +83,14 @@ td{overflow-wrap:anywhere}
 .closebtn{background:#263c32;color:white;border:0;border-radius:8px;padding:8px 12px}
 .divider{border:0;border-top:1px solid #29483a;margin:18px 0}
 .modalnote{font-size:11px;color:#a9c3b3;line-height:1.6;margin-top:8px}
-
-/* QUICK SHARE LINKS - SUPER ADMIN DASHBOARD */
-.share-panel{
- padding:16px;
- margin-bottom:20px;
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
-.share-item{
- background:#091b14;
- border:1px solid #254238;
- border-radius:12px;
- padding:14px;
- min-width:0;
-}
-.share-item h3{
- font-size:13px;
- margin:0 0 7px;
-}
-.share-item p{
- font-size:10px;
- color:var(--muted);
- overflow-wrap:anywhere;
- margin:0 0 12px;
- line-height:1.5;
-}
-.share-btn{
- width:100%;
- border:0;
- border-radius:8px;
- padding:10px;
- background:var(--green);
- color:#052317;
- font-weight:bold;
- font-size:12px;
- cursor:pointer;
-}
+.share-panel{padding:16px;margin-bottom:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.share-item{background:#091b14;border:1px solid #254238;border-radius:12px;padding:14px;min-width:0}
+.share-item h3{font-size:13px;margin:0 0 7px}
+.share-item p{font-size:10px;color:var(--muted);overflow-wrap:anywhere;margin:0 0 12px;line-height:1.5}
+.share-btn{width:100%;border:0;border-radius:8px;padding:10px;background:var(--green);color:#052317;font-weight:bold;font-size:12px;cursor:pointer}
 .share-btn:active{transform:scale(.98)}
-.share-msg{
- grid-column:1/-1;
- font-size:11px;
- color:var(--green);
- min-height:14px;
-}
-
+.share-msg{grid-column:1/-1;font-size:11px;color:var(--green);min-height:14px}
+.action-buttons{display:flex;flex-wrap:wrap;gap:5px}
 @media(max-width:850px){
 .stats{grid-template-columns:repeat(2,1fr)}
 .grid{grid-template-columns:1fr}
@@ -198,108 +160,49 @@ td{overflow-wrap:anywhere}
  </div>
 </div>
 
-<!-- QUICK SHARE LINKS: ONLY INSIDE SUPER ADMIN DASHBOARD -->
 <section class="panel share-panel">
-
  <div class="share-item">
   <h3>SUPER ADMIN DASHBOARD</h3>
   <p>https://bolpur1.github.io/GFC-KABADDI-PRO-2026/</p>
-  <button class="share-btn" type="button"
-   onclick="copyPlatformLink('admin')">
-   COPY ADMIN LINK
-  </button>
+  <button class="share-btn" type="button" onclick="copyPlatformLink('admin')">COPY ADMIN LINK</button>
  </div>
-
  <div class="share-item">
   <h3>CLUB OWNER LOGIN</h3>
   <p>https://bolpur1.github.io/GFC-KABADDI-PRO-2026/club-login.html</p>
-  <button class="share-btn" type="button"
-   onclick="copyPlatformLink('club')">
-   COPY CLUB LOGIN LINK
-  </button>
+  <button class="share-btn" type="button" onclick="copyPlatformLink('club')">COPY CLUB LOGIN LINK</button>
  </div>
-
+ <div class="share-item">
+  <h3>BACKUP DASHBOARD</h3>
+  <p>https://bolpur1.github.io/GFC-KABADDI-PRO-2026/backup.html</p>
+  <button class="share-btn" type="button" onclick="copyPlatformLink('backup')">COPY BACKUP DASHBOARD LINK</button>
+ </div>
  <div class="share-msg" id="shareMsg" aria-live="polite"></div>
 </section>
 
 <section class="stats">
- <div class="panel stat">
-  <div class="k">TOTAL CLIENTS</div>
-  <div class="v" id="totalClients">—</div>
-  <div class="hint">Registered organizations</div>
- </div>
- <div class="panel stat">
-  <div class="k">ACTIVE CLIENTS</div>
-  <div class="v" id="activeClients">—</div>
-  <div class="hint">Currently enabled</div>
- </div>
- <div class="panel stat">
-  <div class="k">TOURNAMENTS</div>
-  <div class="v" id="totalTournaments">—</div>
-  <div class="hint">All tournaments</div>
- </div>
- <div class="panel stat">
-  <div class="k">LIVE MATCHES</div>
-  <div class="v" id="liveMatches">—</div>
-  <div class="hint">Currently live</div>
- </div>
+ <div class="panel stat"><div class="k">TOTAL CLIENTS</div><div class="v" id="totalClients">—</div><div class="hint">Registered organizations</div></div>
+ <div class="panel stat"><div class="k">ACTIVE CLIENTS</div><div class="v" id="activeClients">—</div><div class="hint">Currently enabled</div></div>
+ <div class="panel stat"><div class="k">TOURNAMENTS</div><div class="v" id="totalTournaments">—</div><div class="hint">All tournaments</div></div>
+ <div class="panel stat"><div class="k">LIVE MATCHES</div><div class="v" id="liveMatches">—</div><div class="hint">Currently live</div></div>
 </section>
 
 <div class="grid">
-
 <section class="panel section">
  <h3>Create New Client</h3>
  <p class="desc">Create a club, Owner login account and subscription together.</p>
-
  <form id="clientForm">
   <div class="formgrid">
-   <div class="span2">
-    <label>Club / Organization Name *</label>
-    <input id="clientName" required placeholder="Bolpur Kabaddi Club">
-   </div>
-   <div>
-    <label>Unique Slug *</label>
-    <input id="clientSlug" required placeholder="bolpur-kabaddi">
-   </div>
-   <div>
-    <label>Phone</label>
-    <input id="clientPhone" placeholder="+91...">
-   </div>
-   <div class="span2">
-    <label>Club Contact Email</label>
-    <input id="clientEmail" type="email" placeholder="club@example.com">
-   </div>
-   <div class="span2">
-    <label>Owner Login Email *</label>
-    <input id="ownerEmail" type="email" required autocomplete="off" placeholder="owner@example.com">
-   </div>
-   <div class="span2">
-    <label>Owner Login Password * (Minimum 8 characters)</label>
-    <input id="ownerPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Create owner password">
-   </div>
-   <div>
-    <label>Subscription Plan *</label>
-    <select id="plan">
-     <option>Single Tournament</option>
-     <option>Monthly</option>
-     <option>Quarterly</option>
-     <option>Yearly</option>
-     <option>Custom</option>
-    </select>
-   </div>
-   <div>
-    <label>Amount (INR) *</label>
-    <input id="amount" type="number" min="0" step="0.01" value="499" required>
-   </div>
-   <div class="span2">
-    <label>Subscription Duration (Days) *</label>
-    <input id="days" type="number" min="1" max="3650" value="30" required>
-   </div>
+   <div class="span2"><label>Club / Organization Name *</label><input id="clientName" required placeholder="Bolpur Kabaddi Club"></div>
+   <div><label>Unique Slug *</label><input id="clientSlug" required placeholder="bolpur-kabaddi"></div>
+   <div><label>Phone</label><input id="clientPhone" placeholder="+91..."></div>
+   <div class="span2"><label>Club Contact Email</label><input id="clientEmail" type="email" placeholder="club@example.com"></div>
+   <div class="span2"><label>Owner Login Email *</label><input id="ownerEmail" type="email" required autocomplete="off" placeholder="owner@example.com"></div>
+   <div class="span2"><label>Owner Login Password * (Minimum 8 characters)</label><input id="ownerPassword" type="password" required minlength="8" autocomplete="new-password" placeholder="Create owner password"></div>
+   <div><label>Subscription Plan *</label><select id="plan"><option>Single Tournament</option><option>Monthly</option><option>Quarterly</option><option>Yearly</option><option>Custom</option></select></div>
+   <div><label>Amount (INR) *</label><input id="amount" type="number" min="0" step="0.01" value="499" required></div>
+   <div class="span2"><label>Subscription Duration (Days) *</label><input id="days" type="number" min="1" max="3650" value="30" required></div>
   </div>
-
-  <div class="note">
-   <b>Automatic setup:</b> Create চাপলে Supabase Auth-এ Owner Login Account তৈরি হবে। এরপর Club, Owner Membership এবং Subscription তৈরি হবে। Owner Email ও Password নিরাপদে সংরক্ষণ করে রাখুন এবং Owner-কে দিন।
-  </div>
+  <div class="note"><b>Automatic setup:</b> Create চাপলে Supabase Auth-এ Owner Login Account তৈরি হবে। এরপর Club, Owner Membership এবং Subscription তৈরি হবে। Owner Email ও Password নিরাপদে সংরক্ষণ করে রাখুন এবং Owner-কে দিন।</div>
   <button class="btn full" id="createBtn" type="submit">CREATE CLUB + OWNER ACCOUNT</button>
  </form>
  <div class="msg" id="clientMsg"></div>
@@ -308,17 +211,11 @@ td{overflow-wrap:anywhere}
 <section class="panel section">
  <h3>Client Organizations</h3>
  <p class="desc">Club-এর নাম ক্লিক করে Club Details, Tournament, Team, Player ও Match দেখুন।</p>
- <div class="toolbar" style="margin-bottom:12px">
-  <input id="searchClients" placeholder="Search club...">
- </div>
+ <div class="toolbar" style="margin-bottom:12px"><input id="searchClients" placeholder="Search club..."></div>
  <div class="tablewrap">
   <table>
-   <thead>
-    <tr><th>CLUB</th><th>STATUS</th><th>CREATED</th><th>ACTION</th></tr>
-   </thead>
-   <tbody id="clientsBody">
-    <tr><td colspan="4" class="empty">Loading clubs...</td></tr>
-   </tbody>
+   <thead><tr><th>CLUB</th><th>STATUS</th><th>CREATED</th><th>ACTION</th></tr></thead>
+   <tbody id="clientsBody"><tr><td colspan="4" class="empty">Loading clubs...</td></tr></tbody>
   </table>
  </div>
  <div class="msg" id="listMsg"></div>
@@ -327,15 +224,11 @@ td{overflow-wrap:anywhere}
 
 <section class="panel section" style="margin-top:16px">
  <h3>Subscription Overview</h3>
- <p class="desc">Latest client subscriptions.</p>
+ <p class="desc">Latest client subscriptions. Edit a subscription whenever required.</p>
  <div class="tablewrap">
   <table>
-   <thead>
-    <tr><th>CLIENT ID</th><th>PLAN</th><th>AMOUNT</th><th>END DATE</th><th>STATUS</th></tr>
-   </thead>
-   <tbody id="subsBody">
-    <tr><td colspan="5" class="empty">Loading...</td></tr>
-   </tbody>
+   <thead><tr><th>CLIENT</th><th>PLAN</th><th>AMOUNT</th><th>START DATE</th><th>END DATE</th><th>STATUS</th><th>ACTION</th></tr></thead>
+   <tbody id="subsBody"><tr><td colspan="7" class="empty">Loading...</td></tr></tbody>
   </table>
  </div>
 </section>
@@ -343,16 +236,12 @@ td{overflow-wrap:anywhere}
 
 <div id="clubDetailsView" class="hidden">
  <div class="heading">
-  <div>
-   <h2 id="detailClubTitle">Club Details</h2>
-   <p id="detailClubSubtitle">Club overview</p>
-  </div>
+  <div><h2 id="detailClubTitle">Club Details</h2><p id="detailClubSubtitle">Club overview</p></div>
   <div class="toolbar">
    <button class="btn secondary small" id="backBtn">← Back to Clubs</button>
    <button class="btn secondary small" id="detailRefreshBtn">Refresh</button>
   </div>
  </div>
-
  <section class="detailgrid">
   <div class="panel detailstat"><div class="k">TOURNAMENTS</div><div class="v" id="clubTournamentCount">—</div></div>
   <div class="panel detailstat"><div class="k">TEAMS</div><div class="v" id="clubTeamCount">—</div></div>
@@ -360,40 +249,15 @@ td{overflow-wrap:anywhere}
   <div class="panel detailstat"><div class="k">TOTAL MATCHES</div><div class="v" id="clubMatchCount">—</div></div>
   <div class="panel detailstat"><div class="k">LIVE MATCHES</div><div class="v" id="clubLiveCount">—</div></div>
  </section>
-
  <section class="panel detailsection">
-  <h3>Club Information</h3>
-  <div class="infoGrid" id="clubInfo"></div>
-  <div style="margin-top:14px">
-   <button class="btn small" id="detailManageBtn">Edit Club / Owner Login</button>
-  </div>
+  <h3>Club Information</h3><div class="infoGrid" id="clubInfo"></div>
+  <div style="margin-top:14px"><button class="btn small" id="detailManageBtn">Edit Club / Owner Login</button></div>
  </section>
-
- <section class="panel detailsection">
-  <h3>Owner Information</h3>
-  <div class="infoGrid" id="ownerInfo"><div class="empty">Loading owner...</div></div>
- </section>
-
- <section class="panel detailsection">
-  <h3>Tournaments</h3>
-  <div class="tablewrap"><table><thead id="tournamentsHead"></thead><tbody id="tournamentsBody"></tbody></table></div>
- </section>
-
- <section class="panel detailsection">
-  <h3>Teams</h3>
-  <div class="tablewrap"><table><thead id="teamsHead"></thead><tbody id="teamsBody"></tbody></table></div>
- </section>
-
- <section class="panel detailsection">
-  <h3>Players</h3>
-  <div class="tablewrap"><table><thead id="playersHead"></thead><tbody id="playersBody"></tbody></table></div>
- </section>
-
- <section class="panel detailsection">
-  <h3>Matches</h3>
-  <div class="tablewrap"><table><thead id="matchesHead"></thead><tbody id="matchesBody"></tbody></table></div>
- </section>
-
+ <section class="panel detailsection"><h3>Owner Information</h3><div class="infoGrid" id="ownerInfo"><div class="empty">Loading owner...</div></div></section>
+ <section class="panel detailsection"><h3>Tournaments</h3><div class="tablewrap"><table><thead id="tournamentsHead"></thead><tbody id="tournamentsBody"></tbody></table></div></section>
+ <section class="panel detailsection"><h3>Teams</h3><div class="tablewrap"><table><thead id="teamsHead"></thead><tbody id="teamsBody"></tbody></table></div></section>
+ <section class="panel detailsection"><h3>Players</h3><div class="tablewrap"><table><thead id="playersHead"></thead><tbody id="playersBody"></tbody></table></div></section>
+ <section class="panel detailsection"><h3>Matches</h3><div class="tablewrap"><table><thead id="matchesHead"></thead><tbody id="matchesBody"></tbody></table></div></section>
  <div class="msg" id="detailMsg"></div>
 </div>
 </main>
@@ -401,53 +265,61 @@ td{overflow-wrap:anywhere}
 <div class="footer">GFC KABADDI PRO 2026 · Commercial Multi-Client Platform</div>
 </div>
 
+<!-- MANAGE CLUB MODAL -->
 <div id="manageModal" class="modal hidden">
  <div class="modalbox">
-  <div class="modalhead">
-   <h2>Manage Client & Owner</h2>
-   <button class="closebtn" id="closeModal" type="button">✕</button>
-  </div>
+  <div class="modalhead"><h2>Manage Client & Owner</h2><button class="closebtn" id="closeModal" type="button">✕</button></div>
   <p class="desc">Update club information and Owner login credentials.</p>
   <form id="manageForm" class="hidden">
-   <input type="hidden" id="manageClientId">
-   <input type="hidden" id="manageUserId">
-   <label>Club / Organization Name *</label>
-   <input id="manageName" required>
-   <label>Unique Slug *</label>
-   <input id="manageSlug" required>
-   <label>Contact Email</label>
-   <input id="manageContactEmail" type="email">
-   <label>Phone</label>
-   <input id="managePhone">
-   <hr class="divider">
-   <h3>Owner Login Information</h3>
-   <label>Current Login Email</label>
-   <input id="manageLoginEmail" type="email" required>
-   <label>New Password</label>
-   <input id="managePassword" type="password" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password">
-   <p class="modalnote">নতুন Password না দিলে পুরোনো Password অপরিবর্তিত থাকবে। Password কমপক্ষে ৮ অক্ষরের হতে হবে। বর্তমান Password দেখা যাবে না।</p>
+   <input type="hidden" id="manageClientId"><input type="hidden" id="manageUserId">
+   <label>Club / Organization Name *</label><input id="manageName" required>
+   <label>Unique Slug *</label><input id="manageSlug" required>
+   <label>Contact Email</label><input id="manageContactEmail" type="email">
+   <label>Phone</label><input id="managePhone">
+   <hr class="divider"><h3>Owner Login Information</h3>
+   <label>Current Login Email</label><input id="manageLoginEmail" type="email" required>
+   <label>New Password</label><input id="managePassword" type="password" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password">
+   <p class="modalnote">নতুন Password না দিলে পুরোনো Password অপরিবর্তিত থাকবে। Password কমপক্ষে ৮ অক্ষরের হতে হবে।</p>
    <button class="btn full" id="saveManageBtn" type="submit">SAVE CHANGES</button>
   </form>
   <div class="msg" id="manageMsg"></div>
  </div>
 </div>
 
-<script>
-/* =========================================
-   GFC KABADDI PRO 2026
-   SUPER ADMIN DASHBOARD
-========================================= */
+<!-- SUBSCRIPTION EDIT MODAL -->
+<div id="subscriptionModal" class="modal hidden">
+ <div class="modalbox">
+  <div class="modalhead"><h2>Edit Subscription</h2><button class="closebtn" id="closeSubscriptionModal" type="button">✕</button></div>
+  <p class="desc">Update subscription plan, payment amount and validity.</p>
+  <form id="subscriptionForm">
+   <input type="hidden" id="editSubscriptionId">
+   <label>Subscription Plan *</label>
+   <select id="editPlan" required>
+    <option>Single Tournament</option><option>Monthly</option><option>Quarterly</option><option>Yearly</option><option>Custom</option>
+   </select>
+   <label>Amount (INR) *</label><input id="editAmount" type="number" min="0" step="0.01" required>
+   <label>Start Date *</label><input id="editStartDate" type="date" required>
+   <label>End Date *</label><input id="editEndDate" type="date" required>
+   <label>Status *</label>
+   <select id="editSubStatus" required>
+    <option value="active">Active</option>
+    <option value="expired">Expired</option>
+    <option value="cancelled">Cancelled</option>
+    <option value="suspended">Suspended</option>
+   </select>
+   <button class="btn full" id="saveSubscriptionBtn" type="submit">SAVE SUBSCRIPTION</button>
+  </form>
+  <div class="msg" id="subscriptionMsg"></div>
+ </div>
+</div>
 
+<script>
 const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_XeErhCBnSv6AIqdCdb7J6Q_kXoAH46u";
+const FUNCTION_URL = SUPABASE_URL + "/functions/v1/super-admin-update-client";
+const BACKUP_URL = "https://bolpur1.github.io/GFC-KABADDI-PRO-2026/backup.html";
 
-const FUNCTION_URL =
-  SUPABASE_URL + "/functions/v1/super-admin-update-client";
-
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
 let currentClubId = null;
@@ -457,885 +329,579 @@ let allClients = [];
 
 const $ = id => document.getElementById(id);
 
-/* =========================================
-   QUICK SHARE LINK COPY
-========================================= */
-
 async function copyPlatformLink(type) {
-
-  const links = {
-    admin: "https://bolpur1.github.io/GFC-KABADDI-PRO-2026/",
-    club: "https://bolpur1.github.io/GFC-KABADDI-PRO-2026/club-login.html"
-  };
-
-  const link = links[type];
-
-  if (!link) return;
-
-  const message = $("shareMsg");
-  const label = type === "admin" ? "Super Admin" : "Club Login";
-
-  try {
-
-    if (navigator.clipboard && window.isSecureContext) {
-
-      await navigator.clipboard.writeText(link);
-
-    } else {
-
-      const temp = document.createElement("textarea");
-
-      temp.value = link;
-      temp.style.position = "fixed";
-      temp.style.left = "-9999px";
-      temp.style.top = "0";
-
-      document.body.appendChild(temp);
-      temp.focus();
-      temp.select();
-
-      const copied = document.execCommand("copy");
-
-      temp.remove();
-
-      if (!copied) {
-        throw new Error("Copy command failed");
-      }
-    }
-
-    message.textContent = label + " link copied successfully!";
-
-  } catch (error) {
-
-    message.textContent =
-      "Copy failed. Please copy the link manually: " + link;
-
-  }
-}
-
-function showMessage(id, message, error = false) {
-  const el = $(id);
-  if (!el) return;
-  el.textContent = message || "";
-  el.style.color = error ? "#ff858b" : "#65e6a0";
-}
-
-function setLoading(buttonId, loading, text) {
-  const btn = $(buttonId);
-  if (!btn) return;
-  btn.disabled = loading;
-  if (loading) {
-    btn.dataset.oldText = btn.textContent;
-    btn.textContent = text || "Please wait...";
+ const links = {
+  admin:"https://bolpur1.github.io/GFC-KABADDI-PRO-2026/",
+  club:"https://bolpur1.github.io/GFC-KABADDI-PRO-2026/club-login.html",
+  backup:BACKUP_URL
+ };
+ const link = links[type];
+ if (!link) return;
+ const message = $("shareMsg");
+ const label = type==="admin"?"Super Admin":type==="club"?"Club Login":"Backup Dashboard";
+ try {
+  if (navigator.clipboard && window.isSecureContext) {
+   await navigator.clipboard.writeText(link);
   } else {
-    btn.textContent = btn.dataset.oldText || btn.textContent;
+   const temp=document.createElement("textarea");
+   temp.value=link;temp.style.position="fixed";temp.style.left="-9999px";
+   document.body.appendChild(temp);temp.focus();temp.select();
+   const copied=document.execCommand("copy");temp.remove();
+   if(!copied) throw new Error("Copy failed");
   }
+  message.textContent=label+" link copied successfully!";
+ } catch {
+  message.textContent="Copy failed. Please copy manually: "+link;
+ }
+}
+
+function showMessage(id,message,error=false) {
+ const el=$(id);if(!el)return;
+ el.textContent=message||"";
+ el.style.color=error?"#ff858b":"#65e6a0";
+}
+
+function setLoading(buttonId,loading,text) {
+ const btn=$(buttonId);if(!btn)return;
+ btn.disabled=loading;
+ if(loading){btn.dataset.oldText=btn.textContent;btn.textContent=text||"Please wait...";}
+ else btn.textContent=btn.dataset.oldText||btn.textContent;
 }
 
 function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  })[char]);
+ return String(value??"").replace(/[&<>"']/g,char=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+ })[char]);
 }
 
 function formatDate(value) {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric"
-  });
+ if(!value)return "—";
+ const date=new Date(value);
+ if(Number.isNaN(date.getTime()))return "—";
+ return date.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+}
+
+function dateInputValue(value) {
+ if(!value)return "";
+ const d=new Date(value);
+ if(Number.isNaN(d.getTime()))return "";
+ return d.toISOString().slice(0,10);
 }
 
 function statusBadge(status) {
-  const value = String(status || "unknown").toLowerCase();
-  const cls = value === "active" ? "active" :
-              value === "suspended" ? "suspended" : "inactive";
-  return `<span class="status ${cls}">${escapeHTML(value)}</span>`;
+ const value=String(status||"unknown").toLowerCase();
+ const cls=value==="active"?"active":value==="suspended"?"suspended":"inactive";
+ return `<span class="status ${cls}">${escapeHTML(value)}</span>`;
 }
 
 function showLogin() {
-  $("loginView").classList.remove("hidden");
-  $("appView").classList.add("hidden");
-  $("topState").textContent = "SUPER ADMIN PORTAL";
+ $("loginView").classList.remove("hidden");
+ $("appView").classList.add("hidden");
+ $("topState").textContent="SUPER ADMIN PORTAL";
 }
 
 function showApp() {
-  $("loginView").classList.add("hidden");
-  $("appView").classList.remove("hidden");
-  $("topState").textContent = "ADMIN CONNECTED";
+ $("loginView").classList.add("hidden");
+ $("appView").classList.remove("hidden");
+ $("topState").textContent="ADMIN CONNECTED";
 }
 
 async function getAccessToken() {
-  const { data, error } = await db.auth.getSession();
-  if (error) throw error;
-  const token = data?.session?.access_token;
-  if (!token) throw new Error("Login session expired. Please login again.");
-  return token;
+ const {data,error}=await db.auth.getSession();
+ if(error)throw error;
+ const token=data?.session?.access_token;
+ if(!token)throw new Error("Login session expired. Please login again.");
+ return token;
 }
 
-/* Secure Edge Function request */
 async function edgeCall(payload) {
-  const token = await getAccessToken();
-
-  const response = await fetch(FUNCTION_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token,
-      "apikey": SUPABASE_ANON_KEY
-    },
-    body: JSON.stringify(payload)
-  });
-
-  let result;
-  try {
-    result = await response.json();
-  } catch {
-    throw new Error("Server returned an invalid response.");
-  }
-
-  if (!response.ok || result?.error) {
-    throw new Error(result?.error || result?.message || "Server request failed.");
-  }
-
-  return result;
+ const token=await getAccessToken();
+ const response=await fetch(FUNCTION_URL,{
+  method:"POST",
+  headers:{
+   "Content-Type":"application/json",
+   "Authorization":"Bearer "+token,
+   "apikey":SUPABASE_ANON_KEY
+  },
+  body:JSON.stringify(payload)
+ });
+ let result;
+ try{result=await response.json();}
+ catch{throw new Error("Server returned an invalid response.");}
+ if(!response.ok||result?.error||result?.success===false)
+  throw new Error(result?.error||result?.message||"Server request failed.");
+ return result;
 }
 
-/* Check Super Admin permission */
 async function verifyAdmin() {
-  const { data: sessionData, error: sessionError } =
-    await db.auth.getSession();
-
-  if (sessionError || !sessionData?.session?.user) {
-    currentUser = null;
-    showLogin();
-    return false;
-  }
-
-  currentUser = sessionData.session.user;
-
-  const { data, error } = await db.rpc("is_platform_admin");
-
-  if (error || data !== true) {
-    await db.auth.signOut();
-    currentUser = null;
-    showLogin();
-    showMessage("loginMsg", "This account is not authorized as Super Admin.", true);
-    return false;
-  }
-
-  showApp();
-  $("welcome").textContent = "Logged in as " + (currentUser.email || "Super Admin");
-  return true;
+ const {data:sessionData,error:sessionError}=await db.auth.getSession();
+ if(sessionError||!sessionData?.session?.user){
+  currentUser=null;showLogin();return false;
+ }
+ currentUser=sessionData.session.user;
+ const {data,error}=await db.rpc("is_platform_admin");
+ if(error||data!==true){
+  await db.auth.signOut();currentUser=null;showLogin();
+  showMessage("loginMsg","This account is not authorized as Super Admin.",true);
+  return false;
+ }
+ showApp();
+ $("welcome").textContent="Logged in as "+(currentUser.email||"Super Admin");
+ return true;
 }
 
-/* Login */
-$("loginForm").addEventListener("submit", async event => {
-  event.preventDefault();
-
-  showMessage("loginMsg", "");
-  setLoading("loginBtn", true, "LOGGING IN...");
-
-  try {
-    const email = $("email").value.trim();
-    const password = $("password").value;
-
-    const { error } = await db.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    const allowed = await verifyAdmin();
-    if (!allowed) return;
-
-    await loadDashboard();
-  } catch (error) {
-    showMessage("loginMsg", error.message || "Login failed.", true);
-  } finally {
-    setLoading("loginBtn", false);
-  }
+/* LOGIN */
+$("loginForm").addEventListener("submit",async event=>{
+ event.preventDefault();showMessage("loginMsg","");
+ setLoading("loginBtn",true,"LOGGING IN...");
+ try{
+  const {error}=await db.auth.signInWithPassword({
+   email:$("email").value.trim(),password:$("password").value
+  });
+  if(error)throw error;
+  const allowed=await verifyAdmin();
+  if(!allowed)return;
+  await loadDashboard();
+ }catch(error){showMessage("loginMsg",error.message||"Login failed.",true);}
+ finally{setLoading("loginBtn",false);}
 });
 
-/* Logout */
-$("logoutBtn").addEventListener("click", async () => {
-  await db.auth.signOut();
-  currentUser = null;
-  currentClubId = null;
-  showLogin();
+$("logoutBtn").addEventListener("click",async()=>{
+ await db.auth.signOut();currentUser=null;currentClubId=null;showLogin();
+});
+$("refreshBtn").addEventListener("click",loadDashboard);
+
+/* CREATE CLUB */
+$("clientName").addEventListener("input",()=>{
+ const slugInput=$("clientSlug");
+ if(slugInput.dataset.edited==="yes")return;
+ slugInput.value=$("clientName").value.toLowerCase().trim()
+  .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+});
+$("clientSlug").addEventListener("input",()=>{$("clientSlug").dataset.edited="yes";});
+
+$("clientForm").addEventListener("submit",async event=>{
+ event.preventDefault();showMessage("clientMsg","");
+ setLoading("createBtn",true,"CREATING CLUB & OWNER...");
+ try{
+  const payload={
+   action:"create",
+   name:$("clientName").value.trim(),
+   slug:$("clientSlug").value.trim().toLowerCase(),
+   phone:$("clientPhone").value.trim(),
+   email:$("clientEmail").value.trim(),
+   owner_email:$("ownerEmail").value.trim().toLowerCase(),
+   owner_password:$("ownerPassword").value,
+   plan_name:$("plan").value,
+   amount:Number($("amount").value),
+   days:Number($("days").value)
+  };
+  if(!payload.name||!payload.slug||!payload.owner_email)throw new Error("Please fill all required fields.");
+  if(payload.owner_password.length<8)throw new Error("Owner password must contain at least 8 characters.");
+  if(!Number.isFinite(payload.amount)||payload.amount<0)throw new Error("Please enter a valid subscription amount.");
+  if(!Number.isInteger(payload.days)||payload.days<1||payload.days>3650)throw new Error("Subscription duration must be between 1 and 3650 days.");
+  const result=await edgeCall(payload);
+  $("clientForm").reset();$("amount").value="499";$("days").value="30";$("clientSlug").dataset.edited="";
+  showMessage("clientMsg","SUCCESS! Club and Owner account created. Client ID: "+(result.client_id||"Created")+" | Owner Email: "+payload.owner_email);
+  await loadDashboard();
+ }catch(error){showMessage("clientMsg",error.message||"Could not create client.",true);}
+ finally{setLoading("createBtn",false);}
 });
 
-/* Refresh dashboard */
-$("refreshBtn").addEventListener("click", loadDashboard);
-
-/* Generate a slug from club name */
-$("clientName").addEventListener("input", () => {
-  const slugInput = $("clientSlug");
-  if (slugInput.dataset.edited === "yes") return;
-
-  slugInput.value = $("clientName").value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-});
-
-$("clientSlug").addEventListener("input", () => {
-  $("clientSlug").dataset.edited = "yes";
-});
-
-/* Create Club + Auth Owner + Membership + Subscription */
-$("clientForm").addEventListener("submit", async event => {
-  event.preventDefault();
-
-  showMessage("clientMsg", "");
-  setLoading("createBtn", true, "CREATING CLUB & OWNER...");
-
-  try {
-    const payload = {
-      action: "create",
-      name: $("clientName").value.trim(),
-      slug: $("clientSlug").value.trim().toLowerCase(),
-      phone: $("clientPhone").value.trim(),
-      email: $("clientEmail").value.trim(),
-      owner_email: $("ownerEmail").value.trim().toLowerCase(),
-      owner_password: $("ownerPassword").value,
-      plan_name: $("plan").value,
-      amount: Number($("amount").value),
-      days: Number($("days").value)
-    };
-
-    if (!payload.name || !payload.slug || !payload.owner_email) {
-      throw new Error("Please fill all required fields.");
-    }
-
-    if (payload.owner_password.length < 8) {
-      throw new Error("Owner password must contain at least 8 characters.");
-    }
-
-    if (!Number.isFinite(payload.amount) || payload.amount < 0) {
-      throw new Error("Please enter a valid subscription amount.");
-    }
-
-    if (!Number.isInteger(payload.days) ||
-        payload.days < 1 || payload.days > 3650) {
-      throw new Error("Subscription duration must be between 1 and 3650 days.");
-    }
-
-    const result = await edgeCall(payload);
-
-    $("clientForm").reset();
-    $("amount").value = "499";
-    $("days").value = "30";
-    $("clientSlug").dataset.edited = "";
-
-    showMessage(
-      "clientMsg",
-      "SUCCESS! Club and Owner account created. Client ID: " +
-      (result.client_id || "Created") +
-      " | Owner Email: " + payload.owner_email
-    );
-
-    await loadDashboard();
-
-  } catch (error) {
-    showMessage("clientMsg", error.message || "Could not create client.", true);
-  } finally {
-    setLoading("createBtn", false);
-  }
-});
-
-/* =========================================
-   LOAD DASHBOARD
-========================================= */
-
+/* LOAD DASHBOARD */
 async function loadDashboard() {
-  showMessage("listMsg", "Checking database connection...");
-
-  const tests = [
-    {
-      name: "CLIENTS",
-      run: () => db.from("clients").select("*").limit(1)
-    },
-    {
-      name: "TOURNAMENTS",
-      run: () => db.from("tournaments").select("id").limit(1)
-    },
-    {
-      name: "MATCHES",
-      run: () => db.from("matches").select("id").limit(1)
-    },
-    {
-      name: "SUBSCRIPTIONS",
-      run: () => db.from("subscriptions").select("*").limit(1)
-    }
-  ];
-
-  const errors = [];
-
-  for (const test of tests) {
-    try {
-      const result = await test.run();
-
-      if (result.error) {
-        errors.push(
-          test.name + ": " +
-          (result.error.message || JSON.stringify(result.error))
-        );
-      } else {
-        console.log("DATABASE OK:", test.name);
-      }
-    } catch (error) {
-      errors.push(
-        test.name + ": " +
-        (error.message || String(error))
-      );
-    }
-  }
-
-  if (errors.length > 0) {
-    console.error("DATABASE DIAGNOSTIC:", errors);
-
-    showMessage(
-      "listMsg",
-      "DATABASE ERROR: " + errors.join(" | "),
-      true
-    );
-
-    return;
-  }
-
-  try {
-    showMessage("listMsg", "Database OK. Loading dashboard...");
-
-    const results = await Promise.all([
-      db.from("clients")
-        .select("*")
-        .order("created_at", { ascending: false }),
-
-      db.from("tournaments")
-        .select("id", { count: "exact", head: true }),
-
-      db.from("matches")
-        .select("id", { count: "exact", head: true })
-        .eq("match_status", "live"),
-
-      db.from("subscriptions")
-        .select("*")
-        .order("created_at", { ascending: false })
-    ]);
-
-    const names = [
-      "CLIENTS",
-      "TOURNAMENTS",
-      "LIVE MATCHES",
-      "SUBSCRIPTIONS"
-    ];
-
-    for (let i = 0; i < results.length; i++) {
-      if (results[i].error) {
-        throw new Error(
-          names[i] + ": " +
-          (results[i].error.message || JSON.stringify(results[i].error))
-        );
-      }
-    }
-
-    const clientsResult = results[0];
-    const tournamentsResult = results[1];
-    const matchesResult = results[2];
-    const subscriptionsResult = results[3];
-
-    allClients = clientsResult.data || [];
-
-    $("totalClients").textContent = allClients.length;
-
-    $("activeClients").textContent =
-      allClients.filter(client =>
-        String(client.status || "").toLowerCase() === "active"
-      ).length;
-
-    $("totalTournaments").textContent =
-      tournamentsResult.count ?? "—";
-
-    $("liveMatches").textContent =
-      matchesResult.count ?? "—";
-
-    renderClients(allClients);
-    renderSubscriptions(subscriptionsResult.data || []);
-
-    showMessage("listMsg", "Dashboard loaded successfully.");
-
-  } catch (error) {
-    console.error("DASHBOARD LOADING ERROR:", error);
-
-    showMessage(
-      "listMsg",
-      "Dashboard Error: " +
-      (error.message || JSON.stringify(error) || String(error)),
-      true
-    );
-  }
+ showMessage("listMsg","Checking database connection...");
+ const tests=[
+  {name:"CLIENTS",run:()=>db.from("clients").select("*").limit(1)},
+  {name:"TOURNAMENTS",run:()=>db.from("tournaments").select("id").limit(1)},
+  {name:"MATCHES",run:()=>db.from("matches").select("id").limit(1)},
+  {name:"SUBSCRIPTIONS",run:()=>db.from("subscriptions").select("*").limit(1)}
+ ];
+ const errors=[];
+ for(const test of tests){
+  try{
+   const result=await test.run();
+   if(result.error)errors.push(test.name+": "+result.error.message);
+  }catch(error){errors.push(test.name+": "+(error.message||String(error)));}
+ }
+ if(errors.length){
+  console.error("DATABASE DIAGNOSTIC:",errors);
+  showMessage("listMsg","DATABASE ERROR: "+errors.join(" | "),true);return;
+ }
+ try{
+  showMessage("listMsg","Database OK. Loading dashboard...");
+  const results=await Promise.all([
+   db.from("clients").select("*").order("created_at",{ascending:false}),
+   db.from("tournaments").select("id",{count:"exact",head:true}),
+   db.from("matches").select("id",{count:"exact",head:true}).eq("match_status","live"),
+   db.from("subscriptions").select("*").order("created_at",{ascending:false})
+  ]);
+  const names=["CLIENTS","TOURNAMENTS","LIVE MATCHES","SUBSCRIPTIONS"];
+  results.forEach((r,i)=>{if(r.error)throw new Error(names[i]+": "+r.error.message);});
+  allClients=results[0].data||[];
+  $("totalClients").textContent=allClients.length;
+  $("activeClients").textContent=allClients.filter(c=>String(c.status||"").toLowerCase()==="active").length;
+  $("totalTournaments").textContent=results[1].count??"—";
+  $("liveMatches").textContent=results[2].count??"—";
+  renderClients(allClients);
+  renderSubscriptions(results[3].data||[]);
+  showMessage("listMsg","Dashboard loaded successfully.");
+ }catch(error){
+  console.error("DASHBOARD LOADING ERROR:",error);
+  showMessage("listMsg","Dashboard Error: "+(error.message||String(error)),true);
+ }
 }
 
-/* Client table */
+/* CLIENT TABLE */
 function renderClients(clients) {
-  const body = $("clientsBody");
-
-  if (!clients.length) {
-    body.innerHTML =
-      `<tr><td colspan="4" class="empty">No clients found.</td></tr>`;
-    return;
-  }
-
-  body.innerHTML = clients.map(client => `
-    <tr>
-      <td>
-        <span class="clubname" data-open-club="${escapeHTML(client.id)}">
-          ${escapeHTML(client.name)}
-        </span>
-        <div class="sub">${escapeHTML(client.slug || "")}</div>
-        <div class="sub">${escapeHTML(client.contact_email || "")}</div>
-      </td>
-      <td>${statusBadge(client.status)}</td>
-      <td>${formatDate(client.created_at)}</td>
-      <td>
-        <button class="btn secondary small"
-          data-manage-club="${escapeHTML(client.id)}">Manage</button>
-        <button class="btn danger small"
-          data-toggle-club="${escapeHTML(client.id)}"
-          data-current-status="${escapeHTML(client.status || "")}">
-          ${String(client.status).toLowerCase() === "active" ? "Suspend" : "Activate"}
-        </button>
-      </td>
-    </tr>
-  `).join("");
+ const body=$("clientsBody");
+ if(!clients.length){body.innerHTML=`<tr><td colspan="4" class="empty">No clients found.</td></tr>`;return;}
+ body.innerHTML=clients.map(client=>`
+  <tr>
+   <td>
+    <span class="clubname" data-open-club="${escapeHTML(client.id)}">${escapeHTML(client.name)}</span>
+    <div class="sub">${escapeHTML(client.slug||"")}</div>
+    <div class="sub">${escapeHTML(client.contact_email||"")}</div>
+   </td>
+   <td>${statusBadge(client.status)}</td>
+   <td>${formatDate(client.created_at)}</td>
+   <td>
+    <div class="action-buttons">
+     <button class="btn secondary small" data-manage-club="${escapeHTML(client.id)}">Manage</button>
+     <button class="btn danger small" data-toggle-club="${escapeHTML(client.id)}" data-current-status="${escapeHTML(client.status||"")}">${String(client.status).toLowerCase()==="active"?"Suspend":"Activate"}</button>
+     <button class="btn danger small" data-delete-club="${escapeHTML(client.id)}" data-club-name="${escapeHTML(client.name)}">Delete</button>
+    </div>
+   </td>
+  </tr>
+ `).join("");
 }
 
-/* Subscription table */
+/* SUBSCRIPTION TABLE */
 function renderSubscriptions(subscriptions) {
-  const body = $("subsBody");
-
-  if (!subscriptions.length) {
-    body.innerHTML =
-      `<tr><td colspan="5" class="empty">No subscriptions found.</td></tr>`;
-    return;
-  }
-
-  body.innerHTML = subscriptions.map(sub => {
-    const client = allClients.find(c => c.id === sub.client_id);
-
-    return `
-      <tr>
-        <td>${escapeHTML(client?.name || String(sub.client_id || "").slice(0, 8))}</td>
-        <td>${escapeHTML(sub.plan_name || "—")}</td>
-        <td>₹${escapeHTML(sub.amount ?? "0")}</td>
-        <td>${formatDate(sub.end_date)}</td>
-        <td>${statusBadge(sub.status)}</td>
-      </tr>
-    `;
-  }).join("");
+ const body=$("subsBody");
+ if(!subscriptions.length){body.innerHTML=`<tr><td colspan="7" class="empty">No subscriptions found.</td></tr>`;return;}
+ body.innerHTML=subscriptions.map(sub=>{
+  const client=allClients.find(c=>c.id===sub.client_id);
+  return `<tr>
+   <td>${escapeHTML(client?.name||String(sub.client_id||"").slice(0,8))}</td>
+   <td>${escapeHTML(sub.plan_name||"—")}</td>
+   <td>₹${escapeHTML(sub.amount??"0")}</td>
+   <td>${formatDate(sub.start_date)}</td>
+   <td>${formatDate(sub.end_date)}</td>
+   <td>${statusBadge(sub.status)}</td>
+   <td><button class="btn secondary small" data-edit-sub="${escapeHTML(sub.id)}">Edit</button></td>
+  </tr>`;
+ }).join("");
 }
 
-/* Client search */
-$("searchClients").addEventListener("input", () => {
-  const term = $("searchClients").value.trim().toLowerCase();
+/* SEARCH */
+$("searchClients").addEventListener("input",()=>{
+ const term=$("searchClients").value.trim().toLowerCase();
+ renderClients(allClients.filter(c=>
+  String(c.name||"").toLowerCase().includes(term)||
+  String(c.slug||"").toLowerCase().includes(term)||
+  String(c.contact_email||"").toLowerCase().includes(term)
+ ));
+});
 
-  const filtered = allClients.filter(client =>
-    String(client.name || "").toLowerCase().includes(term) ||
-    String(client.slug || "").toLowerCase().includes(term) ||
-    String(client.contact_email || "").toLowerCase().includes(term)
+/* CLIENT ACTIONS */
+$("clientsBody").addEventListener("click",async event=>{
+ const openButton=event.target.closest("[data-open-club]");
+ const manageButton=event.target.closest("[data-manage-club]");
+ const toggleButton=event.target.closest("[data-toggle-club]");
+ const deleteButton=event.target.closest("[data-delete-club]");
+
+ if(openButton){await openClubDetails(openButton.dataset.openClub);return;}
+ if(manageButton){await openManageModal(manageButton.dataset.manageClub);return;}
+
+ if(toggleButton){
+  const clientId=toggleButton.dataset.toggleClub;
+  const currentStatus=toggleButton.dataset.currentStatus;
+  const newStatus=String(currentStatus).toLowerCase()==="active"?"suspended":"active";
+  if(!confirm("Change this club status to "+newStatus+"?"))return;
+  toggleButton.disabled=true;
+  try{
+   await edgeCall({action:"status",client_id:clientId,status:newStatus});
+   await loadDashboard();showMessage("listMsg","Club status updated successfully.");
+  }catch(error){showMessage("listMsg",error.message||"Status update failed.",true);toggleButton.disabled=false;}
+  return;
+ }
+
+ if(deleteButton){
+  const clientId=deleteButton.dataset.deleteClub;
+  const clubName=deleteButton.dataset.clubName;
+  const confirmed=confirm(
+   "WARNING: DELETE CLUB\n\nClub: "+clubName+
+   "\n\nThe system will first create a complete automatic backup. Only after backup succeeds will the Club be deleted.\n\nThe Owner's Supabase login account will NOT be deleted.\n\nAre you sure?"
   );
+  if(!confirmed)return;
 
-  renderClients(filtered);
+  const typed=prompt('To confirm deletion, type DELETE exactly.');
+  if(typed!=="DELETE"){alert("Deletion cancelled. Confirmation did not match.");return;}
+
+  deleteButton.disabled=true;
+  deleteButton.textContent="BACKING UP...";
+  showMessage("listMsg","Creating automatic backup before deleting "+clubName+"...");
+
+  try{
+   const result=await edgeCall({
+    action:"delete",
+    client_id:clientId,
+    confirmation:"DELETE"
+   });
+
+   await loadDashboard();
+
+   showMessage(
+    "listMsg",
+    "Club deleted successfully. Automatic backup saved. Backup ID: "+(result.backup_id||"Not returned")+". Owner login account was preserved."
+   );
+   alert(
+    "CLUB DELETED SUCCESSFULLY\n\nAutomatic backup ID:\n"+
+    (result.backup_id||"Not returned")+
+    "\n\nOwner login account was preserved."
+   );
+  }catch(error){
+   showMessage("listMsg","DELETE FAILED: "+(error.message||"Unknown error")+". If a backup was saved, check the Backup Dashboard.",true);
+   deleteButton.disabled=false;
+   deleteButton.textContent="Delete";
+  }
+ }
 });
 
-/* Client table actions */
-$("clientsBody").addEventListener("click", async event => {
-  const openButton = event.target.closest("[data-open-club]");
-  const manageButton = event.target.closest("[data-manage-club]");
-  const toggleButton = event.target.closest("[data-toggle-club]");
-
-  if (openButton) {
-    await openClubDetails(openButton.dataset.openClub);
-    return;
-  }
-
-  if (manageButton) {
-    await openManageModal(manageButton.dataset.manageClub);
-    return;
-  }
-
-  if (toggleButton) {
-    const clientId = toggleButton.dataset.toggleClub;
-    const currentStatus = toggleButton.dataset.currentStatus;
-    const newStatus =
-      String(currentStatus).toLowerCase() === "active" ? "suspended" : "active";
-
-    if (!confirm("Change this club status to " + newStatus + "?")) return;
-
-    toggleButton.disabled = true;
-
-    try {
-      await edgeCall({
-        action: "status",
-        client_id: clientId,
-        status: newStatus
-      });
-
-      await loadDashboard();
-      showMessage("listMsg", "Club status updated successfully.");
-
-    } catch (error) {
-      showMessage("listMsg", error.message || "Status update failed.", true);
-      toggleButton.disabled = false;
-    }
-  }
+/* SUBSCRIPTION EDIT */
+$("subsBody").addEventListener("click",async event=>{
+ const button=event.target.closest("[data-edit-sub]");
+ if(!button)return;
+ const id=button.dataset.editSub;
+ try{
+  const {data,error}=await db.from("subscriptions").select("*").eq("id",id).maybeSingle();
+  if(error)throw error;
+  if(!data)throw new Error("Subscription not found.");
+  $("editSubscriptionId").value=data.id;
+  $("editPlan").value=data.plan_name||"Custom";
+  $("editAmount").value=data.amount??0;
+  $("editStartDate").value=dateInputValue(data.start_date);
+  $("editEndDate").value=dateInputValue(data.end_date);
+  $("editSubStatus").value=String(data.status||"active").toLowerCase();
+  showMessage("subscriptionMsg","");
+  $("subscriptionModal").classList.remove("hidden");
+ }catch(error){showMessage("listMsg",error.message||"Could not open subscription.",true);}
 });
 
-/* Initial session check */
-(async function initializeApp() {
-  const allowed = await verifyAdmin();
-  if (allowed) {
-    await loadDashboard();
-  }
+function closeSubscriptionModal(){
+ $("subscriptionModal").classList.add("hidden");
+ $("subscriptionForm").reset();
+ showMessage("subscriptionMsg","");
+}
+$("closeSubscriptionModal").addEventListener("click",closeSubscriptionModal);
+$("subscriptionModal").addEventListener("click",event=>{
+ if(event.target===$("subscriptionModal"))closeSubscriptionModal();
+});
+
+$("subscriptionForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ showMessage("subscriptionMsg","");
+ setLoading("saveSubscriptionBtn",true,"SAVING...");
+ try{
+  const startDate=$("editStartDate").value;
+  const endDate=$("editEndDate").value;
+  if(!startDate||!endDate)throw new Error("Please select both subscription dates.");
+  if(new Date(endDate)<new Date(startDate))throw new Error("End Date cannot be earlier than Start Date.");
+  const result=await edgeCall({
+   action:"subscription_update",
+   subscription_id:$("editSubscriptionId").value,
+   plan_name:$("editPlan").value,
+   amount:Number($("editAmount").value),
+   start_date:new Date(startDate+"T00:00:00").toISOString(),
+   end_date:new Date(endDate+"T23:59:59").toISOString(),
+   status:$("editSubStatus").value
+  });
+  closeSubscriptionModal();
+  await loadDashboard();
+  showMessage("listMsg","Subscription updated successfully.");
+ }catch(error){showMessage("subscriptionMsg",error.message||"Subscription update failed.",true);}
+ finally{setLoading("saveSubscriptionBtn",false);}
+});
+
+/* INITIAL SESSION CHECK */
+(async function initializeApp(){
+ const allowed=await verifyAdmin();
+ if(allowed)await loadDashboard();
 })();
 
-/* =========================================
-   CLUB DETAILS
-========================================= */
-
-async function fetchClubTable(tableName, clientId) {
-  const { data, error } = await db
-    .from(tableName)
-    .select("*")
-    .eq("client_id", clientId)
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-  return data || [];
+/* CLUB DETAILS */
+async function fetchClubTable(tableName,clientId){
+ const {data,error}=await db.from(tableName).select("*").eq("client_id",clientId).order("created_at",{ascending:false});
+ if(error)throw error;
+ return data||[];
 }
 
-function renderSimpleTable(headId, bodyId, rows, columns) {
-  const head = $(headId);
-  const body = $(bodyId);
+function renderSimpleTable(headId,bodyId,rows,columns){
+ const head=$(headId),body=$(bodyId);
+ if(!rows.length){
+  head.innerHTML="";
+  body.innerHTML=`<tr><td class="empty">No records found.</td></tr>`;
+  return;
+ }
+ head.innerHTML=`<tr>${columns.map(col=>`<th>${escapeHTML(col.label)}</th>`).join("")}</tr>`;
+ body.innerHTML=rows.map(row=>`<tr>${columns.map(col=>`<td>${escapeHTML(col.format?col.format(row[col.key],row):(row[col.key]??"—"))}</td>`).join("")}</tr>`).join("");
+}
 
-  if (!rows.length) {
-    head.innerHTML = "";
-    body.innerHTML =
-      `<tr><td class="empty">No records found.</td></tr>`;
-    return;
-  }
+async function openClubDetails(clientId){
+ currentClubId=clientId;
+ $("dashboardView").classList.add("hidden");
+ $("clubDetailsView").classList.remove("hidden");
+ $("detailClubTitle").textContent="Loading Club...";
+ $("detailClubSubtitle").textContent="";
+ $("detailMsg").textContent="";
+ await loadClubDetails();
+}
 
-  head.innerHTML = `
-    <tr>${columns.map(col =>
-      `<th>${escapeHTML(col.label)}</th>`
-    ).join("")}</tr>
+async function loadClubDetails(){
+ if(!currentClubId)return;
+ try{
+  const club=allClients.find(c=>c.id===currentClubId);
+  if(!club)throw new Error("Club not found. Refresh dashboard and try again.");
+  currentClub=club;
+  $("detailClubTitle").textContent=club.name||"Club Details";
+  $("detailClubSubtitle").textContent="Client ID: "+club.id;
+
+  const [tournaments,teams,players,matches,ownerResult]=await Promise.all([
+   fetchClubTable("tournaments",currentClubId),
+   fetchClubTable("teams",currentClubId),
+   fetchClubTable("players",currentClubId),
+   fetchClubTable("matches",currentClubId),
+   edgeCall({action:"get",client_id:currentClubId})
+  ]);
+  currentOwner=ownerResult.owner||null;
+  $("clubTournamentCount").textContent=tournaments.length;
+  $("clubTeamCount").textContent=teams.length;
+  $("clubPlayerCount").textContent=players.length;
+  $("clubMatchCount").textContent=matches.length;
+  $("clubLiveCount").textContent=matches.filter(m=>String(m.match_status||"").toLowerCase()==="live").length;
+
+  $("clubInfo").innerHTML=`
+   <div class="infoItem"><small>CLUB NAME</small><strong>${escapeHTML(club.name||"—")}</strong></div>
+   <div class="infoItem"><small>SLUG</small><strong>${escapeHTML(club.slug||"—")}</strong></div>
+   <div class="infoItem"><small>CONTACT EMAIL</small><strong>${escapeHTML(club.contact_email||"—")}</strong></div>
+   <div class="infoItem"><small>PHONE</small><strong>${escapeHTML(club.phone||"—")}</strong></div>
+   <div class="infoItem"><small>STATUS</small><strong>${escapeHTML(club.status||"—")}</strong></div>
+   <div class="infoItem"><small>CREATED</small><strong>${formatDate(club.created_at)}</strong></div>
   `;
+  $("ownerInfo").innerHTML=currentOwner?`
+   <div class="infoItem"><small>OWNER EMAIL</small><strong>${escapeHTML(currentOwner.email||"—")}</strong></div>
+   <div class="infoItem"><small>OWNER USER ID</small><strong>${escapeHTML(currentOwner.user_id||currentOwner.id||"—")}</strong></div>
+   <div class="infoItem"><small>ROLE</small><strong>${escapeHTML(currentOwner.role||"owner")}</strong></div>
+  `:`<div class="empty">Owner information not available.</div>`;
 
-  body.innerHTML = rows.map(row => `
-    <tr>
-      ${columns.map(col => `
-        <td>${escapeHTML(
-          col.format ? col.format(row[col.key], row) :
-          (row[col.key] ?? "—")
-        )}</td>
-      `).join("")}
-    </tr>
-  `).join("");
+  renderSimpleTable("tournamentsHead","tournamentsBody",tournaments,[
+   {key:"name",label:"TOURNAMENT"},
+   {key:"status",label:"STATUS"},
+   {key:"created_at",label:"CREATED",format:formatDate}
+  ]);
+  renderSimpleTable("teamsHead","teamsBody",teams,[
+   {key:"name",label:"TEAM"},
+   {key:"created_at",label:"CREATED",format:formatDate}
+  ]);
+  renderSimpleTable("playersHead","playersBody",players,[
+   {key:"name",label:"PLAYER"},
+   {key:"jersey_number",label:"JERSEY NO."},
+   {key:"created_at",label:"CREATED",format:formatDate}
+  ]);
+  renderSimpleTable("matchesHead","matchesBody",matches,[
+   {key:"match_status",label:"STATUS"},
+   {key:"created_at",label:"CREATED",format:formatDate}
+  ]);
+  showMessage("detailMsg","Club details loaded successfully.");
+ }catch(error){
+  console.error("CLUB DETAILS ERROR:",error);
+  showMessage("detailMsg","Could not load club details: "+(error.message||"Unknown error"),true);
+ }
 }
 
-async function openClubDetails(clientId) {
-  currentClubId = clientId;
-
-  $("dashboardView").classList.add("hidden");
-  $("clubDetailsView").classList.remove("hidden");
-
-  $("detailClubTitle").textContent = "Loading Club...";
-  $("detailClubSubtitle").textContent = "";
-  $("detailMsg").textContent = "";
-
-  await loadClubDetails();
-}
-
-async function loadClubDetails() {
-  if (!currentClubId) return;
-
-  try {
-    const club = allClients.find(c => c.id === currentClubId);
-
-    if (!club) {
-      throw new Error("Club not found. Refresh dashboard and try again.");
-    }
-
-    currentClub = club;
-
-    $("detailClubTitle").textContent = club.name || "Club Details";
-    $("detailClubSubtitle").textContent =
-      "Client ID: " + club.id;
-
-    const [
-      tournaments,
-      teams,
-      players,
-      matches,
-      ownerResult
-    ] = await Promise.all([
-      fetchClubTable("tournaments", currentClubId),
-      fetchClubTable("teams", currentClubId),
-      fetchClubTable("players", currentClubId),
-      fetchClubTable("matches", currentClubId),
-      edgeCall({
-        action: "get",
-        client_id: currentClubId
-      })
-    ]);
-
-    currentOwner = ownerResult.owner || null;
-
-    $("clubTournamentCount").textContent = tournaments.length;
-    $("clubTeamCount").textContent = teams.length;
-    $("clubPlayerCount").textContent = players.length;
-    $("clubMatchCount").textContent = matches.length;
-
-    /* Correct column: match_status */
-    $("clubLiveCount").textContent = matches.filter(m =>
-      String(m.match_status || "").toLowerCase() === "live"
-    ).length;
-
-    $("clubInfo").innerHTML = `
-      <div class="infoItem">
-        <small>CLUB NAME</small>
-        <strong>${escapeHTML(club.name || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>SLUG</small>
-        <strong>${escapeHTML(club.slug || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>CONTACT EMAIL</small>
-        <strong>${escapeHTML(club.contact_email || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>PHONE</small>
-        <strong>${escapeHTML(club.phone || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>STATUS</small>
-        <strong>${escapeHTML(club.status || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>CREATED</small>
-        <strong>${formatDate(club.created_at)}</strong>
-      </div>
-    `;
-
-    $("ownerInfo").innerHTML = currentOwner ? `
-      <div class="infoItem">
-        <small>OWNER EMAIL</small>
-        <strong>${escapeHTML(currentOwner.email || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>OWNER USER ID</small>
-        <strong>${escapeHTML(currentOwner.user_id || currentOwner.id || "—")}</strong>
-      </div>
-      <div class="infoItem">
-        <small>ROLE</small>
-        <strong>${escapeHTML(currentOwner.role || "owner")}</strong>
-      </div>
-    ` : `<div class="empty">Owner information not available.</div>`;
-
-    renderSimpleTable("tournamentsHead", "tournamentsBody",
-      tournaments, [
-        { key: "name", label: "TOURNAMENT" },
-        { key: "status", label: "STATUS" },
-        { key: "created_at", label: "CREATED", format: formatDate }
-      ]);
-
-    renderSimpleTable("teamsHead", "teamsBody",
-      teams, [
-        { key: "name", label: "TEAM" },
-        { key: "created_at", label: "CREATED", format: formatDate }
-      ]);
-
-    renderSimpleTable("playersHead", "playersBody",
-      players, [
-        { key: "name", label: "PLAYER" },
-        { key: "jersey_number", label: "JERSEY NO." },
-        { key: "created_at", label: "CREATED", format: formatDate }
-      ]);
-
-    /* Correct column: match_status */
-    renderSimpleTable("matchesHead", "matchesBody",
-      matches, [
-        { key: "match_status", label: "STATUS" },
-        { key: "created_at", label: "CREATED", format: formatDate }
-      ]);
-
-    showMessage("detailMsg", "Club details loaded successfully.");
-
-  } catch (error) {
-    console.error("CLUB DETAILS ERROR:", error);
-
-    showMessage(
-      "detailMsg",
-      "Could not load club details: " +
-      (error.message || JSON.stringify(error) || "Unknown error"),
-      true
-    );
-  }
-}
-
-$("backBtn").addEventListener("click", () => {
-  $("clubDetailsView").classList.add("hidden");
-  $("dashboardView").classList.remove("hidden");
-  currentClubId = null;
+$("backBtn").addEventListener("click",()=>{
+ $("clubDetailsView").classList.add("hidden");
+ $("dashboardView").classList.remove("hidden");
+ currentClubId=null;
+});
+$("detailRefreshBtn").addEventListener("click",async()=>{
+ await loadDashboard();
+ await loadClubDetails();
+});
+$("detailManageBtn").addEventListener("click",()=>{
+ if(currentClubId)openManageModal(currentClubId);
 });
 
-$("detailRefreshBtn").addEventListener("click", async () => {
+/* MANAGE CLIENT AND OWNER */
+async function openManageModal(clientId){
+ showMessage("manageMsg","Loading client and owner details...");
+ $("manageModal").classList.remove("hidden");
+ $("manageForm").classList.add("hidden");
+ try{
+  const result=await edgeCall({action:"get",client_id:clientId});
+  const client=result.client||allClients.find(c=>c.id===clientId);
+  const owner=result.owner;
+  if(!client)throw new Error("Client information not found.");
+  if(!owner)throw new Error("Owner information not found.");
+  $("manageClientId").value=client.id;
+  $("manageUserId").value=owner.user_id||owner.id;
+  $("manageName").value=client.name||"";
+  $("manageSlug").value=client.slug||"";
+  $("manageContactEmail").value=client.contact_email||"";
+  $("managePhone").value=client.phone||"";
+  $("manageLoginEmail").value=owner.email||"";
+  $("managePassword").value="";
+  $("manageForm").classList.remove("hidden");
+  showMessage("manageMsg","");
+ }catch(error){showMessage("manageMsg",error.message||"Unable to load owner details.",true);}
+}
+
+function closeManageModal(){
+ $("manageModal").classList.add("hidden");
+ $("manageForm").reset();
+ showMessage("manageMsg","");
+}
+$("closeModal").addEventListener("click",closeManageModal);
+$("manageModal").addEventListener("click",event=>{
+ if(event.target===$("manageModal"))closeManageModal();
+});
+
+$("manageForm").addEventListener("submit",async event=>{
+ event.preventDefault();showMessage("manageMsg","");
+ setLoading("saveManageBtn",true,"SAVING CHANGES...");
+ try{
+  const payload={
+   action:"update",
+   client_id:$("manageClientId").value,
+   user_id:$("manageUserId").value,
+   name:$("manageName").value.trim(),
+   slug:$("manageSlug").value.trim().toLowerCase(),
+   contact_email:$("manageContactEmail").value.trim(),
+   phone:$("managePhone").value.trim(),
+   owner_email:$("manageLoginEmail").value.trim().toLowerCase()
+  };
+  const newPassword=$("managePassword").value;
+  if(newPassword){
+   if(newPassword.length<8)throw new Error("New password must contain at least 8 characters.");
+   payload.owner_password=newPassword;
+  }
+  if(!payload.name||!payload.slug||!payload.owner_email)throw new Error("Please fill all required fields.");
+  await edgeCall(payload);
+  closeManageModal();
   await loadDashboard();
-  await loadClubDetails();
+  if(currentClubId)await loadClubDetails();
+  showMessage("listMsg","Client and Owner details updated successfully.");
+ }catch(error){showMessage("manageMsg",error.message||"Update failed.",true);}
+ finally{setLoading("saveManageBtn",false);}
 });
 
-$("detailManageBtn").addEventListener("click", () => {
-  if (currentClubId) openManageModal(currentClubId);
+/* AUTH STATE LISTENER */
+db.auth.onAuthStateChange((event)=>{
+ if(event==="SIGNED_OUT"){
+  currentUser=null;showLogin();
+ }
 });
-
-/* =========================================
-   MANAGE CLIENT AND OWNER
-========================================= */
-
-async function openManageModal(clientId) {
-  showMessage("manageMsg", "Loading client and owner details...");
-
-  $("manageModal").classList.remove("hidden");
-  $("manageForm").classList.add("hidden");
-
-  try {
-    const result = await edgeCall({
-      action: "get",
-      client_id: clientId
-    });
-
-    const client = result.client ||
-      allClients.find(c => c.id === clientId);
-
-    const owner = result.owner;
-
-    if (!client) throw new Error("Client information not found.");
-    if (!owner) throw new Error("Owner information not found.");
-
-    $("manageClientId").value = client.id;
-    $("manageUserId").value = owner.user_id || owner.id;
-
-    $("manageName").value = client.name || "";
-    $("manageSlug").value = client.slug || "";
-    $("manageContactEmail").value = client.contact_email || "";
-    $("managePhone").value = client.phone || "";
-
-    $("manageLoginEmail").value = owner.email || "";
-    $("managePassword").value = "";
-
-    $("manageForm").classList.remove("hidden");
-    showMessage("manageMsg", "");
-
-  } catch (error) {
-    showMessage(
-      "manageMsg",
-      error.message || "Unable to load owner details.",
-      true
-    );
-  }
-}
-
-function closeManageModal() {
-  $("manageModal").classList.add("hidden");
-  $("manageForm").reset();
-  showMessage("manageMsg", "");
-}
-
-$("closeModal").addEventListener("click", closeManageModal);
-
-$("manageModal").addEventListener("click", event => {
-  if (event.target === $("manageModal")) {
-    closeManageModal();
-  }
-});
-
-$("manageForm").addEventListener("submit", async event => {
-  event.preventDefault();
-
-  showMessage("manageMsg", "");
-  setLoading("saveManageBtn", true, "SAVING CHANGES...");
-
-  try {
-    const payload = {
-      action: "update",
-      client_id: $("manageClientId").value,
-      user_id: $("manageUserId").value,
-      name: $("manageName").value.trim(),
-      slug: $("manageSlug").value.trim().toLowerCase(),
-      contact_email: $("manageContactEmail").value.trim(),
-      phone: $("managePhone").value.trim(),
-      owner_email: $("manageLoginEmail").value.trim().toLowerCase()
-    };
-
-    const newPassword = $("managePassword").value;
-
-    if (newPassword) {
-      if (newPassword.length < 8) {
-        throw new Error("New password must contain at least 8 characters.");
-      }
-      payload.owner_password = newPassword;
-    }
-
-    if (!payload.name || !payload.slug || !payload.owner_email) {
-      throw new Error("Please fill all required fields.");
-    }
-
-    await edgeCall(payload);
-
-    closeManageModal();
-
-    await loadDashboard();
-
-    if (currentClubId) {
-      await loadClubDetails();
-    }
-
-    showMessage("listMsg", "Client and Owner details updated successfully.");
-
-  } catch (error) {
-    showMessage(
-      "manageMsg",
-      error.message || "Update failed.",
-      true
-    );
-  } finally {
-    setLoading("saveManageBtn", false);
-  }
-});
-
-/* =========================================
-   AUTH STATE LISTENER
-========================================= */
-
-db.auth.onAuthStateChange(async (event, session) => {
-  if (event === "SIGNED_OUT") {
-    currentUser = null;
-    showLogin();
-  }
-});
-
-/* END OF APPLICATION */
 </script>
 </body>
 </html>
