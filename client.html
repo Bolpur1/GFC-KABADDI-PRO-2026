@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071713">
 <title>GFC KABADDI PRO 2026 | Club Dashboard</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -95,6 +96,15 @@ min-height:150px;resize:vertical;line-height:1.7
 }
 .bulk-help{
 font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px
+}
+.standalone-tag{
+display:inline-block;
+padding:4px 7px;
+border-radius:6px;
+background:#174d38;
+color:#8dffc0;
+font-size:10px;
+font-weight:bold
 }
 @media(max-width:850px){
 .stats{grid-template-columns:repeat(2,1fr)}
@@ -285,7 +295,7 @@ font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px
 <p class="desc">Teams registered under your club.</p>
 <div class="tablewrap">
 <table>
-<thead><tr><th>TEAM</th><th>SHORT NAME</th><th>TOURNAMENT</th></tr></thead>
+<thead><tr><th>TEAM</th><th>SHORT NAME</th><th>TOURNAMENT / MATCH</th></tr></thead>
 <tbody id="teamsBody">
 <tr><td colspan="3" class="empty">Loading...</td></tr>
 </tbody>
@@ -373,10 +383,72 @@ font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px
 </section>
 </div>
 
-<div class="grid">
+<!-- STANDALONE MATCH CREATION -->
 <section class="panel section">
-<h3>Create Match</h3>
-<p class="desc">Schedule a new Kabaddi match.</p>
+<h3>⚡ Create Standalone Match</h3>
+<p class="desc">
+Create and manage a Kabaddi match without creating a tournament.
+Two new teams will be automatically registered and linked to this match.
+</p>
+
+<form id="standaloneMatchForm">
+
+<div class="formgrid">
+
+<div>
+<label>Team A Name *</label>
+<input id="standaloneTeamA" required placeholder="Bolpur Warriors">
+</div>
+
+<div>
+<label>Team A Short Name</label>
+<input id="standaloneShortA" placeholder="BWR">
+</div>
+
+<div>
+<label>Team B Name *</label>
+<input id="standaloneTeamB" required placeholder="Birbhum Tigers">
+</div>
+
+<div>
+<label>Team B Short Name</label>
+<input id="standaloneShortB" placeholder="BT">
+</div>
+
+<div>
+<label>Match Status</label>
+<select id="standaloneStatus">
+<option value="upcoming">Upcoming</option>
+<option value="live">Live</option>
+</select>
+</div>
+
+<div>
+<label>Venue (Optional)</label>
+<input id="standaloneVenue" placeholder="Kabaddi Ground">
+</div>
+
+</div>
+
+<div class="note">
+<strong>Standalone Match:</strong> Tournament ছাড়াই Match তৈরি হবে।
+দুটি Team স্বয়ংক্রিয়ভাবে তৈরি হবে এবং এই Match-এর সঙ্গে যুক্ত থাকবে।
+পরে Player Management থেকে এই Team-গুলিতে খেলোয়াড় যোগ করতে পারবেন।
+</div>
+
+<button class="btn full" id="standaloneMatchBtn" type="submit">
+CREATE STANDALONE MATCH
+</button>
+</form>
+
+<div class="msg" id="standaloneMatchMsg"></div>
+</section>
+
+<div class="grid">
+
+<section class="panel section">
+<h3>Create Tournament Match</h3>
+<p class="desc">Schedule a match using existing teams.</p>
 
 <form id="matchForm">
 <label>Tournament</label>
@@ -408,19 +480,25 @@ font-size:11px;color:var(--muted);line-height:1.6;margin-top:8px
 
 <section class="panel section">
 <h3>Your Matches</h3>
-<p class="desc">Match schedule and current scores.</p>
+<p class="desc">Tournament and Standalone match schedule and current scores.</p>
 <div class="tablewrap">
 <table>
 <thead>
-<tr><th>TEAM A</th><th>SCORE</th><th>TEAM B</th><th>STATUS</th></tr>
+<tr>
+<th>TYPE</th>
+<th>TEAM A</th>
+<th>SCORE</th>
+<th>TEAM B</th>
+<th>STATUS</th>
+</tr>
 </thead>
 <tbody id="matchesBody">
-<tr><td colspan="4" class="empty">Loading...</td></tr>
+<tr><td colspan="5" class="empty">Loading...</td></tr>
 </tbody>
 </table>
 </div>
 <div class="note">
-Live scoring, raid events, tackle events and scoreboard controls will be connected in the next module.
+Standalone matches are stored without a tournament. Their teams are linked using the standalone_match_id field.
 </div>
 </section>
 </div>
@@ -436,10 +514,16 @@ GFC KABADDI PRO 2026 · Club Management Portal
 <script>
 (() => {
 
+"use strict";
+
 const SUPABASE_URL = "https://wpefjtjcnvdnbsenfukg.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_XeErhCBnSv6AIqdCdb7J6Q_kXoAH46u";
 
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
 const $ = id => document.getElementById(id);
 
 let currentUser = null;
@@ -454,651 +538,1024 @@ let subscriptions = [];
 let busy = false;
 
 const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
 }[c]));
 
-const showMsg = (id,text,error=false) => {
-$(id).textContent = text;
-$(id).style.color = error ? "#ff9ba0" : "#f5c56b";
-};
+function showMsg(id,text,error=false) {
+  $(id).textContent = text;
+  $(id).style.color = error ? "#ff9ba0" : "#f5c56b";
+}
 
 function dateText(value) {
-if (!value) return "—";
-const date = new Date(value);
-if (isNaN(date.getTime())) return "—";
-return date.toLocaleString("en-IN",{
-timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric",
-hour:"2-digit",minute:"2-digit",hour12:true
-});
+  if (!value) return "—";
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("en-IN",{
+    timeZone:"Asia/Kolkata",
+    day:"2-digit",
+    month:"short",
+    year:"numeric",
+    hour:"2-digit",
+    minute:"2-digit",
+    hour12:true
+  });
 }
 
 function dateOnly(value) {
-if (!value) return "—";
-const date = new Date(value + "T00:00:00");
-return date.toLocaleDateString("en-IN",{
-timeZone:"Asia/Kolkata",day:"2-digit",month:"short",year:"numeric"
-});
+  if (!value) return "—";
+  const date = new Date(value + "T00:00:00");
+
+  return date.toLocaleDateString("en-IN",{
+    timeZone:"Asia/Kolkata",
+    day:"2-digit",
+    month:"short",
+    year:"numeric"
+  });
 }
 
 function showLogin() {
-$("loginView").classList.remove("hidden");
-$("appView").classList.add("hidden");
-$("topState").textContent = "CLUB OWNER PORTAL";
+  $("loginView").classList.remove("hidden");
+  $("appView").classList.add("hidden");
+  $("topState").textContent = "CLUB OWNER PORTAL";
 }
 
 function showApp() {
-$("loginView").classList.add("hidden");
-$("appView").classList.remove("hidden");
-$("topState").textContent = "CLUB VERIFIED";
+  $("loginView").classList.add("hidden");
+  $("appView").classList.remove("hidden");
+  $("topState").textContent = "CLUB VERIFIED";
 }
 
 function statusClass(status) {
-const s = String(status || "").toLowerCase();
-if (["active","ongoing","live"].includes(s)) return "active";
-if (["suspended","cancelled","inactive"].includes(s)) return "suspended";
-return "inactive";
-}
+  const s = String(status || "").toLowerCase();
 
-async function verifyUser() {
-const {data:{user},error} = await db.auth.getUser();
-if (error) throw error;
-if (!user) return false;
+  if (["active","ongoing","live"].includes(s)) return "active";
+  if (["suspended","cancelled","inactive"].includes(s)) return "suspended";
 
-currentUser = user;
-
-const {data:memberRows,error:memberError} = await db
-.from("client_members").select("client_id,role").eq("user_id",user.id);
-
-if (memberError) throw memberError;
-memberships = memberRows || [];
-
-if (!memberships.length) {
-throw new Error("No club membership found for this account. Please contact Super Admin.");
-}
-
-const clientIds = [...new Set(memberships.map(m=>m.client_id))];
-
-const {data:clientRows,error:clientError} = await db
-.from("clients").select("id,name,slug,status").in("id",clientIds);
-
-if (clientError) throw clientError;
-if (!clientRows || !clientRows.length) throw new Error("Your club account is unavailable.");
-
-memberships = memberships.map(m=>({
-...m,client:clientRows.find(c=>c.id===m.client_id)
-})).filter(m=>m.client);
-
-if (!memberships.length) throw new Error("No active club access found.");
-
-if (memberships.length > 1) {
-$("clientSelector").classList.remove("hidden");
-$("clientSelector").innerHTML = memberships.map((m,i)=>
-`<option value="${i}">${esc(m.client.name)}</option>`).join("");
-} else {
-$("clientSelector").classList.add("hidden");
-}
-
-await selectClient(0);
-showApp();
-return true;
-}
-
-async function selectClient(index) {
-const membership = memberships[index];
-if (!membership) throw new Error("Invalid club selection.");
-
-currentClient = membership.client;
-currentRole = membership.role;
-
-if (currentClient.status !== "active") {
-throw new Error("Your club account is currently suspended. Contact Super Admin.");
-}
-
-$("clubTitle").textContent = currentClient.name;
-$("welcome").textContent = "Signed in as " + (currentUser.email || "Club User");
-$("rolePill").textContent = String(currentRole).toUpperCase();
-
-await loadDashboard();
-}
-
-async function loadDashboard() {
-if (!currentClient) return;
-
-showMsg("dashboardMsg","Loading club data...");
-const cid = currentClient.id;
-
-const results = await Promise.all([
-db.from("tournaments")
-.select("id,name,season,venue,start_date,end_date,status,created_at")
-.eq("client_id",cid).order("created_at",{ascending:false}),
-
-db.from("teams")
-.select("id,name,short_name,logo_url,tournament_id,created_at")
-.eq("client_id",cid).order("created_at",{ascending:false}),
-
-db.from("players")
-.select("id,name,jersey_number,position,photo_url,team_id,created_at")
-.eq("client_id",cid).order("created_at",{ascending:false}),
-
-db.from("matches")
-.select("id,tournament_id,team_a_id,team_b_id,team_a_score,team_b_score,match_status,created_at")
-.eq("client_id",cid).order("created_at",{ascending:false}),
-
-db.from("subscriptions")
-.select("id,plan_name,amount,start_date,end_date,status")
-.eq("client_id",cid).order("created_at",{ascending:false}).limit(10)
-]);
-
-for (const result of results) {
-if (result.error) throw result.error;
-}
-
-tournaments = results[0].data || [];
-teams = results[1].data || [];
-players = results[2].data || [];
-matches = results[3].data || [];
-subscriptions = results[4].data || [];
-
-$("totalTournaments").textContent = tournaments.length;
-$("totalTeams").textContent = teams.length;
-$("totalPlayers").textContent = players.length;
-$("totalMatches").textContent = matches.length;
-
-renderSubscriptions();
-renderTournaments();
-renderTeams();
-renderPlayers();
-renderMatches();
-updateSelects();
-
-showMsg("dashboardMsg","Club data updated successfully.");
-}
-
-function renderSubscriptions() {
-$("subscriptionBody").innerHTML = subscriptions.length
-? subscriptions.map(s=>`
-<tr>
-<td>${esc(s.plan_name)}</td>
-<td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
-<td>${dateText(s.start_date)}</td>
-<td>${dateText(s.end_date)}</td>
-<td><span class="status ${statusClass(s.status)}">${esc(s.status)}</span></td>
-</tr>`).join("")
-: `<tr><td colspan="5" class="empty">No subscription found.</td></tr>`;
-}
-
-function renderTournaments() {
-$("tournamentsBody").innerHTML = tournaments.length
-? tournaments.map(t=>`
-<tr>
-<td><b>${esc(t.name)}</b><br><span style="color:#8eaa9a">${esc(t.season || "")}</span></td>
-<td>${esc(t.venue || "—")}</td>
-<td>${dateOnly(t.start_date)}</td>
-<td><span class="status ${statusClass(t.status)}">${esc(t.status || "upcoming")}</span></td>
-</tr>`).join("")
-: `<tr><td colspan="4" class="empty">No tournaments created yet.</td></tr>`;
-}
-
-function renderTeams() {
-$("teamsBody").innerHTML = teams.length
-? teams.map(t=>{
-const tournament = tournaments.find(x=>x.id===t.tournament_id);
-return `<tr>
-<td><b>${esc(t.name)}</b></td>
-<td>${esc(t.short_name || "—")}</td>
-<td>${esc(tournament?.name || "—")}</td>
-</tr>`;
-}).join("")
-: `<tr><td colspan="3" class="empty">No teams registered yet.</td></tr>`;
-}
-
-function renderPlayers() {
-$("playersBody").innerHTML = players.length
-? players.map(p=>{
-const team = teams.find(t=>t.id===p.team_id);
-return `<tr>
-<td><b>${esc(p.name)}</b></td>
-<td>${esc(p.jersey_number ?? "—")}</td>
-<td>${esc(p.position || "—")}</td>
-<td>${esc(team?.short_name || team?.name || "—")}</td>
-</tr>`;
-}).join("")
-: `<tr><td colspan="4" class="empty">No players registered yet.</td></tr>`;
-}
-
-function renderMatches() {
-$("matchesBody").innerHTML = matches.length
-? matches.map(m=>{
-const teamA = teams.find(t=>t.id===m.team_a_id);
-const teamB = teams.find(t=>t.id===m.team_b_id);
-return `<tr>
-<td>${esc(teamA?.short_name || teamA?.name || "Team A")}</td>
-<td><b>${Number(m.team_a_score||0)} - ${Number(m.team_b_score||0)}</b></td>
-<td>${esc(teamB?.short_name || teamB?.name || "Team B")}</td>
-<td><span class="status ${statusClass(m.match_status)}">${esc(m.match_status)}</span></td>
-</tr>`;
-}).join("")
-: `<tr><td colspan="4" class="empty">No matches created yet.</td></tr>`;
-}
-
-function updateSelects() {
-const tournamentOptions =
-`<option value="">Select Tournament</option>` +
-tournaments.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
-
-$("teamTournament").innerHTML = tournamentOptions;
-$("matchTournament").innerHTML = tournamentOptions;
-
-const teamOptions =
-`<option value="">Select Team</option>` +
-teams.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
-
-$("playerTeam").innerHTML = teamOptions;
-$("bulkPlayerTeam").innerHTML = teamOptions;
-
-$("matchTeamA").innerHTML =
-`<option value="">Select Team A</option>` +
-teams.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
-
-$("matchTeamB").innerHTML =
-`<option value="">Select Team B</option>` +
-teams.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
-}
-
-/*
-DUPLICATE NAME SYSTEM
-
-First name: Rahul
-Second: Rahul B
-Third: Rahul C
-Fourth: Rahul D
-
-Names are checked separately for each team.
-*/
-
-function suffixLetter(number) {
-let result = "";
-let n = number;
-
-while (n > 0) {
-n--;
-result = String.fromCharCode(65 + (n % 26)) + result;
-n = Math.floor(n / 26);
-}
-
-return result;
-}
-
-function makeUniquePlayerName(teamId,rawName,reservedNames) {
-const base = String(rawName || "").trim();
-if (!base) throw new Error("Player name cannot be empty.");
-
-const existing = new Set(
-reservedNames
-.filter(p=>p.team_id===teamId)
-.map(p=>String(p.name || "").trim().toLowerCase())
-);
-
-if (!existing.has(base.toLowerCase())) {
-return base;
-}
-
-let number = 2;
-let candidate = "";
-
-do {
-candidate = base + " " + suffixLetter(number - 1);
-number++;
-} while (existing.has(candidate.toLowerCase()));
-
-return candidate;
+  return "inactive";
 }
 
 function canManagePlayers() {
-return ["owner","admin"].includes(String(currentRole).toLowerCase());
+  return ["owner","admin"].includes(String(currentRole).toLowerCase());
 }
 
+// ======================================================
+// AUTHENTICATION
+// ======================================================
+
+async function verifyUser() {
+  const {data:{user},error} = await db.auth.getUser();
+
+  if (error) throw error;
+  if (!user) return false;
+
+  currentUser = user;
+
+  const {data:memberRows,error:memberError} = await db
+    .from("client_members")
+    .select("client_id,role")
+    .eq("user_id",user.id);
+
+  if (memberError) throw memberError;
+
+  memberships = memberRows || [];
+
+  if (!memberships.length) {
+    throw new Error(
+      "No club membership found for this account. Please contact Super Admin."
+    );
+  }
+
+  const clientIds = [...new Set(memberships.map(m=>m.client_id))];
+
+  const {data:clientRows,error:clientError} = await db
+    .from("clients")
+    .select("id,name,slug,status")
+    .in("id",clientIds);
+
+  if (clientError) throw clientError;
+
+  if (!clientRows || !clientRows.length) {
+    throw new Error("Your club account is unavailable.");
+  }
+
+  memberships = memberships.map(m=>({
+    ...m,
+    client:clientRows.find(c=>c.id===m.client_id)
+  })).filter(m=>m.client);
+
+  if (!memberships.length) {
+    throw new Error("No active club access found.");
+  }
+
+  if (memberships.length > 1) {
+    $("clientSelector").classList.remove("hidden");
+
+    $("clientSelector").innerHTML = memberships.map((m,i)=>
+      `<option value="${i}">${esc(m.client.name)}</option>`
+    ).join("");
+
+  } else {
+    $("clientSelector").classList.add("hidden");
+  }
+
+  await selectClient(0);
+  showApp();
+
+  return true;
+}
+
+async function selectClient(index) {
+  const membership = memberships[index];
+
+  if (!membership) {
+    throw new Error("Invalid club selection.");
+  }
+
+  currentClient = membership.client;
+  currentRole = membership.role;
+
+  if (currentClient.status !== "active") {
+    throw new Error(
+      "Your club account is currently suspended. Contact Super Admin."
+    );
+  }
+
+  $("clubTitle").textContent = currentClient.name;
+  $("welcome").textContent =
+    "Signed in as " + (currentUser.email || "Club User");
+
+  $("rolePill").textContent = String(currentRole).toUpperCase();
+
+  await loadDashboard();
+}
+
+// ======================================================
+// LOAD DASHBOARD DATA
+// ======================================================
+
+async function loadDashboard() {
+  if (!currentClient) return;
+
+  showMsg("dashboardMsg","Loading club data...");
+
+  const cid = currentClient.id;
+
+  const results = await Promise.all([
+
+    db.from("tournaments")
+      .select("id,name,season,venue,start_date,end_date,status,created_at")
+      .eq("client_id",cid)
+      .order("created_at",{ascending:false}),
+
+    db.from("teams")
+      .select("id,name,short_name,logo_url,tournament_id,standalone_match_id,created_at")
+      .eq("client_id",cid)
+      .order("created_at",{ascending:false}),
+
+    db.from("players")
+      .select("id,name,jersey_number,position,photo_url,team_id,created_at")
+      .eq("client_id",cid)
+      .order("created_at",{ascending:false}),
+
+    db.from("matches")
+      .select("id,tournament_id,team_a_id,team_b_id,team_a_score,team_b_score,match_status,created_at")
+      .eq("client_id",cid)
+      .order("created_at",{ascending:false}),
+
+    db.from("subscriptions")
+      .select("id,plan_name,amount,start_date,end_date,status")
+      .eq("client_id",cid)
+      .order("created_at",{ascending:false})
+      .limit(10)
+
+  ]);
+
+  for (const result of results) {
+    if (result.error) throw result.error;
+  }
+
+  tournaments = results[0].data || [];
+  teams = results[1].data || [];
+  players = results[2].data || [];
+  matches = results[3].data || [];
+  subscriptions = results[4].data || [];
+
+  $("totalTournaments").textContent = tournaments.length;
+  $("totalTeams").textContent = teams.length;
+  $("totalPlayers").textContent = players.length;
+  $("totalMatches").textContent = matches.length;
+
+  renderSubscriptions();
+  renderTournaments();
+  renderTeams();
+  renderPlayers();
+  renderMatches();
+  updateSelects();
+
+  showMsg("dashboardMsg","Club data updated successfully.");
+}
+
+// ======================================================
+// RENDER FUNCTIONS
+// ======================================================
+
+function renderSubscriptions() {
+  $("subscriptionBody").innerHTML = subscriptions.length
+    ? subscriptions.map(s=>`
+      <tr>
+        <td>${esc(s.plan_name)}</td>
+        <td>₹${Number(s.amount||0).toLocaleString("en-IN")}</td>
+        <td>${dateText(s.start_date)}</td>
+        <td>${dateText(s.end_date)}</td>
+        <td>
+          <span class="status ${statusClass(s.status)}">
+            ${esc(s.status)}
+          </span>
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="5" class="empty">No subscription found.</td></tr>`;
+}
+
+function renderTournaments() {
+  $("tournamentsBody").innerHTML = tournaments.length
+    ? tournaments.map(t=>`
+      <tr>
+        <td>
+          <b>${esc(t.name)}</b><br>
+          <span style="color:#8eaa9a">${esc(t.season || "")}</span>
+        </td>
+        <td>${esc(t.venue || "—")}</td>
+        <td>${dateOnly(t.start_date)}</td>
+        <td>
+          <span class="status ${statusClass(t.status)}">
+            ${esc(t.status || "upcoming")}
+          </span>
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="4" class="empty">No tournaments created yet.</td></tr>`;
+}
+
+function renderTeams() {
+  $("teamsBody").innerHTML = teams.length
+    ? teams.map(t=>{
+      const tournament = tournaments.find(x=>x.id===t.tournament_id);
+      const standaloneMatch = matches.find(x=>x.id===t.standalone_match_id);
+
+      let association = "—";
+
+      if (t.tournament_id) {
+        association = tournament?.name || "Tournament";
+      } else if (t.standalone_match_id) {
+        association = "Standalone Match";
+      }
+
+      return `
+        <tr>
+          <td><b>${esc(t.name)}</b></td>
+          <td>${esc(t.short_name || "—")}</td>
+          <td>
+            ${t.standalone_match_id
+              ? '<span class="standalone-tag">STANDALONE</span>'
+              : esc(association)}
+          </td>
+        </tr>
+      `;
+    }).join("")
+    : `<tr><td colspan="3" class="empty">No teams registered yet.</td></tr>`;
+}
+
+function renderPlayers() {
+  $("playersBody").innerHTML = players.length
+    ? players.map(p=>{
+      const team = teams.find(t=>t.id===p.team_id);
+
+      return `
+        <tr>
+          <td><b>${esc(p.name)}</b></td>
+          <td>${esc(p.jersey_number ?? "—")}</td>
+          <td>${esc(p.position || "—")}</td>
+          <td>${esc(team?.short_name || team?.name || "—")}</td>
+        </tr>
+      `;
+    }).join("")
+    : `<tr><td colspan="4" class="empty">No players registered yet.</td></tr>`;
+}
+
+function renderMatches() {
+  $("matchesBody").innerHTML = matches.length
+    ? matches.map(m=>{
+      const teamA = teams.find(t=>t.id===m.team_a_id);
+      const teamB = teams.find(t=>t.id===m.team_b_id);
+
+      const isStandalone = !m.tournament_id;
+
+      return `
+        <tr>
+          <td>
+            ${isStandalone
+              ? '<span class="standalone-tag">STANDALONE</span>'
+              : '<span class="status inactive">TOURNAMENT</span>'}
+          </td>
+          <td>${esc(teamA?.short_name || teamA?.name || "Team A")}</td>
+          <td>
+            <b>${Number(m.team_a_score||0)} - ${Number(m.team_b_score||0)}</b>
+          </td>
+          <td>${esc(teamB?.short_name || teamB?.name || "Team B")}</td>
+          <td>
+            <span class="status ${statusClass(m.match_status)}">
+              ${esc(m.match_status)}
+            </span>
+          </td>
+        </tr>
+      `;
+    }).join("")
+    : `<tr><td colspan="5" class="empty">No matches created yet.</td></tr>`;
+}
+
+// ======================================================
+// UPDATE SELECT OPTIONS
+// ======================================================
+
+function updateSelects() {
+  const tournamentOptions =
+    `<option value="">Select Tournament</option>` +
+    tournaments.map(t=>
+      `<option value="${esc(t.id)}">${esc(t.name)}</option>`
+    ).join("");
+
+  $("teamTournament").innerHTML = tournamentOptions;
+  $("matchTournament").innerHTML = tournamentOptions;
+
+  const teamOptions =
+    `<option value="">Select Team</option>` +
+    teams.map(t=>
+      `<option value="${esc(t.id)}">${esc(t.name)}</option>`
+    ).join("");
+
+  $("playerTeam").innerHTML = teamOptions;
+  $("bulkPlayerTeam").innerHTML = teamOptions;
+
+  $("matchTeamA").innerHTML =
+    `<option value="">Select Team A</option>` +
+    teams.map(t=>
+      `<option value="${esc(t.id)}">${esc(t.name)}</option>`
+    ).join("");
+
+  $("matchTeamB").innerHTML =
+    `<option value="">Select Team B</option>` +
+    teams.map(t=>
+      `<option value="${esc(t.id)}">${esc(t.name)}</option>`
+    ).join("");
+}
+
+// ======================================================
+// DUPLICATE PLAYER NAME SYSTEM
+// ======================================================
+
+function suffixLetter(number) {
+  let result = "";
+  let n = number;
+
+  while (n > 0) {
+    n--;
+    result = String.fromCharCode(65 + (n % 26)) + result;
+    n = Math.floor(n / 26);
+  }
+
+  return result;
+}
+
+function makeUniquePlayerName(teamId,rawName,reservedNames) {
+  const base = String(rawName || "").trim();
+
+  if (!base) {
+    throw new Error("Player name cannot be empty.");
+  }
+
+  const existing = new Set(
+    reservedNames
+      .filter(p=>p.team_id===teamId)
+      .map(p=>String(p.name || "").trim().toLowerCase())
+  );
+
+  if (!existing.has(base.toLowerCase())) {
+    return base;
+  }
+
+  let number = 2;
+  let candidate = "";
+
+  do {
+    candidate = base + " " + suffixLetter(number - 1);
+    number++;
+  } while (existing.has(candidate.toLowerCase()));
+
+  return candidate;
+}
+
+// ======================================================
 // LOGIN
+// ======================================================
 
 $("loginForm").addEventListener("submit",async e=>{
-e.preventDefault();
+  e.preventDefault();
 
-if (busy) return;
-busy = true;
+  if (busy) return;
+  busy = true;
 
-const btn = $("loginBtn");
-btn.disabled = true;
-btn.textContent = "SIGNING IN...";
-showMsg("loginMsg","Checking account...");
+  const btn = $("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "SIGNING IN...";
 
-try {
-const {error} = await db.auth.signInWithPassword({
-email:$("email").value.trim(),
-password:$("password").value
+  showMsg("loginMsg","Checking account...");
+
+  try {
+    const {error} = await db.auth.signInWithPassword({
+      email:$("email").value.trim(),
+      password:$("password").value
+    });
+
+    if (error) throw error;
+
+    await verifyUser();
+    showMsg("loginMsg","");
+
+  } catch(err) {
+    showMsg("loginMsg",err.message || "Login failed.",true);
+    await db.auth.signOut();
+    showLogin();
+
+  } finally {
+    busy = false;
+    btn.disabled = false;
+    btn.textContent = "LOGIN TO CLUB DASHBOARD";
+  }
 });
-if (error) throw error;
 
-await verifyUser();
-showMsg("loginMsg","");
-} catch(err) {
-showMsg("loginMsg",err.message || "Login failed.",true);
-await db.auth.signOut();
-showLogin();
-} finally {
-busy = false;
-btn.disabled = false;
-btn.textContent = "LOGIN TO CLUB DASHBOARD";
-}
-});
-
+// ======================================================
 // CREATE TOURNAMENT
+// ======================================================
 
 $("tournamentForm").addEventListener("submit",async e=>{
-e.preventDefault();
+  e.preventDefault();
 
-const btn = $("tournamentBtn");
-btn.disabled = true;
-btn.textContent = "CREATING...";
+  const btn = $("tournamentBtn");
+  btn.disabled = true;
+  btn.textContent = "CREATING...";
 
-try {
-const payload = {
-client_id:currentClient.id,
-name:$("tournamentName").value.trim(),
-season:$("tournamentSeason").value.trim() || null,
-venue:$("tournamentVenue").value.trim() || null,
-start_date:$("tournamentStart").value || null,
-end_date:$("tournamentEnd").value || null,
-status:$("tournamentStatus").value
-};
+  try {
+    if (!currentClient) throw new Error("Club session not found.");
 
-const {error} = await db.from("tournaments").insert(payload);
-if (error) throw error;
+    const startDate = $("tournamentStart").value || null;
+    const endDate = $("tournamentEnd").value || null;
 
-$("tournamentForm").reset();
-showMsg("tournamentMsg","Tournament created successfully.");
-await loadDashboard();
-} catch(err) {
-showMsg("tournamentMsg",err.message,true);
-} finally {
-btn.disabled = false;
-btn.textContent = "CREATE TOURNAMENT";
-}
+    if (startDate && endDate && endDate < startDate) {
+      throw new Error("End date cannot be before start date.");
+    }
+
+    const payload = {
+      client_id:currentClient.id,
+      name:$("tournamentName").value.trim(),
+      season:$("tournamentSeason").value.trim() || null,
+      venue:$("tournamentVenue").value.trim() || null,
+      start_date:startDate,
+      end_date:endDate,
+      status:$("tournamentStatus").value
+    };
+
+    const {error} = await db.from("tournaments").insert(payload);
+    if (error) throw error;
+
+    $("tournamentForm").reset();
+
+    showMsg("tournamentMsg","Tournament created successfully.");
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("tournamentMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "CREATE TOURNAMENT";
+  }
 });
 
+// ======================================================
 // CREATE TEAM
+// ======================================================
 
 $("teamForm").addEventListener("submit",async e=>{
-e.preventDefault();
+  e.preventDefault();
 
-const btn = $("teamBtn");
-btn.disabled = true;
-btn.textContent = "ADDING...";
+  const btn = $("teamBtn");
+  btn.disabled = true;
+  btn.textContent = "ADDING...";
 
-try {
-const payload = {
-client_id:currentClient.id,
-tournament_id:$("teamTournament").value || null,
-name:$("teamName").value.trim(),
-short_name:$("teamShortName").value.trim() || null,
-logo_url:$("teamLogo").value.trim() || null
-};
+  try {
+    if (!currentClient) throw new Error("Club session not found.");
 
-const {error} = await db.from("teams").insert(payload);
-if (error) throw error;
+    const payload = {
+      client_id:currentClient.id,
+      tournament_id:$("teamTournament").value || null,
+      name:$("teamName").value.trim(),
+      short_name:$("teamShortName").value.trim() || null,
+      logo_url:$("teamLogo").value.trim() || null
+    };
 
-$("teamForm").reset();
-showMsg("teamMsg","Team added successfully.");
-await loadDashboard();
-} catch(err) {
-showMsg("teamMsg",err.message,true);
-} finally {
-btn.disabled = false;
-btn.textContent = "ADD TEAM";
-}
+    const {error} = await db.from("teams").insert(payload);
+    if (error) throw error;
+
+    $("teamForm").reset();
+
+    showMsg("teamMsg","Team added successfully.");
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("teamMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "ADD TEAM";
+  }
 });
 
+// ======================================================
 // INDIVIDUAL PLAYER ADD
+// ======================================================
 
 $("playerForm").addEventListener("submit",async e=>{
-e.preventDefault();
+  e.preventDefault();
 
-const btn = $("playerBtn");
-btn.disabled = true;
-btn.textContent = "ADDING...";
+  const btn = $("playerBtn");
+  btn.disabled = true;
+  btn.textContent = "ADDING...";
 
-try {
-if (!canManagePlayers()) {
-throw new Error("Only Club Owner or Admin can add players.");
-}
+  try {
+    if (!canManagePlayers()) {
+      throw new Error("Only Club Owner or Admin can add players.");
+    }
 
-const teamId = $("playerTeam").value;
-const rawName = $("playerName").value.trim();
+    const teamId = $("playerTeam").value;
+    const rawName = $("playerName").value.trim();
 
-if (!teamId) throw new Error("Please select a team.");
-if (!rawName) throw new Error("Please enter player name.");
+    if (!teamId) throw new Error("Please select a team.");
+    if (!rawName) throw new Error("Please enter player name.");
 
-const finalName = makeUniquePlayerName(teamId,rawName,players);
+    const selectedTeam = teams.find(t=>t.id===teamId);
 
-const jersey = $("playerJersey").value;
+    if (!selectedTeam) {
+      throw new Error("Selected team does not belong to this club.");
+    }
 
-const payload = {
-client_id:currentClient.id,
-team_id:teamId,
-name:finalName,
-jersey_number:jersey === "" ? null : Number(jersey),
-position:$("playerPosition").value || null,
-photo_url:$("playerPhoto").value.trim() || null
-};
+    const finalName = makeUniquePlayerName(teamId,rawName,players);
+    const jersey = $("playerJersey").value;
 
-const {error} = await db.from("players").insert(payload);
-if (error) throw error;
+    const payload = {
+      client_id:currentClient.id,
+      team_id:teamId,
+      name:finalName,
+      jersey_number:jersey === "" ? null : Number(jersey),
+      position:$("playerPosition").value || null,
+      photo_url:$("playerPhoto").value.trim() || null
+    };
 
-$("playerForm").reset();
+    const {error} = await db.from("players").insert(payload);
+    if (error) throw error;
 
-showMsg("playerMsg","Player added successfully: " + finalName);
-await loadDashboard();
+    $("playerForm").reset();
 
-} catch(err) {
-showMsg("playerMsg",err.message,true);
-} finally {
-btn.disabled = false;
-btn.textContent = "ADD PLAYER";
-}
+    showMsg("playerMsg","Player added successfully: " + finalName);
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("playerMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "ADD PLAYER";
+  }
 });
 
+// ======================================================
 // BULK PLAYER ADD
+// ======================================================
 
 $("bulkPlayerBtn").addEventListener("click",async()=>{
-const btn = $("bulkPlayerBtn");
-btn.disabled = true;
-btn.textContent = "ADDING PLAYERS...";
+  const btn = $("bulkPlayerBtn");
+  btn.disabled = true;
+  btn.textContent = "ADDING PLAYERS...";
 
-try {
-if (!canManagePlayers()) {
-throw new Error("Only Club Owner or Admin can add players.");
-}
+  try {
+    if (!canManagePlayers()) {
+      throw new Error("Only Club Owner or Admin can add players.");
+    }
 
-const teamId = $("bulkPlayerTeam").value;
-if (!teamId) throw new Error("Please select a team.");
+    const teamId = $("bulkPlayerTeam").value;
 
-const rawNames = $("bulkPlayerNames").value
-.split(/\r?\n/)
-.map(name=>name.trim())
-.filter(Boolean);
+    if (!teamId) {
+      throw new Error("Please select a team.");
+    }
 
-if (!rawNames.length) {
-throw new Error("Please enter at least one player name.");
-}
+    const rawNames = $("bulkPlayerNames").value
+      .split(/\r?\n/)
+      .map(name=>name.trim())
+      .filter(Boolean);
 
-if (rawNames.length > 500) {
-throw new Error("You can add a maximum of 500 players at a time.");
-}
+    if (!rawNames.length) {
+      throw new Error("Please enter at least one player name.");
+    }
 
-// Use a temporary list so repeated names in the same
-// bulk submission also receive unique suffixes.
-const reservedNames = players.map(p=>({...p}));
-const payload = [];
-const addedNames = [];
+    if (rawNames.length > 500) {
+      throw new Error("You can add a maximum of 500 players at a time.");
+    }
 
-for (const rawName of rawNames) {
-const finalName = makeUniquePlayerName(teamId,rawName,reservedNames);
+    const reservedNames = players.map(p=>({...p}));
+    const payload = [];
+    const addedNames = [];
 
-const player = {
-client_id:currentClient.id,
-team_id:teamId,
-name:finalName,
-jersey_number:null,
-position:null,
-photo_url:null
-};
+    for (const rawName of rawNames) {
+      const finalName = makeUniquePlayerName(
+        teamId,
+        rawName,
+        reservedNames
+      );
 
-payload.push(player);
-reservedNames.push(player);
-addedNames.push(finalName);
-}
+      const player = {
+        client_id:currentClient.id,
+        team_id:teamId,
+        name:finalName,
+        jersey_number:null,
+        position:null,
+        photo_url:null
+      };
 
-// Insert in batches to avoid oversized requests.
-const batchSize = 50;
-let inserted = 0;
+      payload.push(player);
+      reservedNames.push(player);
+      addedNames.push(finalName);
+    }
 
-for (let i=0;i<payload.length;i+=batchSize) {
-const batch = payload.slice(i,i+batchSize);
-const {error} = await db.from("players").insert(batch);
+    const batchSize = 50;
+    let inserted = 0;
 
-if (error) {
-throw new Error(
-"Could not complete the bulk addition. " +
-inserted + " players were saved before the error. " +
-error.message
-);
-}
-inserted += batch.length;
-}
+    for (let i=0;i<payload.length;i+=batchSize) {
+      const batch = payload.slice(i,i+batchSize);
 
-$("bulkPlayerNames").value = "";
+      const {error} = await db.from("players").insert(batch);
 
-showMsg(
-"bulkPlayerMsg",
-inserted + " players added successfully. Names: " +
-addedNames.join(", ")
-);
+      if (error) {
+        throw new Error(
+          "Could not complete the bulk addition. " +
+          inserted + " players were saved before the error. " +
+          error.message
+        );
+      }
 
-await loadDashboard();
+      inserted += batch.length;
+    }
 
-} catch(err) {
-showMsg("bulkPlayerMsg",err.message,true);
-} finally {
-btn.disabled = false;
-btn.textContent = "ADD ALL PLAYERS";
-}
+    $("bulkPlayerNames").value = "";
+
+    showMsg(
+      "bulkPlayerMsg",
+      inserted + " players added successfully. Names: " +
+      addedNames.join(", ")
+    );
+
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("bulkPlayerMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "ADD ALL PLAYERS";
+  }
 });
 
-// CREATE MATCH
+// ======================================================
+// CREATE TOURNAMENT MATCH
+// ======================================================
 
 $("matchForm").addEventListener("submit",async e=>{
-e.preventDefault();
+  e.preventDefault();
 
-const btn = $("matchBtn");
-btn.disabled = true;
-btn.textContent = "CREATING...";
+  const btn = $("matchBtn");
+  btn.disabled = true;
+  btn.textContent = "CREATING...";
 
-try {
-const teamA = $("matchTeamA").value;
-const teamB = $("matchTeamB").value;
+  try {
+    const teamA = $("matchTeamA").value;
+    const teamB = $("matchTeamB").value;
+    const tournamentId = $("matchTournament").value || null;
 
-if (!teamA || !teamB) throw new Error("Please select both teams.");
-if (teamA === teamB) throw new Error("Team A and Team B must be different.");
+    if (!teamA || !teamB) {
+      throw new Error("Please select both teams.");
+    }
 
-const payload = {
-client_id:currentClient.id,
-tournament_id:$("matchTournament").value || null,
-team_a_id:teamA,
-team_b_id:teamB,
-team_a_score:0,
-team_b_score:0,
-match_status:$("matchStatus").value,
-current_half:1,
-raid_timer:30,
-match_timer:1200
-};
+    if (teamA === teamB) {
+      throw new Error("Team A and Team B must be different.");
+    }
 
-const {error} = await db.from("matches").insert(payload);
-if (error) throw error;
+    const selectedA = teams.find(t=>t.id===teamA);
+    const selectedB = teams.find(t=>t.id===teamB);
 
-$("matchForm").reset();
-showMsg("matchMsg","Match created successfully.");
-await loadDashboard();
+    if (!selectedA || !selectedB) {
+      throw new Error("Selected team not found in this club.");
+    }
 
-} catch(err) {
-showMsg("matchMsg",err.message,true);
-} finally {
-btn.disabled = false;
-btn.textContent = "CREATE MATCH";
-}
+    if (tournamentId) {
+      const tournamentTeamA =
+        selectedA.tournament_id === tournamentId;
+
+      const tournamentTeamB =
+        selectedB.tournament_id === tournamentId;
+
+      if (!tournamentTeamA || !tournamentTeamB) {
+        throw new Error(
+          "Both teams must belong to the selected tournament."
+        );
+      }
+    }
+
+    const payload = {
+      client_id:currentClient.id,
+      tournament_id:tournamentId,
+      team_a_id:teamA,
+      team_b_id:teamB,
+      team_a_score:0,
+      team_b_score:0,
+      match_status:$("matchStatus").value,
+      current_half:1,
+      raid_timer:30,
+      match_timer:1200
+    };
+
+    const {error} = await db.from("matches").insert(payload);
+    if (error) throw error;
+
+    $("matchForm").reset();
+
+    showMsg("matchMsg","Tournament match created successfully.");
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("matchMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "CREATE MATCH";
+  }
 });
 
+// ======================================================
+// STANDALONE MATCH CREATION
+// ======================================================
+
+async function createStandaloneMatch(event) {
+  event.preventDefault();
+
+  const btn = $("standaloneMatchBtn");
+  btn.disabled = true;
+  btn.textContent = "CREATING MATCH...";
+
+  let createdMatchId = null;
+  let createdTeamIds = [];
+
+  try {
+    if (!currentClient) {
+      throw new Error("Club session not found. Please login again.");
+    }
+
+    if (!canManagePlayers()) {
+      throw new Error(
+        "Only Club Owner or Admin can create a standalone match."
+      );
+    }
+
+    const teamAName = $("standaloneTeamA").value.trim();
+    const teamBName = $("standaloneTeamB").value.trim();
+
+    const shortA = $("standaloneShortA").value.trim() || null;
+    const shortB = $("standaloneShortB").value.trim() || null;
+
+    if (!teamAName || !teamBName) {
+      throw new Error("Both team names are required.");
+    }
+
+    if (teamAName.toLowerCase() === teamBName.toLowerCase()) {
+      throw new Error("Team A and Team B must have different names.");
+    }
+
+    const status = $("standaloneStatus").value;
+
+    // STEP 1: Create the match without tournament or teams.
+    const matchPayload = {
+      client_id:currentClient.id,
+      tournament_id:null,
+      team_a_id:null,
+      team_b_id:null,
+      team_a_score:0,
+      team_b_score:0,
+      match_status:status,
+      current_half:1,
+      raid_timer:30,
+      match_timer:1200
+    };
+
+    const {data:matchData,error:matchError} = await db
+      .from("matches")
+      .insert(matchPayload)
+      .select("id")
+      .single();
+
+    if (matchError) throw matchError;
+
+    createdMatchId = matchData.id;
+
+    // STEP 2: Create both teams linked to this match.
+    const teamPayload = [
+      {
+        client_id:currentClient.id,
+        tournament_id:null,
+        standalone_match_id:createdMatchId,
+        name:teamAName,
+        short_name:shortA,
+        logo_url:null
+      },
+      {
+        client_id:currentClient.id,
+        tournament_id:null,
+        standalone_match_id:createdMatchId,
+        name:teamBName,
+        short_name:shortB,
+        logo_url:null
+      }
+    ];
+
+    const {data:teamData,error:teamError} = await db
+      .from("teams")
+      .insert(teamPayload)
+      .select("id");
+
+    if (teamError) throw teamError;
+
+    if (!teamData || teamData.length !== 2) {
+      throw new Error("Both teams could not be created.");
+    }
+
+    createdTeamIds = teamData.map(t=>t.id);
+
+    // STEP 3: Connect the two new teams to the match.
+    const {error:updateError} = await db
+      .from("matches")
+      .update({
+        team_a_id:createdTeamIds[0],
+        team_b_id:createdTeamIds[1]
+      })
+      .eq("id",createdMatchId)
+      .eq("client_id",currentClient.id);
+
+    if (updateError) throw updateError;
+
+    $("standaloneMatchForm").reset();
+
+    showMsg(
+      "standaloneMatchMsg",
+      "Standalone Match created successfully!\n" +
+      "Match ID: " + createdMatchId + "\n" +
+      "Team A: " + teamAName + "\n" +
+      "Team B: " + teamBName
+    );
+
+    await loadDashboard();
+
+  } catch(err) {
+
+    // Best-effort cleanup if creation failed midway.
+    if (createdTeamIds.length) {
+      await db
+        .from("teams")
+        .delete()
+        .in("id",createdTeamIds)
+        .eq("client_id",currentClient.id);
+    }
+
+    if (createdMatchId) {
+      await db
+        .from("matches")
+        .delete()
+        .eq("id",createdMatchId)
+        .eq("client_id",currentClient.id);
+    }
+
+    showMsg(
+      "standaloneMatchMsg",
+      "Standalone Match creation failed:\n" + err.message,
+      true
+    );
+
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "CREATE STANDALONE MATCH";
+  }
+}
+
+$("standaloneMatchForm").addEventListener(
+  "submit",
+  createStandaloneMatch
+);
+
+// ======================================================
 // CLIENT SWITCH
+// ======================================================
 
 $("clientSelector").addEventListener("change",async()=>{
-try {
-await selectClient(Number($("clientSelector").value));
-} catch(err) {
-showMsg("dashboardMsg",err.message,true);
-}
+  try {
+    await selectClient(Number($("clientSelector").value));
+
+  } catch(err) {
+    showMsg("dashboardMsg",err.message,true);
+  }
 });
 
+// ======================================================
 // REFRESH
+// ======================================================
 
 $("refreshBtn").addEventListener("click",async()=>{
-const btn = $("refreshBtn");
-btn.disabled = true;
+  const btn = $("refreshBtn");
+  btn.disabled = true;
 
-try {
-await loadDashboard();
-} catch(err) {
-showMsg("dashboardMsg",err.message,true);
-} finally {
-btn.disabled = false;
-}
+  try {
+    await loadDashboard();
+
+  } catch(err) {
+    showMsg("dashboardMsg",err.message,true);
+
+  } finally {
+    btn.disabled = false;
+  }
 });
 
+// ======================================================
 // LOGOUT
+// ======================================================
 
 $("logoutBtn").addEventListener("click",async()=>{
-await db.auth.signOut();
-currentUser = null;
-currentClient = null;
-memberships = [];
-showLogin();
+  await db.auth.signOut();
+
+  currentUser = null;
+  currentClient = null;
+  memberships = [];
+
+  showLogin();
 });
 
+// ======================================================
 // AUTH STATE
+// ======================================================
 
 db.auth.onAuthStateChange(event=>{
-if (event === "SIGNED_OUT") {
-currentUser = null;
-currentClient = null;
-memberships = [];
-showLogin();
-}
+  if (event === "SIGNED_OUT") {
+    currentUser = null;
+    currentClient = null;
+    memberships = [];
+    showLogin();
+  }
 });
 
+// ======================================================
 // INITIAL SESSION CHECK
+// ======================================================
 
 (async()=>{
-try {
-const {data:{session},error} = await db.auth.getSession();
-if (error) throw error;
+  try {
+    const {data:{session},error} = await db.auth.getSession();
 
-if (session) {
-await verifyUser();
-} else {
-showLogin();
-}
-} catch(err) {
-showLogin();
-showMsg("loginMsg",err.message || "Unable to verify account.",true);
-}
+    if (error) throw error;
+
+    if (session) {
+      await verifyUser();
+    } else {
+      showLogin();
+    }
+
+  } catch(err) {
+    showLogin();
+
+    showMsg(
+      "loginMsg",
+      err.message || "Unable to verify account.",
+      true
+    );
+  }
 })();
 
 })();
