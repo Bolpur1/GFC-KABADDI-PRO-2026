@@ -147,7 +147,7 @@ const {data:{session},error} = await db.auth.getSession();
 if(error) throw error;
 
 if(session){
-window.location.replace("club-dashboard.html");
+window.location.replace("client.html");
 }
 }catch(err){
 message(err.message || "Unable to check login session.",true);
