@@ -83,7 +83,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 
 /* ALWAYS-AVAILABLE QUICK SCORING DOCK */
 #quickDock{display:none;position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,1100px);padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#07111ff2;border:1px solid #36516f;border-bottom:0;border-radius:16px 16px 0 0;box-shadow:0 -8px 28px #0008;backdrop-filter:blur(12px)}
-body.scoring-ready:not(.overlay-mode) #quickDock{display:block;position:fixed}
+body.scoring-ready:not(.overlay-mode) #quickDock{display:none}
 #quickDock .dock-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 #quickDock .dock-title{font-size:12px;font-weight:900;color:var(--gold);white-space:nowrap}
 #quickDock select{margin:0;min-width:0;flex:1;padding:10px}
@@ -91,8 +91,10 @@ body.scoring-ready:not(.overlay-mode) #quickDock{display:block;position:fixed}
 #quickDock button{min-height:48px;padding:7px 4px;font-size:12px;line-height:1.15;white-space:normal}
 #quickDock button strong{display:block;font-size:18px;color:var(--gold)}
 #quickDock button span{display:block;font-size:10px}
-body.scoring-ready:not(.overlay-mode) main{padding-bottom:190px}
+body.scoring-ready:not(.overlay-mode) main{padding-bottom:24px}
 @media(max-width:600px){
+ body.scoring-ready:not(.overlay-mode) #quickDock{display:block}
+ .desktop-quick-grid{display:none}
  header{position:sticky;top:0;z-index:30;padding:10px 12px}
  .brand{font-size:15px}
  main{padding:8px 8px 205px}
@@ -234,116 +236,3 @@ body.scoring-ready:not(.overlay-mode) main{padding-bottom:190px}
    <button id="saveSettingsBtn" class="primary" style="width:100%">SAVE MATCH SETTINGS</button>
    <p class="section-note">শুধুমাত্র Club Owner/Admin Match শুরু হওয়ার আগে এই Settings পরিবর্তন করতে পারবেন।</p>
   </section>
-
-  <section class="panel" id="raiderPanel">
-   <h2>🏃 RAID CONTROL — SELECT RAIDER (OPTIONAL)</h2>
-   <label>Raiding Team</label>
-   <select id="raiderTeam"><option value="">Select Raiding Team</option></select>
-   <label>Select Raider / Player (Optional)</label>
-   <select id="raiderSelect"><option value="">No Raider Selected</option></select>
-   <div class="raider-card">
-    <img id="raiderPhoto" class="raider-photo" alt="Raider Photo">
-    <div class="raider-details">
-     <h3 id="raiderName">No Raider Selected</h3>
-     <p id="raiderJersey">Jersey: --</p>
-     <p id="raiderPosition">Position: --</p>
-    </div>
-   </div>
-   <div class="raid-status" id="raidStatus">NO ACTIVE RAID</div>
-   <div class="raid-buttons">
-    <button class="green" id="startRaidBtn">▶ START RAID</button>
-    <button class="red" id="stopRaidBtn">■ STOP RAID</button>
-   </div>
-   <p class="section-note">
-    Raider নির্বাচন করা বাধ্যতামূলক নয়। Team নির্বাচন করে Player ছাড়াই Start Raid করা যাবে।
-   </p>
-  </section>
-
-  <section class="panel">
-   <h2>⚡ QUICK SCORING</h2>
-   <label>Scoring Team</label>
-   <select id="scoringTeam"><option value="">Select Team</option></select>
-   <p class="section-note">নিচের স্থায়ী Quick Score Bar থেকে যেকোনো সময় পয়েন্ট দিতে পারবেন। এখানে প্রয়োজন হলে Manual Event রেকর্ড করুন।</p>
-   <h2 style="margin-top:16px">Manual Scoring</h2>
-   <label>Points</label>
-   <input type="number" id="points" min="0" max="20" value="1">
-   <label>Event</label>
-   <select id="eventType">
-    <option value="raid_touch">Touch / Raid Touch</option>
-    <option value="bonus">Bonus</option>
-    <option value="tackle">Caught / Tackle</option>
-    <option value="super_raid">Super Raid</option>
-    <option value="super_tackle">Super Tackle</option>
-    <option value="all_out">All Out</option>
-    <option value="empty_raid">Empty Raid</option>
-    <option value="do_or_die_success">Do-or-Die Success</option>
-    <option value="do_or_die_failed">Do-or-Die Failed</option>
-    <option value="player_out">Player Out</option>
-    <option value="player_in">Player In</option>
-    <option value="yellow_card">Yellow Card</option>
-    <option value="red_card">Red Card</option>
-   </select>
-   <button class="primary" id="recordBtn" style="width:100%;margin-top:12px">✓ RECORD EVENT</button>
-   <p class="muted">Points নিজে যাচাই করে দিন। বর্তমান Database Function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।</p>
-   <button class="red" id="undoBtn" style="width:100%">↶ UNDO LAST EVENT</button>
-  </section>
-
-  <section class="panel">
-   <h2>🎬 Broadcast Animation Control</h2>
-   <p class="muted">নিচের Alert নির্বাচন করলে Overlay-তে Animation দেখাবে। এগুলি আলাদা Broadcast Alert; Match Score পরিবর্তন করবে না।</p>
-   <div class="actions">
-    <button class="red" data-alert="🔥 FINAL RAID">🔥 FINAL RAID</button>
-    <button data-alert="⏳ LAST MINUTE RAID">LAST MINUTE RAID</button>
-    <button class="primary" data-alert="🏆 GRAND FINAL">GRAND FINAL</button>
-    <button data-alert="⚔ SEMI FINAL">SEMI FINAL</button>
-    <button class="green" data-alert="✋ PLAYER TOUCHED">TOUCHED</button>
-    <button class="red" data-alert="🛡 PLAYER CAUGHT">CAUGHT</button>
-    <button data-alert="⭐ MATCH POINT">MATCH POINT</button>
-    <button data-alert="🏆 WINNER">WINNER</button>
-   </div>
-   <div style="margin-top:12px">
-    <button id="overlayLinkBtn" class="primary" style="width:100%">OPEN BROADCAST OVERLAY</button>
-   </div>
-  </section>
- </section>
-</main>
-
-<aside id="quickDock" aria-label="Quick scoring controls">
- <div class="dock-top">
-  <div class="dock-title">⚡ QUICK SCORE</div>
-  <select id="dockScoringTeam" aria-label="Scoring team"><option value="">Select Scoring Team</option></select>
- </div>
- <div class="dock-buttons">
-  <button class="quick-btn" data-dock-quick="raid_touch" data-points="1"><strong>+1</strong><span>TOUCH</span></button>
-  <button class="quick-btn" data-dock-quick="bonus" data-points="1"><strong>+1</strong><span>BONUS</span></button>
-  <button class="quick-btn green-btn" data-dock-quick="tackle" data-points="1"><strong>+1</strong><span>TACKLE</span></button>
-  <button class="quick-btn green-btn" data-dock-quick="super_tackle" data-points="2"><strong>+2</strong><span>SUPER TACKLE</span></button>
-  <button class="quick-btn" data-dock-quick="super_raid" data-points="3"><strong>+3</strong><span>SUPER RAID</span></button>
-  <button class="quick-btn red-btn" data-dock-quick="all_out" data-points="2"><strong>+2</strong><span>ALL OUT</span></button>
- </div>
-</aside>
-
-<div id="overlayPage" class="hidden">
- <div id="alertBanner"></div>
- <div class="overlaybar">
-  <div class="ovscore" id="ovA">0</div>
-  <div class="ovteams">
-   <div id="ovNames">TEAM A vs TEAM B</div>
-   <div class="ovmeta" id="ovMeta">GFC KABADDI PRO 2026</div>
-   <div class="ovalert" id="ovAlert">LIVE</div>
-  </div>
-  <div class="ovscore" id="ovB">0</div>
- </div>
-</div>
-
-<div id="halfTimeModal" class="modal-backdrop hidden">
- <div class="modal-box">
-  <div class="modal-icon">⏸️</div>
-  <h2>HALF TIME BREAK চলছে</h2>
-  <p>এই মুহূর্তে Raid শুরু বা Score Update করা যাবে না। খেলা চালু করতে আগে Half Time Break শেষ করুন।</p>
-  <button class="primary" id="endBreakPopupBtn">▶ END HALF TIME BREAK</button>
-  <button class="secondary-btn" id="closeBreakPopupBtn">CLOSE</button>
- </div>
-</div>
-
-<script>
