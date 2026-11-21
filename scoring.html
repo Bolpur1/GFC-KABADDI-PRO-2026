@@ -377,7 +377,6 @@ function applyPermissions(){
  $("pauseBtn").disabled=!control||currentMatch?.match_status!=="live";
  $("resumeBtn").disabled=!control||currentMatch?.match_status!=="paused";
 
- // NEW RULE: Active Raid থাকলেও START RAID চালু থাকবে
  $("startRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||raidActionBusy;
 
  $("stopRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||!currentMatch.raid_started_at||raidActionBusy;
@@ -680,7 +679,10 @@ function updateRaiderPreview(){
  }
 }
 
-/* NEW RAID RESTART SYSTEM */
+/* START / RESTART RAID
+   Database Function নিজেই পুরনো Raid Replace করবে।
+   এখানে STOP RAID RPC কল করা হবে না।
+*/
 async function startRaid(){
  if(raidActionBusy)return;
 
@@ -722,48 +724,20 @@ async function startRaid(){
  applyPermissions();
 
  try{
-  // STEP 1: আগের Active Raid বন্ধ করা
-  if(currentMatch.raid_started_at){
-
-   const {error:stopError}=await db.rpc("stop_kabaddi_raid",{
-    p_match_id:matchId
-   });
-
-   if(stopError)throw stopError;
-
-   // STEP 2: Database থেকে নিশ্চিত হওয়া যে আগের Raid বন্ধ হয়েছে
-   const {data:stoppedMatch,error:loadError}=await db.from("matches")
-    .select("*")
-    .eq("id",matchId)
-    .single();
-
-   if(loadError)throw loadError;
-
-   if(stoppedMatch.raid_started_at){
-    throw new Error("আগের Raid এখনও Active রয়েছে। নতুন Raid শুরু করা যায়নি।");
-   }
-
-   currentMatch={...currentMatch,...stoppedMatch};
-
-   // Match Live আছে কিনা যাচাই
-   if(currentMatch.match_status!=="live"){
-    throw new Error("Match Live নেই।");
-   }
-  }
-
-  // STEP 3: নতুন Raid সম্পূর্ণ সময় থেকে শুরু
   const raidSeconds=Number(currentMatch.default_raid_seconds)||30;
 
-  const {error:startError}=await db.rpc("start_kabaddi_raid",{
+  // Directly start a new raid.
+  // Existing active raid will be replaced by the updated SQL function.
+  const {data,error}=await db.rpc("start_kabaddi_raid",{
    p_match_id:matchId,
    p_raider_name:player?.name||null,
    p_raider_player_id:player?.id||null,
    p_raid_seconds:raidSeconds
   });
 
-  if(startError)throw startError;
+  if(error)throw error;
+  if(data?.success===false)throw new Error("Database নতুন Raid শুরু করতে পারেনি।");
 
-  // STEP 4: সর্বশেষ Match Data Load
   await selectMatch(matchId);
 
   msg(player
@@ -771,7 +745,7 @@ async function startRaid(){
    :"নতুন Raid শুরু হয়েছে • "+raidSeconds+" Seconds");
 
  }catch(error){
-  msg("Raid Restart হয়নি: "+error.message,true);
+  msg("Raid Start / Restart হয়নি: "+error.message,true);
  }finally{
   raidActionBusy=false;
   applyPermissions();
@@ -808,7 +782,7 @@ async function stopRaid(){
   if(error)throw error;
 
   await selectMatch(matchId);
-  msg("Raid বন্ধ হয়েছে। Raid Timer Reset হয়েছে।");
+  msg("Raid বন্ধ হয়েছে।");
 
  }catch(error){
   msg("Raid Stop হয়নি: "+error.message,true);
@@ -903,9 +877,12 @@ function getRaidRemaining(){
  const m=currentMatch;
  if(!m)return 0;
 
+ // Raid is inactive after successful score update.
+ if(!m.raid_started_at)return 0;
+
  let remaining=Number(m.raid_timer||0);
 
- if(m.match_status==="live"&&m.raid_started_at){
+ if(m.match_status==="live"){
   const elapsed=Math.floor((Date.now()-new Date(m.raid_started_at).getTime())/1000);
   remaining=Math.max(0,remaining-elapsed);
  }
@@ -1180,8 +1157,12 @@ async function submitScoreEvent(type,points){
  applyPermissions();
 
  try{
-  // STEP 1: Score Event Save
-  const {error}=await db.rpc("record_kabaddi_score_event",{
+  // Database transaction:
+  // 1. Score update
+  // 2. Event insert
+  // 3. Raid timer reset to zero
+  // 4. Active raider cleared
+  const {data,error}=await db.rpc("record_kabaddi_score_event",{
    p_match_id:matchId,
    p_event_type:type,
    p_team_id:team,
@@ -1191,22 +1172,11 @@ async function submitScoreEvent(type,points){
   });
 
   if(error)throw error;
+  if(data?.success===false)throw new Error("Score Update সফল হয়নি।");
 
-  // STEP 2: সফল Score Update হলে Active Raid বন্ধ
-  // Raid Timer শূন্য করার দায়িত্ব stop_kabaddi_raid Database Function-এর।
-  if(currentMatch?.id===matchId&&currentMatch.raid_started_at){
+  // Do NOT call stop_kabaddi_raid here.
+  // The updated score function already resets the raid atomically.
 
-   const {error:stopError}=await db.rpc("stop_kabaddi_raid",{
-    p_match_id:matchId
-   });
-
-   if(stopError){
-    await selectMatch(matchId);
-    throw new Error("Score Save হয়েছে, কিন্তু Raid বন্ধ হয়নি: "+stopError.message);
-   }
-  }
-
-  // STEP 3: Updated Match Data Load
   await selectMatch(matchId);
 
   showAlert(eventLabels[type]||type);
@@ -1214,11 +1184,11 @@ async function submitScoreEvent(type,points){
   msg(
    (eventLabels[type]||type)+
    " • "+points+
-   " Point সফলভাবে Save হয়েছে। Active Raid বন্ধ হয়েছে।"
+   " Point সফলভাবে Save হয়েছে। Raid Timer 00:00 Reset হয়েছে।"
   );
 
  }catch(error){
-  msg("Score / Raid Update Error: "+error.message,true);
+  msg("Score Update Error: "+error.message,true);
  }finally{
   scoreActionBusy=false;
   applyPermissions();
