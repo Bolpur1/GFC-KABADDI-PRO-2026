@@ -3,7 +3,7 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>GFC KABADDI PRO 2026 - Live Scoring</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -14,22 +14,43 @@
  --text:#f4f7fb;--muted:#9db0c6;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{padding:17px;background:#0d1b2d;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font-family:Arial,sans-serif;
+}
+header{
+ padding:17px;background:#0d1b2d;border-bottom:1px solid var(--line);
+ display:flex;justify-content:space-between;align-items:center;
+ gap:10px;flex-wrap:wrap
+}
 .brand{font-weight:900;color:var(--gold);font-size:19px}
 small,.muted{color:var(--muted)}
 main{max-width:1100px;margin:auto;padding:16px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;margin:14px 0}
+.panel{
+ background:var(--panel);border:1px solid var(--line);
+ border-radius:15px;padding:16px;margin:14px 0
+}
 h2{font-size:18px;margin:0 0 14px}
-input,select{background:#081525;color:white;border:1px solid var(--line);padding:12px;border-radius:9px;width:100%;margin:5px 0}
-button{border:0;border-radius:9px;padding:12px 15px;font-weight:bold;cursor:pointer;background:#29415e;color:white}
+input,select{
+ background:#081525;color:white;border:1px solid var(--line);
+ padding:12px;border-radius:9px;width:100%;margin:5px 0;
+ min-height:44px
+}
+button{
+ border:0;border-radius:9px;padding:12px 15px;
+ font-weight:bold;cursor:pointer;background:#29415e;color:white;
+ touch-action:manipulation
+}
 button:disabled{opacity:.4;cursor:not-allowed}
 .primary{background:var(--gold);color:#101827}
 .green{background:#087d59}
 .red{background:#a82b3d}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .scoreboard{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
-.team{padding:18px 8px;background:#0a192b;border:1px solid var(--line);border-radius:12px}
+.team{
+ padding:18px 8px;background:#0a192b;
+ border:1px solid var(--line);border-radius:12px
+}
 .team h3{margin:0 0 10px;font-size:16px}
 .score{font-size:48px;font-weight:900;color:var(--gold)}
 .timer{font-size:27px;font-weight:bold;color:var(--green)}
@@ -38,14 +59,29 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .row>*{flex:1}
 .hidden{display:none!important}
-#message{padding:10px;border-radius:8px;background:#132a40;margin:10px 0;overflow-wrap:anywhere}
+#message{
+ padding:10px;border-radius:8px;background:#132a40;
+ margin:10px 0;overflow-wrap:anywhere
+}
 #overlay{position:fixed;inset:0;background:transparent;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding:5vw}
-.overlaybar{width:min(100%,1000px);display:flex;align-items:center;gap:18px;background:linear-gradient(90deg,#07111fef,#163a5eee);border:2px solid var(--gold);border-radius:15px;padding:17px 24px;box-shadow:0 0 30px #0008}
+.overlaybar{
+ width:min(100%,1000px);display:flex;align-items:center;gap:18px;
+ background:linear-gradient(90deg,#07111fef,#163a5eee);
+ border:2px solid var(--gold);border-radius:15px;padding:17px 24px;
+ box-shadow:0 0 30px #0008
+}
 .overlaybar .ovscore{font-size:34px;font-weight:900;color:var(--gold)}
 .overlaybar .ovteams{flex:1;text-align:center;font-weight:bold}
 .overlaybar .ovalert{font-size:19px;font-weight:900;color:var(--gold);text-align:center}
 .overlaybar .ovmeta{font-size:12px;color:#c4d4e5;text-align:center}
-#alertBanner{position:fixed;top:18%;left:50%;transform:translate(-50%,-20px) scale(.8);opacity:0;background:#a51f35;color:white;font-size:clamp(22px,5vw,48px);font-weight:1000;padding:20px 35px;border:3px solid var(--gold);border-radius:14px;text-align:center;max-width:92vw;z-index:5;pointer-events:none}
+#alertBanner{
+ position:fixed;top:18%;left:50%;
+ transform:translate(-50%,-20px) scale(.8);opacity:0;
+ background:#a51f35;color:white;font-size:clamp(22px,5vw,48px);
+ font-weight:1000;padding:20px 35px;border:3px solid var(--gold);
+ border-radius:14px;text-align:center;max-width:92vw;z-index:5;
+ pointer-events:none
+}
 #alertBanner.show{animation:alertIn 3s ease both}
 @keyframes alertIn{
  0%{opacity:0;transform:translate(-50%,-20px) scale(.8)}
@@ -54,33 +90,60 @@ button:disabled{opacity:.4;cursor:not-allowed}
 }
 #overlayPage{position:fixed;inset:0;z-index:10;background:transparent;pointer-events:none}
 #overlayPage .overlaybar{position:absolute;bottom:5%;left:50%;transform:translateX(-50%)}
-.timerbox{padding:18px 8px;background:#0a192b;border:1px solid var(--line);border-radius:12px;text-align:center}
+.timerbox{
+ padding:18px 8px;background:#0a192b;border:1px solid var(--line);
+ border-radius:12px;text-align:center
+}
 .timerbox .timer{font-size:clamp(27px,5vw,38px)}
 .timer-label{font-size:12px;color:var(--muted);font-weight:bold}
 .timer-warning{color:var(--red)!important}
 .section-note{font-size:12px;color:var(--muted);line-height:1.6}
-.raider-card{background:#0a192b;border:1px solid var(--gold);border-radius:14px;padding:15px;margin-top:12px;display:flex;align-items:center;gap:15px;min-height:105px}
-.raider-photo{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);background:#263b54;flex-shrink:0}
+.raider-card{
+ background:#0a192b;border:1px solid var(--gold);border-radius:14px;
+ padding:15px;margin-top:12px;display:flex;align-items:center;
+ gap:15px;min-height:105px
+}
+.raider-photo{
+ width:76px;height:76px;border-radius:50%;object-fit:cover;
+ border:3px solid var(--gold);background:#263b54;flex-shrink:0
+}
 .raider-details{flex:1;min-width:0}
 .raider-details h3{margin:0 0 6px;color:var(--gold)}
 .raider-details p{margin:4px 0;color:var(--muted);font-size:13px}
 .raid-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.raid-status{margin-top:12px;padding:10px;border-radius:8px;background:#132a40;color:var(--green);text-align:center;font-weight:bold}
+.raid-status{
+ margin-top:12px;padding:10px;border-radius:8px;
+ background:#132a40;color:var(--green);text-align:center;font-weight:bold
+}
 .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
-.quick-btn{min-height:82px;border:1px solid #36516f;background:#142b43;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.quick-btn{
+ min-height:82px;border:1px solid #36516f;background:#142b43;
+ border-radius:12px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:5px
+}
 .quick-btn strong{font-size:28px;color:var(--gold)}
 .quick-btn span{font-size:12px;color:#e4edf7}
 .quick-btn:active{transform:scale(.97);filter:brightness(1.3)}
 .quick-btn.green-btn{background:#075b46}
 .quick-btn.red-btn{background:#702637}
 .quick-heading{font-size:13px;color:var(--muted);margin:12px 0 5px}
-.modal-backdrop{position:fixed;inset:0;background:#000c;z-index:50;display:flex;align-items:center;justify-content:center;padding:18px}
-.modal-box{width:min(100%,430px);background:#102238;border:2px solid var(--gold);border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 55px #000b}
+.modal-backdrop{
+ position:fixed;inset:0;background:#000c;z-index:50;
+ display:flex;align-items:center;justify-content:center;padding:18px
+}
+.modal-box{
+ width:min(100%,430px);background:#102238;border:2px solid var(--gold);
+ border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 55px #000b
+}
 .modal-icon{font-size:42px;margin-bottom:10px}
 .modal-box h2{color:var(--gold);font-size:22px;margin:0 0 12px}
 .modal-box p{color:#d5e0ec;line-height:1.6}
 .modal-box button{width:100%;margin-top:12px;min-height:52px;font-size:15px}
 .modal-box .secondary-btn{background:#29415e}
+
+/* MOBILE QUICK SCORING DOCK */
+#mobileScoreDock{display:none}
+
 @media(max-width:600px){
  main{padding:10px}
  .score{font-size:38px}
@@ -91,8 +154,44 @@ button:disabled{opacity:.4;cursor:not-allowed}
  .row{gap:7px}
  .row button{font-size:12px;padding:11px 7px}
  .raider-photo{width:65px;height:65px}
- .quick-grid{grid-template-columns:repeat(2,1fr)}
- .quick-btn{min-height:75px}
+
+ /* Main page quick buttons desktop-style section hidden on mobile.
+    Buttons are available in the fixed bottom dock instead. */
+ #desktopQuickGrid{display:none}
+
+ body.mobile-scoring-active{padding-bottom:190px}
+ body.mobile-scoring-active main{padding-bottom:20px}
+
+ #mobileScoreDock{
+  display:block;position:fixed;z-index:40;left:0;right:0;bottom:0;
+  padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+  background:#0b192b;
+  border-top:2px solid var(--gold);
+  box-shadow:0 -8px 25px #0008
+ }
+ #mobileScoreDock .dock-top{
+  display:flex;align-items:center;gap:8px;margin-bottom:6px
+ }
+ #mobileScoreDock .dock-title{
+  color:var(--gold);font-size:11px;font-weight:900;
+  white-space:nowrap
+ }
+ #mobileScoreDock select{
+  margin:0;min-height:38px;padding:7px 9px;
+  font-size:13px;flex:1;min-width:0
+ }
+ #mobileScoreDock .quick-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;margin:0
+ }
+ #mobileScoreDock .quick-btn{
+  min-height:52px;padding:4px 2px;border-radius:8px;gap:2px
+ }
+ #mobileScoreDock .quick-btn strong{font-size:21px}
+ #mobileScoreDock .quick-btn span{font-size:9px;line-height:1.1}
+}
+@media(min-width:601px){
+ #mobileScoreDock{display:none!important}
 }
 </style>
 </head>
@@ -207,16 +306,18 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <button class="red" id="stopRaidBtn">■ STOP RAID</button>
    </div>
    <p class="section-note">
-    Active Raid চলাকালীন START RAID চাপলে আগের Raid বন্ধ করে নতুন Raid শুরু হবে। Player নির্বাচন বাধ্যতামূলক নয়।
+    Active Raid চলাকালীন START RAID চাপলে আগের Raid বন্ধ করে নতুন Raid শুরু হবে।
+    Player নির্বাচন বাধ্যতামূলক নয়। Raiding Team নিজে পরিবর্তন করতে পারবেন।
    </p>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="scoringPanel">
    <h2>⚡ QUICK SCORING</h2>
    <label>Scoring Team</label>
    <select id="scoringTeam"><option value="">Select Team</option></select>
    <div class="quick-heading">এক ক্লিকেই স্কোর যোগ করুন</div>
-   <div class="quick-grid">
+
+   <div class="quick-grid" id="desktopQuickGrid">
     <button class="quick-btn" data-quick="raid_touch" data-points="1"><strong>+1</strong><span>RAID TOUCH</span></button>
     <button class="quick-btn" data-quick="bonus" data-points="1"><strong>+1</strong><span>BONUS</span></button>
     <button class="quick-btn green-btn" data-quick="tackle" data-points="1"><strong>+1</strong><span>TACKLE</span></button>
@@ -224,7 +325,9 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <button class="quick-btn" data-quick="super_raid" data-points="3"><strong>+3</strong><span>SUPER RAID</span></button>
     <button class="quick-btn red-btn" data-quick="all_out" data-points="2"><strong>+2</strong><span>ALL OUT BONUS</span></button>
    </div>
+
    <p class="section-note">Quick Button চাপলে নির্বাচিত Scoring Team-এর স্কোর সরাসরি আপডেট হবে।</p>
+
    <h2 style="margin-top:22px">Manual Scoring</h2>
    <label>Points</label>
    <input type="number" id="points" min="0" max="20" value="1">
@@ -268,6 +371,24 @@ button:disabled{opacity:.4;cursor:not-allowed}
   </section>
  </section>
 </main>
+
+<!-- MOBILE FIXED SCORING DOCK -->
+<div id="mobileScoreDock">
+ <div class="dock-top">
+  <span class="dock-title">⚡ QUICK SCORE</span>
+  <select id="mobileScoringTeam" aria-label="Mobile Scoring Team">
+   <option value="">Select Scoring Team</option>
+  </select>
+ </div>
+ <div class="quick-grid">
+  <button class="quick-btn" data-quick="raid_touch" data-points="1"><strong>+1</strong><span>RAID TOUCH</span></button>
+  <button class="quick-btn" data-quick="bonus" data-points="1"><strong>+1</strong><span>BONUS</span></button>
+  <button class="quick-btn green-btn" data-quick="tackle" data-points="1"><strong>+1</strong><span>TACKLE</span></button>
+  <button class="quick-btn green-btn" data-quick="super_tackle" data-points="2"><strong>+2</strong><span>SUPER TACKLE</span></button>
+  <button class="quick-btn" data-quick="super_raid" data-points="3"><strong>+3</strong><span>SUPER RAID</span></button>
+  <button class="quick-btn red-btn" data-quick="all_out" data-points="2"><strong>+2</strong><span>ALL OUT</span></button>
+ </div>
+</div>
 
 <div id="overlayPage" class="hidden">
  <div id="alertBanner"></div>
@@ -338,11 +459,15 @@ function matchTitle(m){
 function showDashboard(){
  $("loginPanel").classList.add("hidden");
  $("dashboard").classList.remove("hidden");
+ $("mobileScoreDock").classList.remove("hidden");
+ document.body.classList.add("mobile-scoring-active");
 }
 
 function showLogin(){
  $("loginPanel").classList.remove("hidden");
  $("dashboard").classList.add("hidden");
+ $("mobileScoreDock").classList.add("hidden");
+ document.body.classList.remove("mobile-scoring-active");
 }
 
 function isHalfTime(){return currentMatch?.match_status==="halftime";}
@@ -368,6 +493,26 @@ function resetRaiderPreview(){
  $("raiderPhoto").alt="No Raider Selected";
 }
 
+/* MOBILE / DESKTOP SCORING TEAM SYNC */
+function setScoringTeam(teamId){
+ $("scoringTeam").value=teamId||"";
+ $("scoringTeam").dataset.selected=teamId||"";
+ $("mobileScoringTeam").value=teamId||"";
+}
+
+function syncScoringTeamOptions(){
+ const source=$("scoringTeam");
+ const mobile=$("mobileScoringTeam");
+ const selected=source.value;
+
+ mobile.innerHTML="";
+ Array.from(source.options).forEach(option=>{
+  mobile.add(new Option(option.textContent,option.value));
+ });
+
+ mobile.value=selected;
+}
+
 /* ROLE PERMISSIONS */
 function applyPermissions(){
  const control=canControl();
@@ -378,19 +523,26 @@ function applyPermissions(){
  $("resumeBtn").disabled=!control||currentMatch?.match_status!=="paused";
 
  $("startRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||raidActionBusy;
-
  $("stopRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||!currentMatch.raid_started_at||raidActionBusy;
 
  $("recordBtn").disabled=!control||scoreActionBusy;
  $("undoBtn").disabled=!control||scoreActionBusy;
  $("saveSettingsBtn").disabled=!admin;
+
  $("manualHalfBtn").disabled=!control||!(currentMatch?.match_status==="halftime"&&Number(currentMatch.current_half)===1);
 
- document.querySelectorAll("[data-quick]").forEach(b=>b.disabled=!control||scoreActionBusy);
+ document.querySelectorAll("[data-quick]").forEach(b=>{
+  b.disabled=!control||scoreActionBusy;
+ });
+
  document.querySelectorAll("[data-alert]").forEach(b=>b.disabled=!control);
+
  $("overlayLinkBtn").disabled=!currentMatch;
  $("matchSelect").disabled=false;
  $("refreshBtn").disabled=false;
+
+ $("scoringTeam").disabled=!currentMatch;
+ $("mobileScoringTeam").disabled=!currentMatch;
 
  if(isViewer()){
   $("timerMessage").textContent="VIEW ONLY — Scoring control disabled";
@@ -504,15 +656,20 @@ function renderMatch(){
  $("matchInfo").textContent=
   matchTitle(m)+" • "+(isStandalone(m)?"Standalone Match":"Tournament Match")+" • "+m.id;
 
+ const oldScoringTeam=$("scoringTeam").dataset.selected||$("scoringTeam").value;
+
  $("scoringTeam").innerHTML='<option value="">Select Team</option>'+
   '<option value="'+escapeHtml(m.team_a_id)+'">'+escapeHtml(a)+'</option>'+
   '<option value="'+escapeHtml(m.team_b_id)+'">'+escapeHtml(b)+'</option>';
 
- const oldScoringTeam=$("scoringTeam").dataset.selected;
  if(oldScoringTeam&&[m.team_a_id,m.team_b_id].includes(oldScoringTeam)){
   $("scoringTeam").value=oldScoringTeam;
+ }else{
+  $("scoringTeam").value="";
  }
+
  $("scoringTeam").dataset.selected=$("scoringTeam").value;
+ syncScoringTeamOptions();
 
  const canEditSettings=canAdmin();
  $("settingsPanel").classList.toggle("hidden",!canEditSettings||m.match_status!=="upcoming");
@@ -679,10 +836,7 @@ function updateRaiderPreview(){
  }
 }
 
-/* START / RESTART RAID
-   Database Function নিজেই পুরনো Raid Replace করবে।
-   এখানে STOP RAID RPC কল করা হবে না।
-*/
+/* START / RESTART RAID */
 async function startRaid(){
  if(raidActionBusy)return;
 
@@ -696,15 +850,15 @@ async function startRaid(){
  }
 
  const matchId=currentMatch.id;
- const teamId=$("raiderTeam").value||currentMatch.current_raiding_team_id||"";
+ const teamId=$("raiderTeam").value||"";
 
  if(!teamId){
   msg("Raiding Team নির্বাচন করুন।",true);
   return;
  }
 
- if(currentMatch.current_raiding_team_id&&currentMatch.current_raiding_team_id!==teamId){
-  msg("Database-এ নির্ধারিত Raiding Team নির্বাচন করুন।",true);
+ if(teamId!==currentMatch.team_a_id&&teamId!==currentMatch.team_b_id){
+  msg("এই Match-এর একটি Team নির্বাচন করুন।",true);
   return;
  }
 
@@ -726,10 +880,9 @@ async function startRaid(){
  try{
   const raidSeconds=Number(currentMatch.default_raid_seconds)||30;
 
-  // Directly start a new raid.
-  // Existing active raid will be replaced by the updated SQL function.
   const {data,error}=await db.rpc("start_kabaddi_raid",{
    p_match_id:matchId,
+   p_raiding_team_id:teamId,
    p_raider_name:player?.name||null,
    p_raider_player_id:player?.id||null,
    p_raid_seconds:raidSeconds
@@ -866,8 +1019,11 @@ function getMatchRemaining(){
  let remaining=Number(m.match_timer||0);
 
  if(m.match_status==="live"&&m.match_started_at){
-  const elapsed=Math.floor((Date.now()-new Date(m.match_started_at).getTime())/1000);
-  remaining=Math.max(0,remaining-elapsed);
+  const startedAt=new Date(m.match_started_at).getTime();
+  if(Number.isFinite(startedAt)){
+   const elapsed=Math.floor((Date.now()-startedAt)/1000);
+   remaining=Math.max(0,remaining-elapsed);
+  }
  }
 
  return remaining;
@@ -876,27 +1032,38 @@ function getMatchRemaining(){
 function getRaidRemaining(){
  const m=currentMatch;
  if(!m)return 0;
-
- // Raid is inactive after successful score update.
  if(!m.raid_started_at)return 0;
 
  let remaining=Number(m.raid_timer||0);
 
  if(m.match_status==="live"){
-  const elapsed=Math.floor((Date.now()-new Date(m.raid_started_at).getTime())/1000);
-  remaining=Math.max(0,remaining-elapsed);
+  const startedAt=new Date(m.raid_started_at).getTime();
+  if(Number.isFinite(startedAt)){
+   const elapsed=Math.floor((Date.now()-startedAt)/1000);
+   remaining=Math.max(0,remaining-elapsed);
+  }
  }
 
  return remaining;
 }
 
+/* IMPORTANT: null means the Half Time timestamp is missing.
+   Zero means the real break timer has finished. */
 function getBreakRemaining(){
  const m=currentMatch;
- if(!m||!m.halftime_started_at)return 0;
 
- const elapsed=Math.floor((Date.now()-new Date(m.halftime_started_at).getTime())/1000);
+ if(!m||!m.halftime_started_at)return null;
 
- return Math.max(0,Number(m.halftime_break_seconds||0)-elapsed);
+ const startedAt=new Date(m.halftime_started_at).getTime();
+
+ if(!Number.isFinite(startedAt))return null;
+
+ const elapsed=Math.floor((Date.now()-startedAt)/1000);
+ const duration=Number(m.halftime_break_seconds);
+
+ if(!Number.isFinite(duration))return null;
+
+ return Math.max(0,duration-elapsed);
 }
 
 function updateTimerDisplay(){
@@ -910,7 +1077,9 @@ function updateTimerDisplay(){
 
  $("matchTimerDisplay").textContent=formatTime(matchRemaining);
  $("raidTimerDisplay").textContent=formatTime(raidRemaining);
- $("breakTimerDisplay").textContent=formatTime(breakRemaining);
+
+ $("breakTimerDisplay").textContent=
+  breakRemaining===null?"--:--":formatTime(breakRemaining);
 
  $("timerHalf").textContent=Number(m.current_half)===2?"SECOND HALF":"FIRST HALF";
 
@@ -924,25 +1093,47 @@ function updateTimerDisplay(){
  $("pauseBtn").disabled=!canControl()||m.match_status!=="live";
  $("resumeBtn").disabled=!canControl()||m.match_status!=="paused";
 
- if(m.match_status==="upcoming")$("timerMessage").textContent="MATCH NOT STARTED";
- else if(m.match_status==="paused")$("timerMessage").textContent="⏸ MATCH PAUSED";
- else if(m.match_status==="halftime")$("timerMessage").textContent=breakRemaining>0?"HALF TIME BREAK":"BREAK FINISHED";
- else if(m.match_status==="live"&&matchRemaining===0)$("timerMessage").textContent=Number(m.current_half)===1?"FIRST HALF FINISHED":"SECOND HALF TIME UP - FINISH MATCH";
- else if(m.match_status==="completed")$("timerMessage").textContent="MATCH COMPLETED";
- else $("timerMessage").textContent="● MATCH LIVE";
+ if(m.match_status==="upcoming"){
+  $("timerMessage").textContent="MATCH NOT STARTED";
+ }
+ else if(m.match_status==="paused"){
+  $("timerMessage").textContent="⏸ MATCH PAUSED";
+ }
+ else if(m.match_status==="halftime"){
+  if(breakRemaining===null){
+   $("timerMessage").textContent="⚠ HALF TIME TIMER DATA MISSING — REFRESH MATCH";
+  }else{
+   $("timerMessage").textContent=breakRemaining>0?"HALF TIME BREAK":"BREAK FINISHED";
+  }
+ }
+ else if(m.match_status==="live"&&matchRemaining===0){
+  $("timerMessage").textContent=Number(m.current_half)===1
+   ?"FIRST HALF FINISHED"
+   :"SECOND HALF TIME UP - FINISH MATCH";
+ }
+ else if(m.match_status==="completed"){
+  $("timerMessage").textContent="MATCH COMPLETED";
+ }
+ else{
+  $("timerMessage").textContent="● MATCH LIVE";
+ }
 }
 
 /* HALF TRANSITIONS */
 async function finishFirstHalfAutomatically(){
- if(!canControl()||transitionBusy||!currentMatch||currentMatch.match_status!=="live"||Number(currentMatch.current_half)!==1||getMatchRemaining()>0)return;
+ if(!canControl()||transitionBusy||!currentMatch||
+    currentMatch.match_status!=="live"||
+    Number(currentMatch.current_half)!==1||
+    getMatchRemaining()>0)return;
 
  transitionBusy=true;
 
  try{
-  const {error}=await db.rpc("finish_kabaddi_half",{p_match_id:currentMatch.id});
+  const matchId=currentMatch.id;
+  const {error}=await db.rpc("finish_kabaddi_half",{p_match_id:matchId});
   if(error)throw error;
 
-  await selectMatch(currentMatch.id);
+  await selectMatch(matchId);
   msg("First Half শেষ। Half Time শুরু হয়েছে।");
 
  }catch(error){
@@ -953,16 +1144,21 @@ async function finishFirstHalfAutomatically(){
 }
 
 async function advanceHalfAutomatically(){
- if(!canControl()||transitionBusy||!currentMatch||currentMatch.match_status!=="halftime"||getBreakRemaining()>0)return;
+ const remaining=getBreakRemaining();
+
+ if(!canControl()||transitionBusy||!currentMatch||
+    currentMatch.match_status!=="halftime"||
+    remaining===null||remaining>0)return;
 
  transitionBusy=true;
 
  try{
-  const {data,error}=await db.rpc("advance_kabaddi_half_if_ready",{p_match_id:currentMatch.id});
+  const matchId=currentMatch.id;
+  const {data,error}=await db.rpc("advance_kabaddi_half_if_ready",{p_match_id:matchId});
   if(error)throw error;
 
   if(data?.transitioned){
-   await selectMatch(currentMatch.id);
+   await selectMatch(matchId);
    hideHalfTimePopup();
    msg("Automatic Second Half শুরু হয়েছে।");
   }
@@ -989,21 +1185,23 @@ async function manualEndHalfTime(fromPopup=false){
  $("endBreakPopupBtn").disabled=true;
  $("manualHalfBtn").disabled=true;
 
- const {data,error}=await db.rpc("end_kabaddi_halftime_now",{
-  p_match_id:currentMatch.id
- });
+ try{
+  const {data,error}=await db.rpc("end_kabaddi_halftime_now",{
+   p_match_id:currentMatch.id
+  });
 
- $("endBreakPopupBtn").disabled=false;
+  if(error)throw error;
 
- if(error){
+  await selectMatch(currentMatch.id);
+  hideHalfTimePopup();
+  msg("Half Time শেষ। Second Half শুরু হয়েছে।");
+
+ }catch(error){
   msg("Second Half শুরু হয়নি: "+error.message,true);
+ }finally{
+  $("endBreakPopupBtn").disabled=false;
   applyPermissions();
-  return;
  }
-
- await selectMatch(currentMatch.id);
- hideHalfTimePopup();
- msg("Half Time শেষ। Second Half শুরু হয়েছে।");
 }
 
 /* MATCH START / RESUME */
@@ -1096,11 +1294,16 @@ function startTimerLoop(){
 
   if(!canControl())return;
 
-  if(currentMatch.match_status==="live"&&Number(currentMatch.current_half)===1&&getMatchRemaining()===0){
+  if(currentMatch.match_status==="live"&&
+     Number(currentMatch.current_half)===1&&
+     getMatchRemaining()===0){
    await finishFirstHalfAutomatically();
   }
 
-  if(currentMatch.match_status==="halftime"&&getBreakRemaining()===0){
+  const breakRemaining=getBreakRemaining();
+
+  if(currentMatch.match_status==="halftime"&&
+     breakRemaining!==null&&breakRemaining===0){
    await advanceHalfAutomatically();
   }
 
@@ -1157,11 +1360,6 @@ async function submitScoreEvent(type,points){
  applyPermissions();
 
  try{
-  // Database transaction:
-  // 1. Score update
-  // 2. Event insert
-  // 3. Raid timer reset to zero
-  // 4. Active raider cleared
   const {data,error}=await db.rpc("record_kabaddi_score_event",{
    p_match_id:matchId,
    p_event_type:type,
@@ -1173,9 +1371,6 @@ async function submitScoreEvent(type,points){
 
   if(error)throw error;
   if(data?.success===false)throw new Error("Score Update সফল হয়নি।");
-
-  // Do NOT call stop_kabaddi_raid here.
-  // The updated score function already resets the raid atomically.
 
   await selectMatch(matchId);
 
@@ -1226,6 +1421,8 @@ async function undoEvent(){
 /* OVERLAY PAGE */
 async function initOverlay(){
  $("app").classList.add("hidden");
+ $("mobileScoreDock").classList.add("hidden");
+ document.body.classList.remove("mobile-scoring-active");
  $("overlayPage").classList.remove("hidden");
  $("logoutBtn").classList.add("hidden");
 
@@ -1324,7 +1521,7 @@ $("raiderTeam").addEventListener("change",async e=>{
 $("raiderSelect").addEventListener("change",updateRaiderPreview);
 
 $("scoringTeam").addEventListener("change",async e=>{
- $("scoringTeam").dataset.selected=e.target.value;
+ setScoringTeam(e.target.value);
 
  if(e.target.value){
   $("raiderTeam").value=e.target.value;
@@ -1332,17 +1529,26 @@ $("scoringTeam").addEventListener("change",async e=>{
  }
 });
 
-$("startRaidBtn").addEventListener("click",startRaid);
-$("stopRaidBtn").addEventListener("click",stopRaid);
+$("mobileScoringTeam").addEventListener("change",async e=>{
+ setScoringTeam(e.target.value);
 
-$("endBreakPopupBtn").addEventListener("click",()=>manualEndHalfTime(true));
-$("closeBreakPopupBtn").addEventListener("click",hideHalfTimePopup);
+ if(e.target.value){
+  $("raiderTeam").value=e.target.value;
+  await loadPlayersForTeam(e.target.value);
+ }
+});
 
 document.querySelectorAll("[data-quick]").forEach(btn=>{
  btn.addEventListener("click",()=>{
   submitScoreEvent(btn.dataset.quick,Number(btn.dataset.points));
  });
 });
+
+$("startRaidBtn").addEventListener("click",startRaid);
+$("stopRaidBtn").addEventListener("click",stopRaid);
+
+$("endBreakPopupBtn").addEventListener("click",()=>manualEndHalfTime(true));
+$("closeBreakPopupBtn").addEventListener("click",hideHalfTimePopup);
 
 document.querySelectorAll("[data-alert]").forEach(btn=>{
  btn.addEventListener("click",()=>sendBroadcastAlert(btn.dataset.alert));
