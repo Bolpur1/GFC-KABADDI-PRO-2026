@@ -203,11 +203,11 @@ button:disabled{opacity:.4;cursor:not-allowed}
    </div>
    <div class="raid-status" id="raidStatus">NO ACTIVE RAID</div>
    <div class="raid-buttons">
-    <button class="green" id="startRaidBtn">▶ START RAID</button>
+    <button class="green" id="startRaidBtn">▶ START RAID / RESTART RAID</button>
     <button class="red" id="stopRaidBtn">■ STOP RAID</button>
    </div>
    <p class="section-note">
-    Raider নির্বাচন করা বাধ্যতামূলক নয়। Team নির্বাচন করে Player ছাড়াই Start Raid করা যাবে।
+    Active Raid চলাকালীন START RAID চাপলে আগের Raid বন্ধ করে নতুন Raid শুরু হবে। Player নির্বাচন বাধ্যতামূলক নয়।
    </p>
   </section>
 
@@ -224,7 +224,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <button class="quick-btn" data-quick="super_raid" data-points="3"><strong>+3</strong><span>SUPER RAID</span></button>
     <button class="quick-btn red-btn" data-quick="all_out" data-points="2"><strong>+2</strong><span>ALL OUT BONUS</span></button>
    </div>
-   <p class="section-note">Quick Button চাপলে নির্বাচিত Scoring Team-এর স্কোর সরাসরি আপডেট হবে। Event ও Points প্রয়োজন অনুযায়ী যাচাই করুন।</p>
+   <p class="section-note">Quick Button চাপলে নির্বাচিত Scoring Team-এর স্কোর সরাসরি আপডেট হবে।</p>
    <h2 style="margin-top:22px">Manual Scoring</h2>
    <label>Points</label>
    <input type="number" id="points" min="0" max="20" value="1">
@@ -245,7 +245,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
     <option value="red_card">Red Card</option>
    </select>
    <button class="primary" id="recordBtn" style="width:100%;margin-top:12px">✓ RECORD EVENT</button>
-   <p class="muted">Points নিজে যাচাই করে দিন। বর্তমান Database Function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।</p>
+   <p class="muted">Points নিজে যাচাই করে দিন। Database Function-এ Kabaddi-র সব নিয়ম স্বয়ংক্রিয়ভাবে যাচাই হয় না।</p>
    <button class="red" id="undoBtn" style="width:100%">↶ UNDO LAST EVENT</button>
   </section>
 
@@ -293,9 +293,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 </div>
 
 <script>
-/* SUPABASE CONFIGURATION
-   এই Key-টি client.html-এর Key-এর সঙ্গে একই হতে হবে।
-*/
+/* SUPABASE CONFIGURATION */
 const SUPABASE_URL="https://wpefjtjcnvdnbsenfukg.supabase.co";
 const SUPABASE_KEY="sb_publishable_XeErhCBnSv6AIqdCdb7J6Q_kXoAH46u";
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -305,6 +303,8 @@ let currentUser=null,clientId=null,currentRole=null,currentMatch=null;
 let matchChannel=null,overlayChannel=null,timerInterval=null;
 let transitionBusy=false,raidPlayers=[],selectedRaider=null;
 let playerLoadRequest=0;
+let raidActionBusy=false;
+let scoreActionBusy=false;
 
 const params=new URLSearchParams(location.search);
 const isOverlay=params.get("overlay")==="1";
@@ -315,32 +315,36 @@ const canControl=()=>["owner","admin","scorer"].includes(currentRole);
 const canAdmin=()=>["owner","admin"].includes(currentRole);
 const isViewer=()=>currentRole==="viewer";
 
-/* COMMON */
 function msg(text,error=false){
  $("message").textContent=text;
  $("message").style.color=error?"#ff8490":"#b9f5d9";
 }
+
 function escapeHtml(s){
  return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
+
 function teamName(team){return team?.short_name||team?.name||"TEAM";}
 
-/* Standalone Match detection: match_mode OR null tournament_id */
 function isStandalone(m){
  return !!m&&(m.match_mode==="standalone"||!m.tournament_id);
 }
+
 function matchTitle(m){
  if(isStandalone(m))return "SINGLE MATCH";
  return m?.tournaments?.name||"TOURNAMENT";
 }
+
 function showDashboard(){
  $("loginPanel").classList.add("hidden");
  $("dashboard").classList.remove("hidden");
 }
+
 function showLogin(){
  $("loginPanel").classList.remove("hidden");
  $("dashboard").classList.add("hidden");
 }
+
 function isHalfTime(){return currentMatch?.match_status==="halftime";}
 
 function showHalfTimePopup(){$("halfTimeModal").classList.remove("hidden");}
@@ -372,14 +376,18 @@ function applyPermissions(){
  $("startBtn").disabled=!control||!currentMatch||!["upcoming","paused"].includes(currentMatch.match_status);
  $("pauseBtn").disabled=!control||currentMatch?.match_status!=="live";
  $("resumeBtn").disabled=!control||currentMatch?.match_status!=="paused";
- $("startRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||!!currentMatch.raid_started_at;
- $("stopRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||!currentMatch.raid_started_at;
- $("recordBtn").disabled=!control;
- $("undoBtn").disabled=!control;
+
+ // NEW RULE: Active Raid থাকলেও START RAID চালু থাকবে
+ $("startRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||raidActionBusy;
+
+ $("stopRaidBtn").disabled=!control||!currentMatch||currentMatch.match_status!=="live"||!currentMatch.raid_started_at||raidActionBusy;
+
+ $("recordBtn").disabled=!control||scoreActionBusy;
+ $("undoBtn").disabled=!control||scoreActionBusy;
  $("saveSettingsBtn").disabled=!admin;
  $("manualHalfBtn").disabled=!control||!(currentMatch?.match_status==="halftime"&&Number(currentMatch.current_half)===1);
 
- document.querySelectorAll("[data-quick]").forEach(b=>b.disabled=!control);
+ document.querySelectorAll("[data-quick]").forEach(b=>b.disabled=!control||scoreActionBusy);
  document.querySelectorAll("[data-alert]").forEach(b=>b.disabled=!control);
  $("overlayLinkBtn").disabled=!currentMatch;
  $("matchSelect").disabled=false;
@@ -395,9 +403,12 @@ async function login(){
  const email=$("email").value.trim(),password=$("password").value;
  if(!email||!password){msg("Email এবং Password দিন।",true);return;}
  $("loginBtn").disabled=true;
+
  const {data,error}=await db.auth.signInWithPassword({email,password});
+
  $("loginBtn").disabled=false;
  if(error){msg(error.message,true);return;}
+
  currentUser=data.user;
  await initialize();
 }
@@ -405,6 +416,7 @@ async function login(){
 async function initialize(){
  const {data:userData,error:userError}=await db.auth.getUser();
  if(userError){msg(userError.message,true);return;}
+
  currentUser=userData?.user;
  if(!currentUser){showLogin();msg("Please login.");return;}
 
@@ -447,6 +459,7 @@ async function loadMatches(){
  });
 
  const wanted=requestedMatch||select.value;
+
  if(wanted&&(data||[]).some(m=>m.id===wanted)){
   select.value=wanted;
   await selectMatch(wanted);
@@ -579,6 +592,7 @@ async function loadRaidPlayers(){
  if(!currentMatch||currentMatch.id!==matchId)return;
 
  const wanted=currentMatch.current_raider_player_id||previousPlayer;
+
  if(wanted&&raidPlayers.some(p=>p.id===wanted)){
   $("raiderSelect").value=wanted;
   updateRaiderPreview();
@@ -610,6 +624,7 @@ async function loadPlayersForTeam(teamId){
  }
 
  const matchId=currentMatch.id;
+
  const {data,error}=await db.from("players")
   .select("id,client_id,team_id,name,jersey_number,position,photo_url")
   .eq("client_id",clientId).eq("team_id",teamId)
@@ -665,16 +680,26 @@ function updateRaiderPreview(){
  }
 }
 
-/* START RAID */
+/* NEW RAID RESTART SYSTEM */
 async function startRaid(){
+ if(raidActionBusy)return;
+
  if(!canControl()){msg("আপনার Raid Control Permission নেই।",true);return;}
  if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
  if(blockDuringHalfTime())return;
- if(currentMatch.match_status!=="live"){msg("শুধুমাত্র Live Match-এ Raid শুরু করা যাবে।",true);return;}
- if(currentMatch.raid_started_at){msg("আগের Raid শেষ না করে নতুন Raid শুরু করা যাবে না।",true);return;}
 
+ if(currentMatch.match_status!=="live"){
+  msg("শুধুমাত্র Live Match-এ Raid শুরু করা যাবে।",true);
+  return;
+ }
+
+ const matchId=currentMatch.id;
  const teamId=$("raiderTeam").value||currentMatch.current_raiding_team_id||"";
- if(!teamId){msg("Raiding Team নির্বাচন করুন।",true);return;}
+
+ if(!teamId){
+  msg("Raiding Team নির্বাচন করুন।",true);
+  return;
+ }
 
  if(currentMatch.current_raiding_team_id&&currentMatch.current_raiding_team_id!==teamId){
   msg("Database-এ নির্ধারিত Raiding Team নির্বাচন করুন।",true);
@@ -686,58 +711,125 @@ async function startRaid(){
 
  if(playerId){
   player=raidPlayers.find(p=>p.id===playerId);
+
   if(!player||player.team_id!==teamId){
    msg("সঠিক দলের Player নির্বাচন করুন।",true);
    return;
   }
  }
 
- $("startRaidBtn").disabled=true;
+ raidActionBusy=true;
+ applyPermissions();
 
- const {error}=await db.rpc("start_kabaddi_raid",{
-  p_match_id:currentMatch.id,
-  p_raider_name:player?.name||null,
-  p_raider_player_id:player?.id||null,
-  p_raid_seconds:currentMatch.default_raid_seconds||30
- });
+ try{
+  // STEP 1: আগের Active Raid বন্ধ করা
+  if(currentMatch.raid_started_at){
 
- if(error){
-  msg("Raid Start হয়নি: "+error.message,true);
+   const {error:stopError}=await db.rpc("stop_kabaddi_raid",{
+    p_match_id:matchId
+   });
+
+   if(stopError)throw stopError;
+
+   // STEP 2: Database থেকে নিশ্চিত হওয়া যে আগের Raid বন্ধ হয়েছে
+   const {data:stoppedMatch,error:loadError}=await db.from("matches")
+    .select("*")
+    .eq("id",matchId)
+    .single();
+
+   if(loadError)throw loadError;
+
+   if(stoppedMatch.raid_started_at){
+    throw new Error("আগের Raid এখনও Active রয়েছে। নতুন Raid শুরু করা যায়নি।");
+   }
+
+   currentMatch={...currentMatch,...stoppedMatch};
+
+   // Match Live আছে কিনা যাচাই
+   if(currentMatch.match_status!=="live"){
+    throw new Error("Match Live নেই।");
+   }
+  }
+
+  // STEP 3: নতুন Raid সম্পূর্ণ সময় থেকে শুরু
+  const raidSeconds=Number(currentMatch.default_raid_seconds)||30;
+
+  const {error:startError}=await db.rpc("start_kabaddi_raid",{
+   p_match_id:matchId,
+   p_raider_name:player?.name||null,
+   p_raider_player_id:player?.id||null,
+   p_raid_seconds:raidSeconds
+  });
+
+  if(startError)throw startError;
+
+  // STEP 4: সর্বশেষ Match Data Load
+  await selectMatch(matchId);
+
+  msg(player
+   ?"নতুন Raid শুরু হয়েছে: "+player.name+" • "+raidSeconds+" Seconds"
+   :"নতুন Raid শুরু হয়েছে • "+raidSeconds+" Seconds");
+
+ }catch(error){
+  msg("Raid Restart হয়নি: "+error.message,true);
+ }finally{
+  raidActionBusy=false;
   applyPermissions();
-  return;
  }
-
- await selectMatch(currentMatch.id);
- msg(player?"Raid শুরু হয়েছে: "+player.name:"Raid Timer শুরু হয়েছে। Raider নির্বাচন করা হয়নি।");
 }
 
+/* STOP RAID */
 async function stopRaid(){
+ if(raidActionBusy)return;
  if(!canControl()){msg("আপনার Raid Control Permission নেই।",true);return;}
  if(!currentMatch)return;
  if(blockDuringHalfTime())return;
- if(currentMatch.match_status!=="live"){msg("Match Live নেই।",true);return;}
- if(!currentMatch.raid_started_at){msg("কোনো Active Raid নেই।",true);return;}
 
- $("stopRaidBtn").disabled=true;
- const {error}=await db.rpc("stop_kabaddi_raid",{p_match_id:currentMatch.id});
-
- if(error){
-  msg("Raid Stop হয়নি: "+error.message,true);
-  applyPermissions();
+ if(currentMatch.match_status!=="live"){
+  msg("Match Live নেই।",true);
   return;
  }
 
- await selectMatch(currentMatch.id);
- msg("Raid শেষ হয়েছে।");
+ if(!currentMatch.raid_started_at){
+  msg("কোনো Active Raid নেই।",true);
+  return;
+ }
+
+ const matchId=currentMatch.id;
+
+ raidActionBusy=true;
+ applyPermissions();
+
+ try{
+  const {error}=await db.rpc("stop_kabaddi_raid",{
+   p_match_id:matchId
+  });
+
+  if(error)throw error;
+
+  await selectMatch(matchId);
+  msg("Raid বন্ধ হয়েছে। Raid Timer Reset হয়েছে।");
+
+ }catch(error){
+  msg("Raid Stop হয়নি: "+error.message,true);
+ }finally{
+  raidActionBusy=false;
+  applyPermissions();
+ }
 }
 
 /* OVERLAY */
 function renderOverlay(){
  if(!currentMatch)return;
+
  $("ovA").textContent=currentMatch.team_a_score??0;
  $("ovB").textContent=currentMatch.team_b_score??0;
- $("ovNames").textContent=teamName(currentMatch.teamsA)+" VS "+teamName(currentMatch.teamsB);
- $("ovMeta").textContent=matchTitle(currentMatch)+" • "+(currentMatch.match_status||"").toUpperCase()+" • HALF "+(currentMatch.current_half||1);
+
+ $("ovNames").textContent=
+  teamName(currentMatch.teamsA)+" VS "+teamName(currentMatch.teamsB);
+
+ $("ovMeta").textContent=
+  matchTitle(currentMatch)+" • "+(currentMatch.match_status||"").toUpperCase()+" • HALF "+(currentMatch.current_half||1);
 }
 
 function showAlert(text){
@@ -781,7 +873,9 @@ async function sendBroadcastAlert(text){
 
 function openOverlay(){
  if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
+
  const url=location.origin+location.pathname+"?overlay=1&match="+encodeURIComponent(currentMatch.id);
+
  window.open(url,"GFC_KABADDI_OVERLAY","width=1200,height=700");
 }
 
@@ -801,6 +895,7 @@ function getMatchRemaining(){
   const elapsed=Math.floor((Date.now()-new Date(m.match_started_at).getTime())/1000);
   remaining=Math.max(0,remaining-elapsed);
  }
+
  return remaining;
 }
 
@@ -814,6 +909,7 @@ function getRaidRemaining(){
   const elapsed=Math.floor((Date.now()-new Date(m.raid_started_at).getTime())/1000);
   remaining=Math.max(0,remaining-elapsed);
  }
+
  return remaining;
 }
 
@@ -822,6 +918,7 @@ function getBreakRemaining(){
  if(!m||!m.halftime_started_at)return 0;
 
  const elapsed=Math.floor((Date.now()-new Date(m.halftime_started_at).getTime())/1000);
+
  return Math.max(0,Number(m.halftime_break_seconds||0)-elapsed);
 }
 
@@ -829,6 +926,7 @@ function updateTimerDisplay(){
  if(!currentMatch)return;
 
  const m=currentMatch;
+
  const matchRemaining=getMatchRemaining();
  const raidRemaining=getRaidRemaining();
  const breakRemaining=getBreakRemaining();
@@ -838,9 +936,14 @@ function updateTimerDisplay(){
  $("breakTimerDisplay").textContent=formatTime(breakRemaining);
 
  $("timerHalf").textContent=Number(m.current_half)===2?"SECOND HALF":"FIRST HALF";
- $("matchTimerDisplay").classList.toggle("timer-warning",matchRemaining<=60&&m.match_status==="live");
+
+ $("matchTimerDisplay").classList.toggle(
+  "timer-warning",
+  matchRemaining<=60&&m.match_status==="live"
+ );
 
  $("manualHalfBtn").disabled=!canControl()||!(m.match_status==="halftime"&&Number(m.current_half)===1);
+
  $("pauseBtn").disabled=!canControl()||m.match_status!=="live";
  $("resumeBtn").disabled=!canControl()||m.match_status!=="paused";
 
@@ -857,12 +960,14 @@ async function finishFirstHalfAutomatically(){
  if(!canControl()||transitionBusy||!currentMatch||currentMatch.match_status!=="live"||Number(currentMatch.current_half)!==1||getMatchRemaining()>0)return;
 
  transitionBusy=true;
+
  try{
   const {error}=await db.rpc("finish_kabaddi_half",{p_match_id:currentMatch.id});
   if(error)throw error;
 
   await selectMatch(currentMatch.id);
   msg("First Half শেষ। Half Time শুরু হয়েছে।");
+
  }catch(error){
   msg("Half Time শুরু হয়নি: "+error.message,true);
  }finally{
@@ -874,6 +979,7 @@ async function advanceHalfAutomatically(){
  if(!canControl()||transitionBusy||!currentMatch||currentMatch.match_status!=="halftime"||getBreakRemaining()>0)return;
 
  transitionBusy=true;
+
  try{
   const {data,error}=await db.rpc("advance_kabaddi_half_if_ready",{p_match_id:currentMatch.id});
   if(error)throw error;
@@ -883,6 +989,7 @@ async function advanceHalfAutomatically(){
    hideHalfTimePopup();
    msg("Automatic Second Half শুরু হয়েছে।");
   }
+
  }catch(error){
   msg("Second Half শুরু হয়নি: "+error.message,true);
  }finally{
@@ -905,7 +1012,9 @@ async function manualEndHalfTime(fromPopup=false){
  $("endBreakPopupBtn").disabled=true;
  $("manualHalfBtn").disabled=true;
 
- const {data,error}=await db.rpc("end_kabaddi_halftime_now",{p_match_id:currentMatch.id});
+ const {data,error}=await db.rpc("end_kabaddi_halftime_now",{
+  p_match_id:currentMatch.id
+ });
 
  $("endBreakPopupBtn").disabled=false;
 
@@ -926,6 +1035,7 @@ async function startMatch(){
  if(!currentMatch)return;
 
  let rpcName;
+
  if(currentMatch.match_status==="upcoming")rpcName="start_kabaddi_match";
  else if(currentMatch.match_status==="paused")rpcName="resume_kabaddi_match";
  else{
@@ -956,7 +1066,9 @@ async function pauseMatch(){
   return;
  }
 
- const {error}=await db.rpc("pause_kabaddi_match",{p_match_id:currentMatch.id});
+ const {error}=await db.rpc("pause_kabaddi_match",{
+  p_match_id:currentMatch.id
+ });
 
  if(error){msg("Pause হয়নি: "+error.message,true);return;}
 
@@ -1014,6 +1126,7 @@ function startTimerLoop(){
   if(currentMatch.match_status==="halftime"&&getBreakRemaining()===0){
    await advanceHalfAutomatically();
   }
+
  },1000);
 }
 
@@ -1035,6 +1148,8 @@ const eventLabels={
 };
 
 async function submitScoreEvent(type,points){
+ if(scoreActionBusy)return;
+
  if(!canControl()){msg("আপনার Scoring Permission নেই।",true);return;}
  if(!currentMatch){msg("আগে Match নির্বাচন করুন।",true);return;}
  if(blockDuringHalfTime())return;
@@ -1045,6 +1160,7 @@ async function submitScoreEvent(type,points){
  }
 
  const team=$("scoringTeam").value;
+
  if(!team){msg("আগে Scoring Team নির্বাচন করুন।",true);return;}
 
  if(!Number.isInteger(points)||points<0||points>20){
@@ -1057,25 +1173,56 @@ async function submitScoreEvent(type,points){
   return;
  }
 
+ const matchId=currentMatch.id;
  const playerId=selectedRaider&&selectedRaider.team_id===team?selectedRaider.id:null;
 
- const {error}=await db.rpc("record_kabaddi_score_event",{
-  p_match_id:currentMatch.id,
-  p_event_type:type,
-  p_team_id:team,
-  p_points:points,
-  p_overlay_label:eventLabels[type]||type,
-  p_player_id:playerId
- });
+ scoreActionBusy=true;
+ applyPermissions();
 
- if(error){
-  msg("Event save হয়নি: "+error.message,true);
-  return;
+ try{
+  // STEP 1: Score Event Save
+  const {error}=await db.rpc("record_kabaddi_score_event",{
+   p_match_id:matchId,
+   p_event_type:type,
+   p_team_id:team,
+   p_points:points,
+   p_overlay_label:eventLabels[type]||type,
+   p_player_id:playerId
+  });
+
+  if(error)throw error;
+
+  // STEP 2: সফল Score Update হলে Active Raid বন্ধ
+  // Raid Timer শূন্য করার দায়িত্ব stop_kabaddi_raid Database Function-এর।
+  if(currentMatch?.id===matchId&&currentMatch.raid_started_at){
+
+   const {error:stopError}=await db.rpc("stop_kabaddi_raid",{
+    p_match_id:matchId
+   });
+
+   if(stopError){
+    await selectMatch(matchId);
+    throw new Error("Score Save হয়েছে, কিন্তু Raid বন্ধ হয়নি: "+stopError.message);
+   }
+  }
+
+  // STEP 3: Updated Match Data Load
+  await selectMatch(matchId);
+
+  showAlert(eventLabels[type]||type);
+
+  msg(
+   (eventLabels[type]||type)+
+   " • "+points+
+   " Point সফলভাবে Save হয়েছে। Active Raid বন্ধ হয়েছে।"
+  );
+
+ }catch(error){
+  msg("Score / Raid Update Error: "+error.message,true);
+ }finally{
+  scoreActionBusy=false;
+  applyPermissions();
  }
-
- await selectMatch(currentMatch.id);
- showAlert(eventLabels[type]||type);
- msg((eventLabels[type]||type)+" • "+points+" Point সফলভাবে Save হয়েছে।");
 }
 
 async function recordEvent(){
@@ -1096,7 +1243,9 @@ async function undoEvent(){
 
  if(!confirm("সর্বশেষ Scoring Event Undo করবেন?"))return;
 
- const {data,error}=await db.rpc("undo_last_match_event",{p_match_id:currentMatch.id});
+ const {data,error}=await db.rpc("undo_last_match_event",{
+  p_match_id:currentMatch.id
+ });
 
  if(error){msg("Undo হয়নি: "+error.message,true);return;}
 
@@ -1111,6 +1260,7 @@ async function initOverlay(){
  $("logoutBtn").classList.add("hidden");
 
  const {data:userData}=await db.auth.getUser();
+
  if(!userData?.user){
   $("overlayPage").classList.add("hidden");
   $("app").classList.remove("hidden");
@@ -1124,7 +1274,6 @@ async function initOverlay(){
   return;
  }
 
- /* Match ownership / club membership check */
  const {data:matchAccess,error:accessError}=await db.from("matches")
   .select("id,client_id")
   .eq("id",requestedMatch)
